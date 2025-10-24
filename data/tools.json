@@ -1,0 +1,87 @@
+[
+  {
+    "id": "chatgpt",
+    "name": "ChatGPT",
+    "logo": "https://pbs.twimg.com/profile_images/1591069251076162560/3vS9p5t1_400x400.jpg",
+    "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
+    "tags": ["chat", "writing", "coding", "assistant"],
+    "summary": "Ask questions, get drafts, and debug code quickly.",
+    "details": "ChatGPT provides versatile conversational capabilities. It can help you write emails, summarize documents, generate code snippets, and more.",
+    "howTo": [
+      "Open ChatGPT and type a clear question or request.",
+      "Provide context or examples if you want a tailored answer.",
+      "Review and edit the response; ask follow-up questions to refine output.",
+      "When using code snippets, test them in your environment and request clarifications if needed."
+    ]
+  },
+  {
+    "id": "claude",
+    "name": "Anthropic Claude",
+    "logo": "https://raw.githubusercontent.com/anthropic/claude-branding/main/claude-wordmark/Claude_wordmark.png",
+    "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
+    "tags": ["chat", "research", "summaries"],
+    "summary": "Good for research, note-taking and clarifying complex topics.",
+    "details": "Claude is designed to be helpful and to provide reasoned answers. It's useful for long-form analysis and summarization.",
+    "howTo": [
+      "Start a conversation with your topic or paste the material to summarize.",
+      "Ask Claude for bullet summaries, highlights, or a plain-language explanation.",
+      "Use follow-ups to get more detail or examples."
+    ]
+  },
+  {
+    "id": "midjourney",
+    "name": "Midjourney",
+    "logo": "https://cdn.midjourney.com/assets/logo.png",
+    "about": "An image-generation tool that turns text prompts into high-quality artwork.",
+    "tags": ["image", "art", "design"],
+    "summary": "Create concept art, social images, and visual ideas from short prompts.",
+    "details": "Midjourney specializes in creative image outputs. Use concise prompts and tweak style words to refine results.",
+    "howTo": [
+      "Write a short descriptive prompt (subject, style, colors).",
+      "Select an aspect ratio or style if the tool supports it.",
+      "Generate, then iterate by adding or removing adjectives to refine the image."
+    ]
+  },
+  {
+    "id": "dalle",
+    "name": "DALL·E",
+    "logo": "https://images.unsplash.com/photo-1612831455542-6d2b737b93d3?auto=format&fit=crop&w=400&q=80",
+    "about": "A fast image generator by OpenAI for photorealistic or stylized images from text.",
+    "tags": ["image", "photorealism", "illustration"],
+    "summary": "Quickly make visuals for presentations, mockups, or social posts.",
+    "details": "DALL·E can generate diverse imagery. Be specific with backgrounds, lighting, and subjects for consistent outputs.",
+    "howTo": [
+      "Type the scene you want in simple sentences.",
+      "Add style cues like 'photorealistic' or 'watercolor'.",
+      "Pick the best result and download or refine with extra prompts."
+    ]
+  },
+  {
+    "id": "zapier",
+    "name": "Zapier",
+    "logo": "https://cdn-icons-png.flaticon.com/512/5968/5968705.png",
+    "about": "Automation platform that connects apps and automates repetitive tasks without code.",
+    "tags": ["automation", "workflow", "integrations"],
+    "summary": "Automate copying data, notifications, and routine tasks across apps.",
+    "details": "Zapier links web apps and runs simple automations called Zaps. It's approachable for non-technical users.",
+    "howTo": [
+      "Pick a trigger (e.g., new Gmail message).",
+      "Choose the action app (e.g., save to Google Sheets).",
+      "Test the Zap and turn it on to run automatically."
+    ]
+  },
+  {
+    "id": "runway",
+    "name": "Runway",
+    "logo": "https://runwayml.com/images/logo.svg",
+    "about": "A suite for creators with AI-powered video, image and audio tools.",
+    "tags": ["video", "editing", "creative"],
+    "summary": "Edit video, remove backgrounds, and generate content with simple controls.",
+    "details": "Runway helps creators speed up editing workflows with AI features like background removal and text-to-video generation.",
+    "howTo": [
+      "Upload your footage or image.",
+      "Select an AI tool (e.g., background remove or color grade).",
+      "Apply settings and export the result."
+    ]
+  }
+]
