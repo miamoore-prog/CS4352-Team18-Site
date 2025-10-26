@@ -2,16 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
+:root {
   --radius: 12px;
 }
 
 /* simple shadcn-like card */
 .card {
   /* warm beige card */
-  background: linear-gradient(180deg, rgba(255,250,244,0.9), rgba(250,245,236,0.9));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 250, 244, 0.9),
+    rgba(250, 245, 236, 0.9)
+  );
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
   padding: 1rem;
 }
 
@@ -23,6 +27,29 @@
   @apply w-12 h-12 rounded-md object-cover;
 }
 
-html,body,#__next{height:100%}
+html,
+body,
+#__next {
+  height: 100%;
+}
 /* warm beige background */
-body{background: linear-gradient(180deg, #FBF7F0 0%, #F2EBDD 100%)}
+body {
+  background: linear-gradient(180deg, #fbf7f0 0%, #f2ebdd 100%);
+}
+
+/* shadcn-like utility classes */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  .btn-primary {
+    @apply bg-primary text-white px-3 py-2 shadow-sm;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-primary px-2 py-1;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-sm;
+  }
+}
