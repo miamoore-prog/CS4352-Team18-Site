@@ -5,6 +5,9 @@
     "logo": "https://pbs.twimg.com/profile_images/1591069251076162560/3vS9p5t1_400x400.jpg",
     "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
     "tags": ["chat", "writing", "coding", "assistant"],
+    "intents": ["writing", "coding", "assistant"],
+    "primary_intent": "writing",
+    "keywords": ["email", "draft", "summarize", "write", "brainstorm"],
     "summary": "Ask questions, get drafts, and debug code quickly.",
     "details": "ChatGPT provides versatile conversational capabilities. It can help you write emails, summarize documents, generate code snippets, and more.",
     "howTo": [
@@ -20,6 +23,9 @@
     "logo": "https://raw.githubusercontent.com/anthropic/claude-branding/main/claude-wordmark/Claude_wordmark.png",
     "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
     "tags": ["chat", "research", "summaries"],
+    "intents": ["writing", "research", "assistant"],
+    "primary_intent": "writing",
+    "keywords": ["summarize", "notes", "explain", "email", "draft"],
     "summary": "Good for research, note-taking and clarifying complex topics.",
     "details": "Claude is designed to be helpful and to provide reasoned answers. It's useful for long-form analysis and summarization.",
     "howTo": [
@@ -34,6 +40,9 @@
     "logo": "https://cdn.midjourney.com/assets/logo.png",
     "about": "An image-generation tool that turns text prompts into high-quality artwork.",
     "tags": ["image", "art", "design"],
+    "intents": ["image", "design"],
+    "primary_intent": "image",
+    "keywords": ["image", "art", "illustration", "prompt", "visual"],
     "summary": "Create concept art, social images, and visual ideas from short prompts.",
     "details": "Midjourney specializes in creative image outputs. Use concise prompts and tweak style words to refine results.",
     "howTo": [
@@ -48,6 +57,9 @@
     "logo": "https://images.unsplash.com/photo-1612831455542-6d2b737b93d3?auto=format&fit=crop&w=400&q=80",
     "about": "A fast image generator by OpenAI for photorealistic or stylized images from text.",
     "tags": ["image", "photorealism", "illustration"],
+    "intents": ["image", "photorealism"],
+    "primary_intent": "image",
+    "keywords": ["image", "photorealistic", "illustration", "visual", "prompt"],
     "summary": "Quickly make visuals for presentations, mockups, or social posts.",
     "details": "DALL·E can generate diverse imagery. Be specific with backgrounds, lighting, and subjects for consistent outputs.",
     "howTo": [
@@ -62,6 +74,9 @@
     "logo": "https://cdn-icons-png.flaticon.com/512/5968/5968705.png",
     "about": "Automation platform that connects apps and automates repetitive tasks without code.",
     "tags": ["automation", "workflow", "integrations"],
+    "intents": ["automation", "integrations"],
+    "primary_intent": "automation",
+    "keywords": ["automate", "workflow", "integration", "trigger", "zap"],
     "summary": "Automate copying data, notifications, and routine tasks across apps.",
     "details": "Zapier links web apps and runs simple automations called Zaps. It's approachable for non-technical users.",
     "howTo": [
@@ -76,6 +91,9 @@
     "logo": "https://runwayml.com/images/logo.svg",
     "about": "A suite for creators with AI-powered video, image and audio tools.",
     "tags": ["video", "editing", "creative"],
+    "intents": ["video", "editing"],
+    "primary_intent": "video",
+    "keywords": ["video", "edit", "background removal", "text-to-video"],
     "summary": "Edit video, remove backgrounds, and generate content with simple controls.",
     "details": "Runway helps creators speed up editing workflows with AI features like background removal and text-to-video generation.",
     "howTo": [
