@@ -22,7 +22,7 @@ export default function NavBar() {
               </Button>
             </Link>
             <a href="#" className="text-sm text-slate-500">
-              <Link href="/tools">
+              <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
               </Button>
