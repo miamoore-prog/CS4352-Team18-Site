@@ -1,61 +1,134 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
-import toolsData from '../../data/tools.json'
-import SearchBar from '../../components/SearchBar'
-import FilterSidebar from '../../components/FilterSidebar'
-import ToolCard from '../../components/ToolCard'
-import ToolModal from '../../components/ToolModal'
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import toolsData from "../../data/tools.json";
+import SearchBar from "../../components/SearchBar";
+import ToolCard from "../../components/ToolCard";
+import ToolModal from "../../components/ToolModal";
 
 export default function ToolsPage() {
-  const searchParams = useSearchParams()
-  const initialQuery = searchParams.get('query') || ''
-  const [query, setQuery] = useState(initialQuery)
-  const [selectedTag, setSelectedTag] = useState(null)
-  const [activeTool, setActiveTool] = useState(null)
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("query") || "";
+  const [query, setQuery] = useState(initialQuery);
+  const [activeTool, setActiveTool] = useState(null);
+  const [recommendedIds, setRecommendedIds] = useState(null);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [recommendationError, setRecommendationError] = useState(null);
 
-  const tags = useMemo(() => {
-    const s = new Set()
-    toolsData.forEach(t => t.tags.forEach(tag => s.add(tag)))
-    return Array.from(s)
-  }, [])
+  // We no longer rely on client-side fallback filtering. The server/Gemini
+  // provides all recommendations. Keep a trivial memo for compatibility.
+  const filtered = useMemo(() => toolsData, []);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return toolsData.filter((t) => {
-      if (selectedTag && !t.tags.includes(selectedTag)) return false
-      if (!q) return true
-      return (
-        t.name.toLowerCase().includes(q) ||
-        t.about.toLowerCase().includes(q) ||
-        t.tags.join(' ').toLowerCase().includes(q) ||
-        t.summary.toLowerCase().includes(q)
-      )
-    })
-  }, [query, selectedTag])
+  // Explicit displayed tools state to avoid any render-order timing issues
+  const [displayedTools, setDisplayedTools] = useState(toolsData);
+
+  // Fetch recommendations from the server (Gemini). Called manually via the Search button.
+  async function fetchRecommendations(q, { signal } = {}) {
+    if (!q || q.trim() === "") {
+      setRecommendedIds(null);
+      setRecommendationError(null);
+      setLoadingRecommendations(false);
+      return;
+    }
+
+    setRecommendationError(null);
+    setLoadingRecommendations(true);
+
+    try {
+      // clear displayed tools while fetching to show loading state
+      setDisplayedTools([]);
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q }),
+        signal,
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const data = await res.json();
+
+      if (Array.isArray(data) && data.length > 0) {
+        const ids = data.map((d) => d.id).filter(Boolean);
+
+        setRecommendedIds(ids);
+        // set displayed tools immediately
+        setDisplayedTools(toolsData.filter((t) => ids.includes(t.id)));
+      } else {
+        setRecommendedIds([]);
+        setDisplayedTools([]);
+      }
+    } catch (err) {
+      if (err.name === "AbortError") {
+        return;
+      }
+
+      setRecommendationError(String(err));
+      setRecommendedIds([]);
+      setDisplayedTools([]);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  }
+
+  // No live/debounced search: only search when the user presses the Search button.
+
+  function handleQueryChange(value) {
+    setQuery(value);
+    setRecommendationError(null);
+  }
+
+  // provide a manual search trigger (Search button) that calls the same API
+  function handleSearch(value) {
+    const q = typeof value === "string" && value.trim() !== "" ? value : query;
+
+    // update parent query state to reflect what is being searched
+    if (q !== query) setQuery(q);
+    // clear previous recommendations while fetching
+    setRecommendedIds(null);
+    fetchRecommendations(q);
+  }
+
+  // If the page was opened with a query param (navigated from home), run
+  // a search automatically on mount so users see results immediately.
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim() !== "") {
+      // ensure the displayed query matches the initialQuery
+      if (initialQuery !== query) setQuery(initialQuery);
+      // kick off the fetch once
+      fetchRecommendations(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <aside className="md:col-span-1">
-        <div className="card">
-          <SearchBar value={query} onChange={setQuery} onSearch={()=>{}} />
-        </div>
+    <div className="space-y-6">
+      <div className="card">
+        <SearchBar
+          value={query}
+          onChange={handleQueryChange}
+          onSearch={handleSearch}
+        />
+      </div>
 
-        <div className="card mt-4">
-          <h4 className="font-semibold mb-2">Filter by tag</h4>
-          <FilterSidebar tags={tags} selected={selectedTag} onSelect={setSelectedTag} />
-          {selectedTag && (
-            <button className="mt-4 text-sm text-primary underline" onClick={() => setSelectedTag(null)}>Clear filter</button>
+      <section>
+        <div className="mb-4 text-sm text-slate-600">
+          {loadingRecommendations
+            ? "Searching..."
+            : `Showing ${displayedTools.length} tool(s)`}
+          {recommendationError && (
+            <div className="text-red-500 text-sm">
+              Error: {recommendationError}
+            </div>
+          )}
+          {recommendedIds && recommendedIds.length === 0 && (
+            <div className="text-sm text-slate-500">
+              No AI recommendations returned.
+            </div>
           )}
         </div>
-      </aside>
-
-      <section className="md:col-span-3">
-        <div className="mb-4 text-sm text-slate-600">Showing {filtered.length} tool(s)</div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {filtered.map((t) => (
+          {displayedTools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => setActiveTool(t)} />
           ))}
         </div>
@@ -65,5 +138,5 @@ export default function ToolsPage() {
         <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
       )}
     </div>
-  )
+  );
 }

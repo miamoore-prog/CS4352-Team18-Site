@@ -1,18 +1,25 @@
-"use client"
+"use client";
 
-import React from 'react'
+import React from "react";
+import { Button } from "./ui";
 
 export default function FilterSidebar({ tags = [], selected, onSelect }) {
   return (
     <div className="flex flex-col">
       {tags.map((tag) => (
-        <button
+        <Button
           key={tag}
           onClick={() => onSelect(tag)}
-          className={`text-sm mb-2 text-left px-3 py-2 rounded-md ${selected === tag ? 'bg-primary/10 text-primary font-semibold' : 'bg-slate-50'}`}>
+          variant="ghost"
+          className={`text-sm mb-2 text-left w-full ${
+            selected === tag
+              ? "bg-primary/10 text-primary font-semibold"
+              : "bg-slate-50"
+          }`}
+        >
           #{tag}
-        </button>
+        </Button>
       ))}
     </div>
-  )
+  );
 }

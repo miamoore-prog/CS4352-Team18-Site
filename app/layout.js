@@ -1,9 +1,10 @@
-import '../styles/globals.css'
+import "../styles/globals.css";
+import NavBar from "../components/NavBar";
 
 export const metadata = {
-  title: 'AI Tools Browser',
-  description: 'Find friendly, simple AI tools for common tasks.'
-}
+  title: "AI Tools Browser",
+  description: "Find friendly, simple AI tools for common tasks.",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -11,20 +12,17 @@ export default function RootLayout({ children }) {
       <body>
         <div className="max-w-5xl mx-auto px-4 py-8">
           <header className="mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-semibold text-slate-800">AI Tools — Simple Finder</h1>
-                <p className="text-sm text-slate-500">Find the right AI tool for the job — fast and simple.</p>
-              </div>
-              <div className="text-xs text-slate-400">Minimal • Friendly • Clear</div>
-            </div>
+            <NavBar />
           </header>
 
           <main>{children}</main>
 
-          <footer className="mt-12 text-sm text-slate-500">Made for non-technical users • Example data only</footer>
+          <footer className="mt-12 text-sm text-slate-500">
+            Built by Team 18 for CS/CGS 4352 (Introduction to Human-Computer
+            Interaction)
+          </footer>
         </div>
       </body>
     </html>
-  )
+  );
 }
