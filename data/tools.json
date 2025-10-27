@@ -101,5 +101,39 @@
       "Select an AI tool (e.g., background remove or color grade).",
       "Apply settings and export the result."
     ]
+  },
+  {
+    "id": "magicschool",
+    "name": "MagicSchool AI",
+    "logo": "https://example.com/magicschool-logo.png",
+    "about": "An AI-powered tutoring assistant that helps students learn concepts step-by-step and practice with targeted exercises.",
+    "tags": ["education", "tutoring", "learning", "explain"],
+    "intents": ["research", "writing", "education"],
+    "primary_intent": "education",
+    "keywords": ["tutor", "practice", "explain", "homework"],
+    "summary": "Get guided explanations, practice problems, and personalized study plans for many school subjects.",
+    "details": "MagicSchool AI provides interactive, curriculum-aligned explanations and exercises. It adapts to a student's level, generates practice questions, and offers hints and step-by-step solutions to reinforce understanding.",
+    "howTo": [
+      "Enter the topic or problem you want to study.",
+      "Pick a difficulty level and choose whether you want an explanation or practice set.",
+      "Work through problems and use hints or request step-by-step solutions when stuck."
+    ]
+  },
+  {
+    "id": "curipod",
+    "name": "Curipod",
+    "logo": "https://curipod.com/assets/logo.png",
+    "about": "A tool for teachers to create interactive lessons, quizzes, and formative assessments that engage students.",
+    "tags": ["education", "lessons", "interactive", "assessment"],
+    "intents": ["education", "research"],
+    "primary_intent": "education",
+    "keywords": ["quiz", "poll", "lesson", "assessment"],
+    "summary": "Create quick interactive activities and assessments for students with built-in analytics.",
+    "details": "Curipod makes it easy to build interactive slides, polls, and quizzes that students can respond to in real time. Teachers can collect responses, view analytics, and adapt instruction based on student understanding.",
+    "howTo": [
+      "Create a new Curipod and add interactive slides or questions.",
+      "Share the join link or code with students during class.",
+      "Review responses and analytics to inform next steps."
+    ]
   }
 ]
