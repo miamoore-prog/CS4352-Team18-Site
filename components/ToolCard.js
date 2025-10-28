@@ -3,10 +3,15 @@
 import Image from "next/image";
 import React from "react";
 import { Card, Button } from "./ui";
+import { useAuth } from "./AuthContext";
+import { useBookmarks } from "./BookmarkContext";
 
 export default function ToolCard({ tool, onOpen }) {
+  const { user } = useAuth();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const bookmarked = isBookmarked(tool.id);
   return (
-    <Card className="flex items-start space-x-4">
+    <Card className="flex items-start space-x-4 relative">
       <img src={tool.logo} alt={tool.name} className="logo" />
 
       <div className="flex-1">
@@ -30,12 +35,26 @@ export default function ToolCard({ tool, onOpen }) {
           ))}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 flex items-center space-x-2">
           <Button onClick={onOpen} variant="ghost" className="text-sm">
             View details
           </Button>
         </div>
       </div>
+      {user && (
+        <button
+          aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+          title={bookmarked ? "Remove bookmark" : "Add bookmark"}
+          onClick={() => toggleBookmark(tool.id)}
+          className="absolute bottom-3 right-3"
+        >
+          <img
+            src="/icons/Bookmark.webp"
+            alt="Bookmark"
+            className={`w-7 h-7 ${bookmarked ? "opacity-100" : "opacity-50"}`}
+          />
+        </button>
+      )}
     </Card>
   );
 }

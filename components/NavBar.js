@@ -3,8 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "./ui";
+import { useAuth } from "./AuthContext";
 
 export default function NavBar() {
+  const { user, logout } = useAuth();
   return (
     <nav className="mb-6">
       <div className="flex items-center justify-between">
@@ -25,6 +27,26 @@ export default function NavBar() {
               About
             </a>
           </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          {!user && (
+            <>
+              <Link href="/login">
+                <Button className="text-sm">Login</Button>
+              </Link>
+              <Link href="/signup">
+                <Button variant="secondary" className="text-sm">Create account</Button>
+              </Link>
+            </>
+          )}
+          {user && (
+            <>
+              <Link href="/profile">
+                <Button variant="ghost" className="text-sm">{user.username || user.email}</Button>
+              </Link>
+              <Button variant="outline" className="text-sm" onClick={logout}>Logout</Button>
+            </>
+          )}
         </div>
       </div>
     </nav>
