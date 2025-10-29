@@ -42,12 +42,26 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
 
     // Simple local intent classifier (fallback / fast path) - prefer deterministic matching when possible
     function classifyIntentFromQuery(q) {
-      const tokens = q
-        .toLowerCase()
+      // First check for key phrases before tokenizing
+      const q_lower = q.toLowerCase();
+      const keyPhrases = [
+        "ai tools",
+        "teaching tools",
+        "for teaching",
+        "for students",
+        "in classroom",
+        "ai assistant"
+      ];
+      
+      let foundPhrases = keyPhrases.filter(phrase => q_lower.includes(phrase));
+      
+      // Then get individual tokens
+      const tokens = q_lower
         .split(/[^\w]+/)
-        .filter(Boolean);
+        .filter(Boolean)
+        .concat(foundPhrases);
+      
       const stopwords = new Set([
-        "i",
         "me",
         "my",
         "we",
@@ -70,7 +84,6 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
         "these",
         "those",
         "to",
-        "for",
         "of",
         "in",
         "on",
@@ -87,15 +100,16 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
         "do",
         "does",
         "did",
-        "want",
-        "wants",
-        "wanting",
-        "helps",
-        "help",
-        "please",
       ]);
       const filtered = tokens.filter((t) => !stopwords.has(t));
       const tset = new Set(filtered);
+      
+      // Check if query contains AI-related terms
+      const hasAIContext = filtered.some(t => 
+        t.includes('ai') || t.includes('artificial') || t.includes('intelligence') || 
+        t === 'tool' || t === 'tools'
+      );
+      
       const map = {
         writing: [
           "write",
@@ -179,9 +193,17 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
     // If we can deterministically map to an intent, return local matching tools immediately (guarantees correct semantics)
     if (detectedIntent) {
       const matched = toolsData
-        .filter((t) =>
-          (t.primary_intent || t.intents || []).includes(detectedIntent)
-        )
+        .filter((t) => {
+          // For education/teaching queries, include tools that match either education intent or have education tags
+          if (detectedIntent === 'education') {
+            return (t.primary_intent === 'education' || 
+                   t.intents?.includes('education') || 
+                   t.tags?.includes('education') ||
+                   t.tags?.includes('teaching'));
+          }
+          // For other intents, use standard intent matching
+          return (t.primary_intent || t.intents || []).includes(detectedIntent);
+        })
         .map((t) => ({
           id: t.id,
           name: t.name,
