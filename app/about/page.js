@@ -8,7 +8,7 @@ export default function AboutPage() {
     const a = 1;
 
   return (
-    <div class= "header">
+    <div className= "header">
       <h1>About</h1>
       <p>My supercool header</p>
     </div>
