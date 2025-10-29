@@ -2,7 +2,7 @@
   {
     "id": "chatgpt",
     "name": "ChatGPT",
-    "logo": "https://pbs.twimg.com/profile_images/1591069251076162560/3vS9p5t1_400x400.jpg",
+    "logo": "/logos/chatgpt.webp",
     "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
     "tags": ["chat", "writing", "coding", "assistant"],
     "intents": ["writing", "coding", "assistant"],
@@ -20,7 +20,7 @@
   {
     "id": "claude",
     "name": "Anthropic Claude",
-    "logo": "https://raw.githubusercontent.com/anthropic/claude-branding/main/claude-wordmark/Claude_wordmark.png",
+    "logo": "/logos/claude.webp",
     "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
     "tags": ["chat", "research", "summaries"],
     "intents": ["writing", "research", "assistant"],
@@ -37,7 +37,7 @@
   {
     "id": "midjourney",
     "name": "Midjourney",
-    "logo": "https://cdn.midjourney.com/assets/logo.png",
+    "logo": "/logos/midjourney.webp",
     "about": "An image-generation tool that turns text prompts into high-quality artwork.",
     "tags": ["image", "art", "design"],
     "intents": ["image", "design"],
@@ -54,7 +54,7 @@
   {
     "id": "dalle",
     "name": "DALL·E",
-    "logo": "https://images.unsplash.com/photo-1612831455542-6d2b737b93d3?auto=format&fit=crop&w=400&q=80",
+    "logo": "/logos/dalle.webp",
     "about": "A fast image generator by OpenAI for photorealistic or stylized images from text.",
     "tags": ["image", "photorealism", "illustration"],
     "intents": ["image", "photorealism"],
@@ -71,7 +71,7 @@
   {
     "id": "zapier",
     "name": "Zapier",
-    "logo": "https://cdn-icons-png.flaticon.com/512/5968/5968705.png",
+    "logo": "/logos/zapier.webp",
     "about": "Automation platform that connects apps and automates repetitive tasks without code.",
     "tags": ["automation", "workflow", "integrations"],
     "intents": ["automation", "integrations"],
@@ -88,7 +88,7 @@
   {
     "id": "runway",
     "name": "Runway",
-    "logo": "https://runwayml.com/images/logo.svg",
+    "logo": "/logos/runway.webp",
     "about": "A suite for creators with AI-powered video, image and audio tools.",
     "tags": ["video", "editing", "creative"],
     "intents": ["video", "editing"],
@@ -105,7 +105,7 @@
   {
     "id": "magicschool",
     "name": "MagicSchool AI",
-    "logo": "https://example.com/magicschool-logo.png",
+    "logo": "/logos/magicschool.webp",
     "about": "An AI-powered tutoring assistant that helps students learn concepts step-by-step and practice with targeted exercises.",
     "tags": ["education", "tutoring", "learning", "explain"],
     "intents": ["research", "writing", "education"],
@@ -122,7 +122,7 @@
   {
     "id": "curipod",
     "name": "Curipod",
-    "logo": "https://curipod.com/assets/logo.png",
+    "logo": "/logos/curipod.webp",
     "about": "A tool for teachers to create interactive lessons, quizzes, and formative assessments that engage students.",
     "tags": ["education", "lessons", "interactive", "assessment"],
     "intents": ["education", "research"],
