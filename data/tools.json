@@ -135,5 +135,26 @@
       "Share the join link or code with students during class.",
       "Review responses and analytics to inform next steps."
     ]
+  },
+
+
+  {
+    "id": "Gemini",
+    "name": "Google Gemini",
+    "logo": "/logos/gemini.png",
+    "about": "Google's advanced AI model that excels in understanding and generating human-like text across various contexts.",
+    "tags": ["chat", "writing", "research", "assistant"],
+    "intents": ["writing", "research", "assistant"],
+    "primary_intent": "anything",
+    "keywords": ["email", "draft", "summarize", "write", "brainstorm", "research"],
+    "summary": "Versatile AI for writing, research, and more with deep contextual understanding.",
+    "details": "Google Gemini is designed to handle a wide range of tasks, from drafting emails to conducting in-depth research. Its advanced capabilities allow for nuanced understanding and generation of text, making it a powerful tool for various applications.",
+    "howTo": [
+      "Start by clearly stating your request or question.",
+      "Provide any necessary context to help Gemini understand your needs.",
+      "Review the generated content and ask for revisions or additional information as needed."
+    ]
+
   }
+
 ]
