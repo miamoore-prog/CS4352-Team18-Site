@@ -11,7 +11,7 @@ export default function AboutPage() {
 
   return (
     <div className= "header">
-      <h1 id="About_title">About</h1>
+      <h1 style = {"32px"}>About</h1>
 
       <p>Hi there! We are a team of five, Mia, Dallia, Uy, Nykaela, and William. We built this website for those 
         who want to learn more about new technologies and how they can be used in everyday life. From AI to simply new apps, we've got you convered! 
