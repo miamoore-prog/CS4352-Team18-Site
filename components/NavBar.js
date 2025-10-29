@@ -21,13 +21,11 @@ export default function NavBar() {
                 Tools
               </Button>
             </Link>
-            <a href="#" className="text-sm text-slate-500">
               <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
               </Button>
             </Link>
-            </a>
           </div>
         </div>
       </div>
