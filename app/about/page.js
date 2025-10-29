@@ -22,6 +22,14 @@ export default function AboutPage() {
       </p>
       
 
+      <h2 style = {{fontSize: "32px", lineHeight: "1.8"}}>More about this AI Site</h2>
+      <p>
+        In this site, we have a collection of articles that cover a wide range of topics related to AI and new technologies. 
+        Anyone from all ages can understand more about the latest advancements in technology and how they can be used in everyday life.
+        No one will be left out!
+      </p>
+      
+
   {/*below is the team images*/}
 <div   style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '20px' }}    >
       <Image
@@ -72,7 +80,7 @@ export default function AboutPage() {
  {/* Home Button */}
  <Link href="/">
         <h1 style = {{lineHeight: "1.8"}}> </h1>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" style={{lineHeight: "1.8"}}>
+        <button className= "px-4 py-2 bg-purple-600 text-white rounded hover:bg-blue-100" style={{lineHeight: "1.8"}}>
           Home
         </button>
       </Link>
