@@ -145,7 +145,7 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "integrate",
           "integration",
         ],
-        video: ["video", "edit", "editing", "clip", "footage"],
+        video: ["video", "filming", "videos", "record", "videoing", "recording", "edit", "editing", "clip", "footage"],
         coding: ["code", "coding", "debug", "program"],
         research: [
           "research",
