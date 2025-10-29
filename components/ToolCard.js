@@ -5,8 +5,22 @@ import React from "react";
 import { Card, Button } from "./ui";
 
 export default function ToolCard({ tool, onOpen }) {
+  // open modal when the card is clicked (or activated via keyboard)
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpen?.();
+    }
+  };
+
   return (
-    <Card className="flex items-start space-x-4">
+    <Card
+      className="flex items-start space-x-4 cursor-pointer"
+      onClick={onOpen}
+      role="button"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
       <img src={tool.logo} alt={tool.name} className="logo" />
 
       <div className="flex-1">
@@ -30,11 +44,7 @@ export default function ToolCard({ tool, onOpen }) {
           ))}
         </div>
 
-        <div className="mt-4">
-          <Button onClick={onOpen} variant="ghost" className="text-sm">
-            View details
-          </Button>
-        </div>
+        {/* Clicking the card opens the modal — the explicit button was removed for a cleaner interaction */}
       </div>
     </Card>
   );
