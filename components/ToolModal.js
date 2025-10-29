@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { Card, Button } from "./ui";
+import reviewsData from "../data/reviews.json";
 
 export default function ToolModal({ tool, onClose }) {
   const [showHowTo, setShowHowTo] = useState(false);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/75" onClick={onClose} />
 
       <Card className="max-w-2xl w-full p-6 z-10">
         <div className="flex items-start justify-between">
@@ -29,6 +30,45 @@ export default function ToolModal({ tool, onClose }) {
 
         <div className="mt-4 text-sm text-slate-700">{tool.details}</div>
 
+        {/* Reviews / ratings section (Amazon-style inspiration) */}
+        <div className="mt-6">
+          <h4 className="font-semibold">Customer reviews</h4>
+          {(() => {
+            const reviews = reviewsData[tool.id] || [];
+            const count = reviews.length;
+            const avg =
+              count === 0
+                ? 0
+                : (reviews.reduce((s, r) => s + r.rating, 0) / count).toFixed(1);
+
+            return (
+              <div className="mt-3">
+                <div className="flex items-center">
+                  <div className="text-2xl font-semibold mr-3">{avg}</div>
+                  <div className="text-sm text-slate-600">{count} reviews</div>
+                </div>
+
+                <div className="mt-3 space-y-3 max-h-48 overflow-y-auto">
+                  {count === 0 && (
+                    <div className="text-sm text-slate-500">No reviews yet.</div>
+                  )}
+
+                  {reviews.map((r, i) => (
+                    <div key={i} className="p-3 bg-slate-50 rounded">
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold">{r.author}</div>
+                        <div className="text-sm text-slate-500">{r.date}</div>
+                      </div>
+                      <div className="text-xs text-amber-500 mt-1">{'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}</div>
+                      <div className="mt-2 text-sm text-slate-700">{r.text}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+
         <div className="mt-4">
           <h4 className="font-semibold">Tags</h4>
           <div className="mt-2">
@@ -48,9 +88,9 @@ export default function ToolModal({ tool, onClose }) {
             <Button onClick={() => setShowHowTo(!showHowTo)} className="mr-2">
               How to guide
             </Button>
-            <Button variant="ghost" onClick={onClose}>
+            {/* <Button variant="ghost" onClick={onClose}>
               Done
-            </Button>
+            </Button>*/}
           </div>
         </div>
 
