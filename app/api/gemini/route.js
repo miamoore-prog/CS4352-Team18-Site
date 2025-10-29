@@ -27,9 +27,13 @@ export async function POST(req) {
     const prompt = `You are given a user query and a catalog of tools. Each catalog item includes id, name, tags, primary_intent, intents, keywords, and a short summary.
 
 Task:
-1) Determine the user's primary intent from this list: [writing, image, automation, video, coding, research]. Pick exactly one primary intent.
-2) From the catalog, RETURN ONLY tools whose 'primary_intent' equals the identified primary intent. Do not return other tools.
+1) Determine the user's primary intent from this list: [writing, image, automation, video, coding, research, education]. Pick exactly one primary intent.
+2) Apply these special rules:
+   - For education/study queries: Return tools with "education" tag/intent OR research-focused tools that aid learning
+   - For image/photo queries: Return tools with "image" primary_intent OR tools specifically good at photo editing/generation
+   - For other intents: Return tools whose primary_intent matches the identified intent
 3) Return a JSON array (up to 6 items) of objects with keys: id, name, score (0-1), reason (one short sentence why it matches). Order by relevance.
+4) For study-related queries, prioritize tools that offer interactive learning or practice features.
 
 Catalog: ${JSON.stringify(catalog)}
 User query: "${query.replace(/"/g, '\\"')}"
@@ -38,12 +42,26 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
 
     // Simple local intent classifier (fallback / fast path) - prefer deterministic matching when possible
     function classifyIntentFromQuery(q) {
-      const tokens = q
-        .toLowerCase()
+      // First check for key phrases before tokenizing
+      const q_lower = q.toLowerCase();
+      const keyPhrases = [
+        "ai tools",
+        "teaching tools",
+        "for teaching",
+        "for students",
+        "in classroom",
+        "ai assistant"
+      ];
+      
+      let foundPhrases = keyPhrases.filter(phrase => q_lower.includes(phrase));
+      
+      // Then get individual tokens
+      const tokens = q_lower
         .split(/[^\w]+/)
-        .filter(Boolean);
+        .filter(Boolean)
+        .concat(foundPhrases);
+      
       const stopwords = new Set([
-        "i",
         "me",
         "my",
         "we",
@@ -66,7 +84,6 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
         "these",
         "those",
         "to",
-        "for",
         "of",
         "in",
         "on",
@@ -83,15 +100,16 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
         "do",
         "does",
         "did",
-        "want",
-        "wants",
-        "wanting",
-        "helps",
-        "help",
-        "please",
       ]);
       const filtered = tokens.filter((t) => !stopwords.has(t));
       const tset = new Set(filtered);
+      
+      // Check if query contains AI-related terms
+      const hasAIContext = filtered.some(t => 
+        t.includes('ai') || t.includes('artificial') || t.includes('intelligence') || 
+        t === 'tool' || t === 'tools'
+      );
+      
       const map = {
         writing: [
           "write",
@@ -111,6 +129,13 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "design",
           "illustration",
           "visual",
+          "photoshop",
+          "edit",
+          "editing",
+          "generate",
+          "ai art",
+          "artwork",
+          "graphics",
         ],
         automation: [
           "automate",
@@ -120,9 +145,42 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "integrate",
           "integration",
         ],
-        video: ["video", "edit", "editing", "clip", "footage"],
+        video: ["video", "filming", "videos", "record", "videoing", "recording", "edit", "editing", "clip", "footage"],
         coding: ["code", "coding", "debug", "program"],
-        research: ["research", "summarize", "summary", "analyze", "notes"],
+        research: [
+          "research",
+          "summarize",
+          "summary",
+          "analyze",
+          "notes",
+          "study",
+          "studying",
+          "review",
+          "understand",
+          "comprehend",
+          "learn",
+        ],
+        education: [
+          "teach",
+          "teaching",
+          "learn",
+          "learning",
+          "student",
+          "teacher",
+          "classroom",
+          "lesson",
+          "education",
+          "tutor",
+          "tutoring",
+          "quiz",
+          "assessment",
+          "school",
+          "study",
+          "studying",
+          "homework",
+          "practice",
+          "exercises",
+        ],
       };
       for (const intent of Object.keys(map)) {
         if (map[intent].some((w) => tset.has(w))) return intent;
@@ -135,9 +193,17 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
     // If we can deterministically map to an intent, return local matching tools immediately (guarantees correct semantics)
     if (detectedIntent) {
       const matched = toolsData
-        .filter((t) =>
-          (t.primary_intent || t.intents || []).includes(detectedIntent)
-        )
+        .filter((t) => {
+          // For education/teaching queries, include tools that match either education intent or have education tags
+          if (detectedIntent === 'education') {
+            return (t.primary_intent === 'education' || 
+                   t.intents?.includes('education') || 
+                   t.tags?.includes('education') ||
+                   t.tags?.includes('teaching'));
+          }
+          // For other intents, use standard intent matching
+          return (t.primary_intent || t.intents || []).includes(detectedIntent);
+        })
         .map((t) => ({
           id: t.id,
           name: t.name,
@@ -187,6 +253,17 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
       // parsing failed: fallback to simple keyword scoring server-side
       const q = query.trim().toLowerCase();
       const tokens = q.split(/[^\w]+/).filter(Boolean);
+      
+      // Check if query is education-related
+      const educationTokens = ["teach", "teaching", "learn", "learning", "student", "teacher", "classroom", "lesson", "education", "tutor", "tutoring", "quiz", "assessment", "school"];
+      const isEducationQuery = tokens.some(token => 
+        educationTokens.some(edu => 
+          edu === token || 
+          token.startsWith(edu) || 
+          edu.startsWith(token)
+        )
+      );
+
       const scored = toolsData
         .map((t) => {
           const hay = [
@@ -200,6 +277,14 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
             .join(" ")
             .toLowerCase();
           let score = 0;
+          
+          // If education query, only score education tools
+          if (isEducationQuery) {
+            if (!t.tags.includes("education") && t.primary_intent !== "education") {
+              return { id: t.id, name: t.name, score: 0, tags: t.tags, summary: t.summary };
+            }
+          }
+
           for (const tk of tokens) {
             if (hay.includes(tk)) score += 1;
             if (tk.endsWith("e") && hay.includes(tk.slice(0, -1))) score += 0.5;

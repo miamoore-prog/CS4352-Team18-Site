@@ -1,0 +1,30 @@
+{
+  "chatgpt": [
+    {
+      "author": "Alex",
+      "rating": 5,
+      "date": "October 20, 2025",
+      "text": "Super helpful for drafting emails and brainstorming ideas. Saved me a lot of time."
+    },
+    {
+      "author": "Sam",
+      "rating": 4,
+      "date": "October 12, 2025",
+      "text": "Very capable, but sometimes the output needs editing for tone."
+    }
+  ],
+  "midjourney": [
+    {
+      "author": "Jordan",
+      "rating": 5,
+      "date": "September 30, 2025",
+      "text": "Amazing outputs for concept art — great starting point for iterations."
+    }
+  ],
+  "claude": [],
+  "dalle": [],
+  "zapier": [],
+  "runway": [],
+  "magicschool": [],
+  "curipod": []
+}
