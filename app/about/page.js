@@ -13,4 +13,4 @@ export default function AboutPage() {
       <p>My supercool header</p>
     </div>
   );
-}
+};
