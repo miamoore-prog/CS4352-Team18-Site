@@ -9,7 +9,7 @@ export default function ToolModal({ tool, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/75" onClick={onClose} />
 
       <Card className="max-w-2xl w-full p-6 z-10">
         <div className="flex items-start justify-between">
@@ -88,9 +88,9 @@ export default function ToolModal({ tool, onClose }) {
             <Button onClick={() => setShowHowTo(!showHowTo)} className="mr-2">
               How to guide
             </Button>
-            <Button variant="ghost" onClick={onClose}>
+            {/* <Button variant="ghost" onClick={onClose}>
               Done
-            </Button>
+            </Button>*/}
           </div>
         </div>
 
