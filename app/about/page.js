@@ -20,14 +20,16 @@ export default function AboutPage() {
         who want to learn more about new technologies and how they can be used in everyday life. From AI to simply new apps, we've got you convered! 
       </p>
 
+      {/* Home Button */}
       <Link href="/">
-        <Button  className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
           Home
-        </Button>
+        </button>
       </Link>
-
-
-
     </div>
+
+
+
+    //</div>
   );
 };
