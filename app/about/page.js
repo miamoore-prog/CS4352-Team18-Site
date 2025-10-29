@@ -20,6 +20,7 @@ export default function AboutPage() {
       <p>Hi there! We are a team of five, Mia, Dallia, Uy, Nykaela, and William. We built this website for those 
         who want to learn more about new technologies and how they can be used in everyday life. From AI to simply new apps, we've got you convered! 
       </p>
+      
 
       <h2 style = {{fontSize: "32px", lineHeight: "1.8"}}>More about this AI Site</h2>
       <p>
