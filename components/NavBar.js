@@ -26,6 +26,11 @@ export default function NavBar() {
                 About
               </Button>
             </Link>
+              <Link href="/login">
+              <Button variant="ghost" className="text-sm">
+                Login
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
