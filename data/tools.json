@@ -302,5 +302,31 @@
       "Let the AI categorize and reconcile entries automatically.",
       "Review generated financial reports and export them for tax or client use."
     ]
+  },
+
+  {
+    "id": "deepseek",
+    "name": "DeepSeek AI",
+    "logo": "/logos/deepseek.png",
+    "about": "An AI-powered video search and analysis tool that helps users find specific moments, objects, or people within large video libraries.",
+    "tags": ["video", "search", "analysis", "AI"],
+    "intents": ["video", "search", "analysis"],
+    "primary_intent": "video",
+    "keywords": ["video search", "object detection", "people recognition", "moment finding"],
+    "summary": "Quickly locate specific content within videos using AI-driven search capabilities.",
+    "details": "DeepSeek AI utilizes advanced machine learning algorithms to analyze video content and identify key elements such as objects, people, and actions. This allows users to efficiently search through extensive video libraries to find relevant clips or moments without manual review.",
+    "howTo": [
+      "Upload your video library to DeepSeek AI.",
+      "Use the search bar to enter keywords related to the content you want to find.",
+      "Review the AI-generated results and navigate directly to the relevant video segments.",
+      "Utilize filters to narrow down search results based on time, location, or detected objects."
+    ]
+
   }
+
+
+
+
+
+
 ]
