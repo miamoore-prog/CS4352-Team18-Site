@@ -24,7 +24,9 @@
 }
 
 .logo {
-  @apply w-12 h-12 rounded-md object-cover;
+  @apply w-12 h-12 rounded-md object-contain;
+  flex-shrink: 0;
+  padding: 2px;
 }
 
 html,
