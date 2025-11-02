@@ -302,5 +302,178 @@
       "Let the AI categorize and reconcile entries automatically.",
       "Review generated financial reports and export them for tax or client use."
     ]
+  },
+
+  {
+    "id": "heidi",
+    "name": "Heidi Health",
+    "logo": "/logos/heidi.png",
+    "about": "An AI assistant for clinicians that automates medical note-taking, patient summaries, and follow-up communication.",
+    "tags": ["healthcare", "documentation", "nursing", "assistant"],
+    "intents": ["assistant", "automation"],
+    "primary_intent": "healthcare",
+    "keywords": ["medical notes", "automation", "EHR", "summaries", "patient care"],
+    "summary": "Streamline clinical documentation and follow-ups using AI-powered note generation and workflow automation.",
+    "details": "Heidi Health uses AI to listen to patient consultations, extract key medical information, and generate structured notes directly compatible with EHR systems. It also assists with patient messaging, referrals, and appointment summaries — reducing administrative workload for nurses and doctors.",
+    "howTo": [
+      "Open Heidi during or after a patient visit.",
+      "Allow the AI to capture or transcribe the conversation.",
+      "Review and approve the generated documentation.",
+      "Send notes to the EHR or automate patient communication."
+    ]
+  },  
+  {
+    "id": "aidoc",
+    "name": "Aidoc",
+    "logo": "/logos/aidoc.webp",
+    "about": "An AI diagnostic assistant that analyzes medical images such as CT scans and X-rays to flag urgent findings for radiologists.",
+    "tags": ["healthcare", "radiology", "diagnostics", "analysis"],
+    "intents": ["research", "automation", "analysis"],
+    "primary_intent": "healthcare",
+    "keywords": ["radiology", "diagnosis", "xray", "ct", "scan", "medical"],
+    "summary": "Detects abnormalities in imaging scans and prioritizes critical cases for review.",
+    "details": "Aidoc integrates with hospital PACS systems to automatically analyze imaging studies. It highlights potential abnormalities like hemorrhages, embolisms, and fractures, enabling radiologists to focus on urgent findings and improve patient outcomes.",
+    "howTo": [
+      "Connect Aidoc to your hospital’s PACS or upload imaging files.",
+      "Select the analysis type (e.g., brain CT, chest X-ray).",
+      "Review flagged cases with AI annotations and confidence scores.",
+      "Validate results and add findings to the patient report."
+    ]
   }
+
+  ,
+  {
+    "id": "coachnow",
+    "name": "CoachNow",
+    "logo": "/logos/coachnow.webp",
+    "about": "A coaching platform with AI-assisted video analysis and communication tools for sports coaches and athletes.",
+    "tags": ["sports", "coaching", "video", "performance"],
+    "intents": ["video", "analysis", "education"],
+    "primary_intent": "sports",
+    "keywords": ["training", "analysis", "feedback", "athlete", "performance"],
+    "summary": "Analyze athlete videos, track progress, and share instant feedback with AI tools.",
+    "details": "CoachNow provides a shared space for coaches and athletes to communicate and review performance. Its AI tools analyze video clips to highlight movement inefficiencies, compare techniques, and generate progress summaries.",
+    "howTo": [
+      "Record or upload athlete training footage.",
+      "Use the AI analysis feature to identify motion patterns or errors.",
+      "Annotate clips and send feedback or drills to the athlete.",
+      "Track progress over time through the platform dashboard."
+    ]
+  },
+  {
+    "id": "hudlai",
+    "name": "Hudl AI",
+    "logo": "/logos/hudl.png",
+    "about": "An AI video analytics tool that breaks down sports footage automatically to help coaches and teams improve performance.",
+    "tags": ["sports", "analytics", "video", "team"],
+    "intents": ["video", "analysis"],
+    "primary_intent": "sports",
+    "keywords": ["game film", "strategy", "analytics", "team", "performance"],
+    "summary": "Automatically tags plays, analyzes movement, and provides stats from uploaded game footage.",
+    "details": "Hudl AI analyzes team footage to tag key plays, identify formations, and generate performance reports. It helps coaches save time on film breakdown and make data-driven decisions for future practices or matches.",
+    "howTo": [
+      "Upload your match or practice video.",
+      "Let Hudl AI automatically tag plays and generate stats.",
+      "Review highlights, strategies, and AI-suggested clips.",
+      "Use insights to adjust player positioning or team tactics."
+    ]
+  },
+  {
+    "id": "seeandspray",
+    "name": "John Deere See & Spray",
+    "logo": "/logos/johndeere.png",
+    "about": "An agricultural AI system that uses computer vision to detect weeds and precisely apply herbicide, reducing waste and environmental impact.",
+    "tags": ["agriculture", "farming", "automation", "sustainability"],
+    "intents": ["automation", "agriculture"],
+    "primary_intent": "agriculture",
+    "keywords": ["weed detection", "spraying", "precision farming", "crops", "tractor"],
+    "summary": "Detect weeds in real time and spray only where needed to save chemicals and protect crops.",
+    "details": "See & Spray by John Deere leverages machine learning and computer vision to differentiate between crops and weeds as the equipment moves across a field. It then applies herbicide only where weeds are detected, improving efficiency and sustainability.",
+    "howTo": [
+      "Attach the See & Spray system to compatible John Deere equipment.",
+      "Calibrate the cameras and sensors for your crop type.",
+      "Drive or operate autonomously through the field while AI identifies weeds.",
+      "Monitor spraying accuracy and performance data via the dashboard."
+    ]
+  },
+  {
+    "id": "oneSoil",
+    "name": "OneSoil",
+    "logo": "/logos/onesoil.png",
+    "about": "A precision agriculture platform that uses satellite imagery and AI to monitor crop health, track vegetation growth, and optimize fertilizer use.",
+    "tags": ["agriculture", "farming", "analysis", "sustainability"],
+    "intents": ["automation", "agriculture", "analysis"],
+    "primary_intent": "agriculture",
+    "keywords": ["crop health", "satellite", "fertilizer", "yield", "field analysis"],
+    "summary": "Monitor fields in real time using AI and satellite data to boost yield and reduce input costs.",
+    "details": "OneSoil analyzes multispectral satellite imagery to detect crop growth patterns, stress levels, and vegetation health. It helps farmers make data-driven decisions about irrigation, fertilization, and seeding rates. The platform visualizes field zones, compares seasonal performance, and integrates with farm management software for precision agriculture.",
+    "howTo": [
+      "Create a free OneSoil account and map your fields using satellite imagery.",
+      "View vegetation and NDVI maps to identify areas needing attention.",
+      "Adjust irrigation and fertilizer plans based on AI recommendations.",
+      "Track field performance throughout the growing season and export reports for future planning."
+    ]
+  },
+  {
+    "id": "bluej",
+    "name": "BlueJ Tax AI",
+    "logo": "/logos/bluej.png",
+    "about": "An AI assistant that automates tax calculations, form preparation, and deduction checks for accountants and finance professionals.",
+    "tags": ["finance", "accounting", "automation", "business"],
+    "intents": ["automation", "finance", "assistant"],
+    "primary_intent": "finance",
+    "keywords": ["tax", "accounting", "deductions", "compliance", "bookkeeping"],
+    "summary": "Streamline tax prep, detect deduction opportunities, and generate reports quickly.",
+    "details": "Blue Jay AI helps tax accountants automate repetitive work such as preparing returns, verifying compliance, and identifying potential tax-saving deductions. It integrates with existing accounting software to reduce manual data entry and errors.",
+    "howTo": [
+      "Upload client financial data or connect to accounting software.",
+      "Select the tax year and type of return you’re preparing.",
+      "Let Blue Jay review for deductions, compliance issues, and filing recommendations.",
+      "Export the final report or file electronically after verification."
+    ]
+  },
+  {
+    "id": "botkeeper",
+    "name": "Botkeeper",
+    "logo": "/logos/botkeeper.webp",
+    "about": "An AI-powered bookkeeping platform that automates accounting tasks, transaction categorization, and financial reporting for businesses and accounting firms.",
+    "tags": ["finance", "accounting", "automation", "bookkeeping"],
+    "intents": ["automation", "finance", "assistant"],
+    "primary_intent": "finance",
+    "keywords": ["bookkeeping", "transactions", "reconciliation", "reports", "accounting"],
+    "summary": "Automate bookkeeping and reporting to save hours on manual accounting work.",
+    "details": "Botkeeper combines AI and human oversight to handle bookkeeping tasks like categorizing transactions, reconciling accounts, and generating financial statements. It integrates with QuickBooks, Xero, and other accounting tools to deliver accurate, up-to-date financial data with minimal human input.",
+    "howTo": [
+      "Connect your accounting software (e.g., QuickBooks or Xero) to Botkeeper.",
+      "Upload or sync your bank and credit card transactions.",
+      "Let the AI categorize and reconcile entries automatically.",
+      "Review generated financial reports and export them for tax or client use."
+    ]
+  },
+
+  {
+    "id": "deepseek",
+    "name": "DeepSeek AI",
+    "logo": "/logos/deepseek.png",
+    "about": "An AI-powered video search and analysis tool that helps users find specific moments, objects, or people within large video libraries.",
+    "tags": ["video", "search", "analysis", "AI"],
+    "intents": ["video", "search", "analysis"],
+    "primary_intent": "video",
+    "keywords": ["video search", "object detection", "people recognition", "moment finding"],
+    "summary": "Quickly locate specific content within videos using AI-driven search capabilities.",
+    "details": "DeepSeek AI utilizes advanced machine learning algorithms to analyze video content and identify key elements such as objects, people, and actions. This allows users to efficiently search through extensive video libraries to find relevant clips or moments without manual review.",
+    "howTo": [
+      "Upload your video library to DeepSeek AI.",
+      "Use the search bar to enter keywords related to the content you want to find.",
+      "Review the AI-generated results and navigate directly to the relevant video segments.",
+      "Utilize filters to narrow down search results based on time, location, or detected objects."
+    ]
+
+  }
+
+
+
+
+
+
 ]
