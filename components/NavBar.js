@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "./ui";
+import LanguageIcon from "./LanguageIcon";
 
 export default function NavBar() {
   return (
@@ -11,7 +12,7 @@ export default function NavBar() {
         <div className="flex items-center space-x-4">
           <Link href="/">
             <span className="text-lg font-semibold text-slate-800">
-              Reboot Required
+              AI Compass
             </span>
           </Link>
 
@@ -21,17 +22,20 @@ export default function NavBar() {
                 Tools
               </Button>
             </Link>
-              <Link href="/about">
+            <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
               </Button>
             </Link>
-              <Link href="/login">
+            <Link href="/login">
               <Button variant="ghost" className="text-sm">
                 Login
               </Button>
             </Link>
           </div>
+        </div>
+        <div className="flex items-center">
+          <LanguageIcon />
         </div>
       </div>
     </nav>
