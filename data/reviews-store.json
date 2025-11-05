@@ -1,0 +1,33 @@
+{
+  "chatgpt": [
+    {
+      "id": "chatgpt-r1",
+      "author": "Alex",
+      "rating": 5,
+      "date": "2025-10-20T12:00:00.000Z",
+      "text": "Super helpful for drafting emails and brainstorming ideas. Saved me a lot of time.",
+      "keywords": ["writing", "productivity"],
+      "likes": 0
+    },
+    {
+      "id": "chatgpt-r2",
+      "author": "Sam",
+      "rating": 4,
+      "date": "2025-10-12T12:00:00.000Z",
+      "text": "Very capable, but sometimes the output needs editing for tone.",
+      "keywords": ["editing"],
+      "likes": 0
+    }
+  ],
+  "midjourney": [
+    {
+      "id": "midjourney-r1",
+      "author": "Jordan",
+      "rating": 5,
+      "date": "2025-09-30T12:00:00.000Z",
+      "text": "Amazing outputs for concept art — great starting point for iterations.",
+      "keywords": ["art", "concept"],
+      "likes": 0
+    }
+  ]
+}
