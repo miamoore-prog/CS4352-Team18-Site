@@ -30,11 +30,16 @@
 html,
 body,
 #__next {
-  height: 100%;
+  /* allow the page to grow taller than the viewport so background continues with content */
+  min-height: 100%;
 }
-/* warm beige background */
+
+/* warm beige background: ensure it covers the full scrollable area and stays consistent while scrolling */
 body {
+  min-height: 100vh;
   background: linear-gradient(180deg, #fbf7f0 0%, #f2ebdd 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 /* shadcn-like utility classes */

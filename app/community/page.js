@@ -17,7 +17,14 @@ export default function CommunityPage() {
   const [form, setForm] = useState({ author: "", rating: 5, text: "", keywords: "" });
 
   // fetch list of available tools from data (client-side)
-  const toolIds = useMemo(() => Object.keys(tools), []);
+  const toolIds = useMemo(() => (Array.isArray(tools) ? tools.map((t) => t.id) : []), []);
+
+  // popular models / companies (shown as clickable chips)
+  const popular = useMemo(() => {
+    if (!Array.isArray(tools)) return [];
+    // pick the first 6 tools as 'popular' defaults
+    return tools.slice(0, 6).map((t) => ({ id: t.id, name: t.name }));
+  }, []);
 
   useEffect(() => {
     // pick first tool by default
@@ -112,7 +119,7 @@ export default function CommunityPage() {
     reviews.forEach((r) => (r.keywords || []).forEach((k) => kws.add(k)));
     // also include tags from the tools data for the selected tool
     try {
-      const t = tools[selectedTool];
+      const t = Array.isArray(tools) ? tools.find((x) => x.id === selectedTool) : null;
       if (t && t.tags) t.tags.forEach((tg) => kws.add(tg));
     } catch (e) {}
     return Array.from(kws).slice(0, 20);
@@ -120,47 +127,72 @@ export default function CommunityPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
-        <h2 className="text-lg font-semibold">Community</h2>
-        <p className="text-sm text-slate-600">Browse and contribute reviews for tools.</p>
+      {/* Top filter bar */}
+      <Card className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex-1 flex items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <Input
+              placeholder="Filter keywords or search"
+              value={keywordInput}
+              onChange={(e) => setKeywordInput(e.target.value)}
+            />
+          </div>
+
+          <Button onClick={() => { addKeyword(keywordInput); setKeywordInput(""); }}>
+            Add
+          </Button>
+
+          <Button onClick={applyFilter} variant="ghost">
+            Filter
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="text-sm">Sort</label>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="ml-2 px-2 py-1 border rounded">
+            <option value="recent">Most recent</option>
+            <option value="oldest">Oldest</option>
+            <option value="liked">Most liked</option>
+          </select>
+        </div>
       </Card>
+
+      {/* Selected keyword chips (pills) */}
+      <div className="flex flex-wrap gap-2">
+        {filterKeywords.map((k) => (
+          <button key={k} onClick={() => removeKeyword(k)} className="inline-flex items-center gap-2 bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm">
+            <span className="font-medium">{k}</span>
+            <span className="text-xs text-sky-600">×</span>
+          </button>
+        ))}
+      </div>
 
       <Card>
         <div className="flex items-center gap-4">
-          <label className="text-sm">Tool</label>
-          <select value={selectedTool || ""} onChange={(e) => setSelectedTool(e.target.value)} className="px-3 py-2 border rounded">
-            {toolIds.map((id) => (
-              <option key={id} value={id}>{id}</option>
-            ))}
-          </select>
-
-          <div className="ml-4">
-            <label className="text-sm">Sort</label>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="ml-2 px-2 py-1 border rounded">
-              <option value="recent">Recent</option>
-              <option value="liked">Most liked</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label className="text-sm">Keywords</label>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {availableKeywords.map((k) => (
-              <button key={k} onClick={() => addKeyword(k)} className="px-2 py-1 bg-slate-100 rounded text-sm">{k}</button>
+          <div className="inline-flex gap-2">
+            {popular.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => addKeyword(p.id)}
+                className="px-3 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
+              >
+                {p.name}
+              </button>
             ))}
           </div>
 
-          <div className="mt-3 flex items-center gap-2">
-            <Input placeholder="Add keyword" value={keywordInput} onChange={(e) => setKeywordInput(e.target.value)} />
-            <Button onClick={() => { addKeyword(keywordInput); setKeywordInput(""); }}>Add</Button>
-            <Button variant="ghost" onClick={applyFilter}>Filter</Button>
-          </div>
-
-          <div className="mt-2">
-            {filterKeywords.map((k) => (
-              <span key={k} className="tag mr-2">{k} <button onClick={() => removeKeyword(k)} className="ml-1 text-xs">x</button></span>
-            ))}
+          <div>
+            <div className="inline-flex gap-2">
+              {availableKeywords.map((k) => (
+                <button
+                  key={k}
+                  onClick={() => addKeyword(k)}
+                  className="px-3 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
+                >
+                  {k}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </Card>

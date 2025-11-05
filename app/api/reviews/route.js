@@ -42,6 +42,9 @@ export async function GET(req) {
 
       if (sort === "liked") {
         filtered = filtered.slice().sort((a, b) => (b.likes || 0) - (a.likes || 0));
+      } else if (sort === "oldest") {
+        // oldest first
+        filtered = filtered.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
       } else {
         // default: recent (by date)
         filtered = filtered.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
