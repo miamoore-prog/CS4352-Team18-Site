@@ -25,5 +25,3 @@ Local setup steps to enable Gemini (do not commit your secret):
 Security notes
 - Do NOT commit `.env.local` or your API key to source control.
 - `.env.example` exists in the repo as a template.
-
-If you want, I can add a brief note to the project that reminds contributors to create `.env.local` (I already added this README entry). If you'd like, I can also create a `.env.local.example` or add a pre-start check that warns when `GEMINI_API_KEY` is missing.

@@ -1,0 +1,20 @@
+{
+  "id": "user1",
+  "username": "alice",
+  "password": "test",
+  "displayName": "Alice Cooper",
+  "bookmarks": ["chatgpt", "dalle"],
+  "reviews": [
+    { "toolId": "chatgpt", "rating": 5, "text": "Very helpful for drafts." }
+  ],
+  "threads": [
+    {
+      "id": "t1",
+      "title": "Best prompts for email",
+      "posts": [
+        { "author": "alice", "text": "What's your favorite email prompt?" },
+        { "author": "bob", "text": "I like: 'Write a polite follow-up'" }
+      ]
+    }
+  ]
+}

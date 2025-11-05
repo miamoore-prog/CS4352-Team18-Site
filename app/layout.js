@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import NavBar from "../components/NavBar";
 
 export const metadata = {
-  title: "AI Tools Browser",
+  title: "AI Compass",
   description: "Find friendly, simple AI tools for common tasks.",
 };
 

@@ -1,0 +1,13 @@
+{
+  "id": "user7",
+  "username": "gina",
+  "password": "test",
+  "displayName": "Gina Torres",
+  "bookmarks": ["midjourney", "runway"],
+  "reviews": [
+    { "toolId": "midjourney", "rating": 5, "text": "Fantastic for concept art." }
+  ],
+  "threads": [
+    { "id": "t4", "title": "Prompt styles", "posts": [{ "author": "gina", "text": "Share your favorite style prompts." }] }
+  ]
+}
