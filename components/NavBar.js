@@ -62,6 +62,12 @@ export default function NavBar() {
                 Community
               </Button>
             </Link>
+<<<<<<< HEAD
+=======
+            <a href="#" className="text-sm text-slate-500">
+              About
+            </a>
+>>>>>>> 57b69c931235c3bde0966b8410ad81b0506c01ba
             <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
