@@ -1,0 +1,11 @@
+{
+  "id": "user2",
+  "username": "bob",
+  "password": "test",
+  "displayName": "Bob Marley",
+  "bookmarks": ["midjourney"],
+  "reviews": [
+    { "toolId": "midjourney", "rating": 4, "text": "Great for concept art." }
+  ],
+  "threads": []
+}

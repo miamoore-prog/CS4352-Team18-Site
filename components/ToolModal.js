@@ -1,11 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button } from "./ui";
-import reviewsData from "../data/reviews.json";
 
 export default function ToolModal({ tool, onClose }) {
   const [showHowTo, setShowHowTo] = useState(false);
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const res = await fetch(`/api/reviews?toolId=${encodeURIComponent(tool.id)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && Array.isArray(data.reviews)) setReviews(data.reviews);
+      } catch (e) {
+        // ignore
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [tool.id]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -33,40 +51,41 @@ export default function ToolModal({ tool, onClose }) {
         {/* Reviews / ratings section (Amazon-style inspiration) */}
         <div className="mt-6">
           <h4 className="font-semibold">Customer reviews</h4>
-          {(() => {
-            const reviews = reviewsData[tool.id] || [];
-            const count = reviews.length;
-            const avg =
-              count === 0
-                ? 0
-                : (reviews.reduce((s, r) => s + r.rating, 0) / count).toFixed(1);
+          <div className="mt-3">
+            {(() => {
+              const count = reviews.length;
+              const avg =
+                count === 0
+                  ? 0
+                  : (reviews.reduce((s, r) => s + (r.rating || 0), 0) / count).toFixed(1);
 
-            return (
-              <div className="mt-3">
-                <div className="flex items-center">
-                  <div className="text-2xl font-semibold mr-3">{avg}</div>
-                  <div className="text-sm text-slate-600">{count} reviews</div>
-                </div>
+              return (
+                <div>
+                  <div className="flex items-center">
+                    <div className="text-2xl font-semibold mr-3">{avg}</div>
+                    <div className="text-sm text-slate-600">{count} reviews</div>
+                  </div>
 
-                <div className="mt-3 space-y-3 max-h-48 overflow-y-auto">
-                  {count === 0 && (
-                    <div className="text-sm text-slate-500">No reviews yet.</div>
-                  )}
+                  <div className="mt-3 space-y-3 max-h-48 overflow-y-auto">
+                    {count === 0 && (
+                      <div className="text-sm text-slate-500">No reviews yet.</div>
+                    )}
 
-                  {reviews.map((r, i) => (
-                    <div key={i} className="p-3 bg-slate-50 rounded">
-                      <div className="flex items-center justify-between">
-                        <div className="font-semibold">{r.author}</div>
-                        <div className="text-sm text-slate-500">{r.date}</div>
+                    {reviews.map((r, i) => (
+                      <div key={i} className="p-3 bg-slate-50 rounded">
+                        <div className="flex items-center justify-between">
+                          <div className="font-semibold">{r.authorDisplay || r.author}</div>
+                          <div className="text-sm text-slate-500">{r.date || ''}</div>
+                        </div>
+                        <div className="text-xs text-amber-500 mt-1">{'★'.repeat(r.rating || 0) + '☆'.repeat(5 - (r.rating || 0))}</div>
+                        <div className="mt-2 text-sm text-slate-700">{r.text}</div>
                       </div>
-                      <div className="text-xs text-amber-500 mt-1">{'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}</div>
-                      <div className="mt-2 text-sm text-slate-700">{r.text}</div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </div>
         </div>
 
         <div className="mt-4">

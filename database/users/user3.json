@@ -1,0 +1,17 @@
+{
+  "id": "user3",
+  "username": "charlie",
+  "password": "test",
+  "displayName": "Charlie Day",
+  "bookmarks": [],
+  "reviews": [],
+  "threads": [
+    {
+      "id": "t2",
+      "title": "Image generation tips",
+      "posts": [
+        { "author": "charlie", "text": "Try adding style adjectives." }
+      ]
+    }
+  ]
+}

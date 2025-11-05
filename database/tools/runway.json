@@ -1,0 +1,17 @@
+{
+  "id": "runway",
+  "name": "Runway",
+  "logo": "/logos/runway.webp",
+  "about": "Creative suite for video, image, and audio generation and editing powered by AI.",
+  "tags": ["video", "image", "ai", "editing"],
+  "intents": ["video", "image", "editing"],
+  "primary_intent": "video",
+  "keywords": ["video", "editing", "ai", "multimodal"],
+  "summary": "Generate and edit video and images using modern AI tools and models.",
+  "details": "Runway provides an accessible studio for content creators to apply AI effects and generate assets.",
+  "howTo": [
+    "Upload footage or create from a text prompt.",
+    "Apply models and adjust parameters.",
+    "Export the final asset."
+  ]
+}
