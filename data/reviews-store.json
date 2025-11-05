@@ -1,33 +1,116 @@
 {
   "chatgpt": [
     {
-      "id": "chatgpt-r1",
+      "id": "chatgpt-r20251105a",
+      "title": "Great for quick drafts",
       "author": "Alex",
       "rating": 5,
-      "date": "2025-10-20T12:00:00.000Z",
-      "text": "Super helpful for drafting emails and brainstorming ideas. Saved me a lot of time.",
-      "keywords": ["writing", "productivity"],
-      "likes": 0
+      "text": "Saved me hours drafting customer outreach. The tone suggestions are particularly useful.",
+      "keywords": ["writing","productivity"],
+      "date": "2025-11-05T14:12:00.000Z",
+      "likes": 12
     },
     {
-      "id": "chatgpt-r2",
+      "id": "chatgpt-r20251020b",
+      "title": null,
       "author": "Sam",
       "rating": 4,
-      "date": "2025-10-12T12:00:00.000Z",
-      "text": "Very capable, but sometimes the output needs editing for tone.",
-      "keywords": ["editing"],
-      "likes": 0
+      "text": "Very capable, but sometimes the output needs editing for tone and factuality checks.",
+      "keywords": ["editing","accuracy"],
+      "date": "2025-10-20T09:30:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "chatgpt-r20250910c",
+      "title": "Unexpected hallucination",
+      "author": "Priya",
+      "rating": 3,
+      "text": "Most prompts are great, but I hit a hallucination when asking for obscure facts. Be cautious for research use.",
+      "keywords": ["hallucination","research"],
+      "date": "2025-09-10T18:00:00.000Z",
+      "likes": 2
     }
   ],
   "midjourney": [
     {
-      "id": "midjourney-r1",
+      "id": "midjourney-r20251001a",
+      "title": "Awesome concept art",
       "author": "Jordan",
       "rating": 5,
-      "date": "2025-09-30T12:00:00.000Z",
       "text": "Amazing outputs for concept art — great starting point for iterations.",
-      "keywords": ["art", "concept"],
-      "likes": 0
+      "keywords": ["art","concept","visuals"],
+      "date": "2025-10-01T12:00:00.000Z",
+      "likes": 8
+    },
+    {
+      "id": "midjourney-r20250815b",
+      "title": null,
+      "author": "Casey",
+      "rating": 4,
+      "text": "Love the aesthetic results but sometimes composition needs manual cleanup.",
+      "keywords": ["composition","workflow"],
+      "date": "2025-08-15T08:00:00.000Z",
+      "likes": 1
+    }
+  ],
+  "dalle": [
+    {
+      "id": "dalle-r20251005a",
+      "title": "Fast ideation",
+      "author": "Maya",
+      "rating": 5,
+      "text": "Great for quick visual mockups. Colors and styles are convenient for moodboards.",
+      "keywords": ["moodboard","ideation"],
+      "date": "2025-10-05T16:20:00.000Z",
+      "likes": 5
+    }
+  ],
+  "claude": [
+    {
+      "id": "claude-r20250922a",
+      "title": "Helpful assistant",
+      "author": "Riley",
+      "rating": 4,
+      "text": "Good for long-form replies and summarization. Occasionally verbose but accurate.",
+      "keywords": ["summaries","longform"],
+      "date": "2025-09-22T11:00:00.000Z",
+      "likes": 4
+    }
+  ],
+  "runway": [
+    {
+      "id": "runway-r20250730a",
+      "title": "Great for quick edits",
+      "author": "Taylor",
+      "rating": 5,
+      "text": "The video-editing tools are surprisingly capable for quick cuts and style transfer.",
+      "keywords": ["video","editing"],
+      "date": "2025-07-30T10:00:00.000Z",
+      "likes": 2
+    }
+  ],
+  "zapier": [
+    {
+      "id": "zapier-r20250612a",
+      "title": "Automated workflows saved us time",
+      "author": "Morgan",
+      "rating": 5,
+      "text": "Integration was straightforward and reduced manual tasks across apps.",
+      "keywords": ["automation","integrations"],
+      "date": "2025-06-12T09:00:00.000Z",
+      "likes": 7
+    }
+  ],
+  "magicschool": [
+    {
+      "id": "magicschool-r20251101a",
+      "title": "Great tutoring features",
+      "author": "Jordan",
+      "rating": 4,
+      "text": "Helps structure lessons well; I'd like more interactive widgets though.",
+      "keywords": ["education","tutoring"],
+      "date": "2025-11-01T13:00:00.000Z",
+      "likes": 1
     }
   ]
 }

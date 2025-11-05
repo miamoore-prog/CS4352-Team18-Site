@@ -14,7 +14,8 @@ export default function CommunityPage() {
   const [keywordInput, setKeywordInput] = useState("");
   const [sort, setSort] = useState("recent");
 
-  const [form, setForm] = useState({ author: "", rating: 5, text: "", keywords: "" });
+  const [form, setForm] = useState({ title: "", author: "", rating: 5, text: "", keywords: [] });
+  const [composerTagInput, setComposerTagInput] = useState("");
 
   // fetch list of available tools from data (client-side)
   const toolIds = useMemo(() => (Array.isArray(tools) ? tools.map((t) => t.id) : []), []);
@@ -66,6 +67,26 @@ export default function CommunityPage() {
     }
   }
 
+  // helper: fetch reviews using explicit params (used when we change tool and keywords together)
+  async function fetchReviewsWithParams(toolId, keywordsArr = [], sortOpt = sort) {
+    if (!toolId) return;
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("tool", toolId);
+      if (keywordsArr.length > 0) params.set("keywords", keywordsArr.join(","));
+      if (sortOpt) params.set("sort", sortOpt);
+
+      const res = await fetch(`/api/reviews?${params.toString()}`);
+      const data = await res.json();
+      setReviews(data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     fetchReviews();
   }, [selectedTool]);
@@ -83,6 +104,17 @@ export default function CommunityPage() {
     await fetchReviews();
   }
 
+  // handle clicking a popular chip: set selected tool and add as keyword, then fetch with both params
+  function handlePopularClick(p) {
+    const newTool = p.id;
+    // add the human-friendly tool name to keyword filters (so chips match availableKeywords which are names/tags)
+    const newKeys = filterKeywords.includes(p.name) ? filterKeywords : [...filterKeywords, p.name];
+    setSelectedTool(newTool);
+    setFilterKeywords(newKeys);
+    // fetch directly with computed params so state update timing doesn't block refresh
+    fetchReviewsWithParams(newTool, newKeys, sort);
+  }
+
   async function handleLike(reviewId) {
     try {
       await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'like', toolId: selectedTool, reviewId }) });
@@ -98,20 +130,25 @@ export default function CommunityPage() {
     try {
       const payload = {
         toolId: selectedTool,
-        author: form.author || 'Anonymous',
+        // new posts use a title; keep backward compatibility by also sending author when no title
+        title: form.title || null,
+        author: form.author || null,
         rating: form.rating || 5,
         text: form.text,
         keywords: form.keywords,
       };
       const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (res.ok) {
-        setForm({ author: '', rating: 5, text: '', keywords: '' });
+        setForm({ title: '', author: '', rating: 5, text: '', keywords: [] });
+        setComposerTagInput('');
         fetchReviews();
       }
     } catch (err) {
       console.error(err);
     }
   }
+
+  const [showCompose, setShowCompose] = useState(false);
 
   // derive keyword buttons from reviews (simple heuristic)
   const availableKeywords = useMemo(() => {
@@ -160,9 +197,13 @@ export default function CommunityPage() {
       {/* Selected keyword chips (pills) */}
       <div className="flex flex-wrap gap-2">
         {filterKeywords.map((k) => (
-          <button key={k} onClick={() => removeKeyword(k)} className="inline-flex items-center gap-2 bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-sm">
+          <button
+            key={k}
+            onClick={() => removeKeyword(k)}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md bg-sky-100 text-slate-900 border-sky-200"
+          >
             <span className="font-medium">{k}</span>
-            <span className="text-xs text-sky-600">×</span>
+            <span className="text-xs text-slate-400">×</span>
           </button>
         ))}
       </div>
@@ -170,15 +211,18 @@ export default function CommunityPage() {
       <Card>
         <div className="flex items-center gap-4">
           <div className="inline-flex gap-2">
-            {popular.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => addKeyword(p.id)}
-                className="px-3 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
-              >
-                {p.name}
-              </button>
-            ))}
+            {popular.map((p) => {
+              const active = filterKeywords.includes(p.name) || selectedTool === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => handlePopularClick(p)}
+                  className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${active ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                >
+                  {p.name}
+                </button>
+              );
+            })}
           </div>
 
           <div>
@@ -187,7 +231,7 @@ export default function CommunityPage() {
                 <button
                   key={k}
                   onClick={() => addKeyword(k)}
-                  className="px-3 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
+                  className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
                 >
                   {k}
                 </button>
@@ -197,17 +241,19 @@ export default function CommunityPage() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Posts column - match top filter box width (full width of content area) */}
+      <div className="w-full">
         <Card>
-          <h3 className="font-semibold">Reviews {loading ? '(loading...)' : ''}</h3>
+          <h3 className="font-semibold">Posts {loading ? '(loading...)' : ''}</h3>
           <div className="mt-3 space-y-3">
-            {reviews.length === 0 && <div className="text-sm text-slate-500">No reviews found.</div>}
+            {reviews.length === 0 && <div className="text-sm text-slate-500">No posts found.</div>}
             {reviews.map((r) => (
               <div key={r.id} className="border p-3 rounded">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold">{r.author}</div>
+                    <div className="font-semibold">{r.title || r.author}</div>
                     <div className="text-xs text-slate-500">{new Date(r.date).toLocaleDateString()} • {r.rating} / 5</div>
+                    <div className="text-xs text-amber-500 mt-1">{'★'.repeat(Math.max(0, Math.min(5, Math.round(r.rating || 0)))) + '☆'.repeat(5 - Math.max(0, Math.min(5, Math.round(r.rating || 0))))}</div>
                   </div>
                   <div>
                     <button onClick={() => handleLike(r.id)} className="text-sm">👍 {r.likes || 0}</button>
@@ -221,25 +267,93 @@ export default function CommunityPage() {
             ))}
           </div>
         </Card>
-
-        <Card>
-          <h3 className="font-semibold">Write a review</h3>
-          <form onSubmit={submitReview} className="mt-4 flex flex-col gap-3">
-            <Input placeholder="Your name" value={form.author} onChange={(e) => setForm((s) => ({ ...s, author: e.target.value }))} />
-            <div className="flex gap-2 items-center">
-              <label className="text-sm">Rating</label>
-              <select value={form.rating} onChange={(e) => setForm((s) => ({ ...s, rating: Number(e.target.value) }))} className="px-2 py-1 border rounded">
-                {[5,4,3,2,1].map((n) => <option key={n} value={n}>{n}</option>)}
-              </select>
-            </div>
-            <textarea rows={5} placeholder="Write your review" className="border p-2 rounded" value={form.text} onChange={(e) => setForm((s) => ({ ...s, text: e.target.value }))} />
-            <Input placeholder="keywords, comma separated" value={form.keywords} onChange={(e) => setForm((s) => ({ ...s, keywords: e.target.value }))} />
-            <div className="flex justify-end">
-              <Button type="submit">Submit review</Button>
-            </div>
-          </form>
-        </Card>
       </div>
+
+      {/* Floating compose button */}
+      <button
+        aria-label="Create post"
+        onClick={() => setShowCompose(true)}
+        className="fixed bottom-6 right-6 bg-violet-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-violet-700 transition"
+      >
+        +
+      </button>
+
+      {/* Compose modal */}
+      {showCompose && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowCompose(false)} />
+            <Card className="z-10 w-full max-w-2xl p-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Write a post</h3>
+                <button onClick={() => setShowCompose(false)} className="text-slate-500">Close</button>
+              </div>
+
+              <form onSubmit={(e) => { submitReview(e); setShowCompose(false); }} className="mt-4 flex flex-col gap-3">
+                <Input placeholder="Post title" value={form.title} onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))} />
+
+                {/* quick suggested keywords for posts */}
+                <div className="flex flex-wrap gap-2">
+                  {['review','problem solving','model issue','bug','feature request'].map((k) => (
+                    <button
+                      type="button"
+                      key={k}
+                      onClick={() => setForm((s) => ({ ...s, keywords: s.keywords ? Array.from(new Set([...s.keywords, k])) : [k] }))}
+                      className="px-2 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
+                    >
+                      {k}
+                    </button>
+                  ))}
+                </div>
+
+                {/* tag-input UI: show tags and an input to add more */}
+                <div className="border rounded p-2">
+                  <div className="flex flex-wrap gap-2">
+                    {(form.keywords || []).map((tk) => (
+                      <span key={tk} className="inline-flex items-center gap-2 px-2 py-1 bg-slate-100 rounded-full text-sm">
+                        <span>{tk}</span>
+                        <button type="button" onClick={() => setForm((s) => ({ ...s, keywords: (s.keywords || []).filter((x) => x !== tk) }))} className="text-xs text-slate-500">×</button>
+                      </span>
+                    ))}
+                    <input
+                      className="outline-none px-2 py-1 text-sm"
+                      placeholder="Add keyword and press Enter"
+                      value={composerTagInput}
+                      onChange={(e) => setComposerTagInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ',') {
+                          e.preventDefault();
+                          const v = composerTagInput.trim().replace(/,$/, '');
+                          if (v) {
+                            setForm((s) => ({ ...s, keywords: s.keywords ? Array.from(new Set([...s.keywords, v])) : [v] }));
+                            setComposerTagInput('');
+                          }
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* star rating control */}
+                <div className="flex gap-2 items-center">
+                  <label className="text-sm">Rating</label>
+                  <div className="flex items-center gap-1 ml-2">
+                    {[1,2,3,4,5].map((n) => (
+                      <button key={n} type="button" onClick={() => setForm((s) => ({ ...s, rating: n }))} className={`text-xl ${n <= (form.rating || 0) ? 'text-amber-400' : 'text-slate-300'}`} aria-label={`Set rating ${n}`}>
+                        {n <= (form.rating || 0) ? '★' : '☆'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <textarea rows={5} placeholder="Write your post" className="border p-2 rounded" value={form.text} onChange={(e) => setForm((s) => ({ ...s, text: e.target.value }))} />
+
+                <div className="flex justify-end">
+                  <Button type="submit">Post</Button>
+                </div>
+              </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

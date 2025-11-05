@@ -83,14 +83,17 @@ export async function POST(req) {
       return new Response(JSON.stringify(list[idx]), { status: 200 });
     }
 
-    const { toolId, author, rating, text, keywords } = body;
-    if (!toolId || !author || !rating || !text) {
-      return new Response(JSON.stringify({ error: "toolId, author, rating, text required" }), { status: 400 });
+    const { toolId, author, title, rating, text, keywords } = body;
+    // require toolId, title (or author), rating, and text
+    if (!toolId || !(title || author) || !rating || !text) {
+      return new Response(JSON.stringify({ error: "toolId, title/author, rating, text required" }), { status: 400 });
     }
 
     const newReview = {
       id: `${toolId}-r${Date.now()}`,
-      author,
+      // store title when provided (for posts), fall back to author for compatibility
+      title: title || null,
+      author: author || null,
       rating: Number(rating),
       text,
       keywords: Array.isArray(keywords) ? keywords : (typeof keywords === 'string' ? keywords.split(',').map(k=>k.trim()).filter(Boolean) : []),
