@@ -1,0 +1,18 @@
+{
+  "id": "chatgpt",
+  "name": "ChatGPT",
+  "logo": "/logos/chatgpt.webp",
+  "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
+  "tags": ["chat", "writing", "coding", "assistant"],
+  "intents": ["writing", "coding", "assistant"],
+  "primary_intent": "writing",
+  "keywords": ["email", "draft", "summarize", "write", "brainstorm"],
+  "summary": "Ask questions, get drafts, and debug code quickly.",
+  "details": "ChatGPT provides versatile conversational capabilities. It can help you write emails, summarize documents, generate code snippets, and more.",
+  "howTo": [
+    "Open ChatGPT and type a clear question or request.",
+    "Provide context or examples if you want a tailored answer.",
+    "Review and edit the response; ask follow-up questions to refine output.",
+    "When using code snippets, test them in your environment and request clarifications if needed."
+  ]
+}

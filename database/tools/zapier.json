@@ -1,0 +1,17 @@
+{
+  "id": "zapier",
+  "name": "Zapier",
+  "logo": "/logos/zapier.webp",
+  "about": "Automation tool to connect apps and build workflows without code.",
+  "tags": ["automation", "integration", "no-code"],
+  "intents": ["automation", "integration"],
+  "primary_intent": "automation",
+  "keywords": ["automation", "integration", "workflow", "connect"],
+  "summary": "Connect apps and automate repetitive tasks with simple triggers and actions.",
+  "details": "Zapier provides a visual automation builder. Use triggers to start flows and actions to perform tasks in connected apps.",
+  "howTo": [
+    "Choose a trigger app and event.",
+    "Add actions in the apps you want to control.",
+    "Test and enable the zap."
+  ]
+}

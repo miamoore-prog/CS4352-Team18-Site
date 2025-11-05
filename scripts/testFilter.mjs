@@ -1,4 +1,14 @@
-import toolsData from "../data/tools.json" assert { type: "json" };
+import fs from 'fs'
+import path from 'path'
+
+const TOOLS_DIR = path.resolve(process.cwd(), 'database', 'tools')
+
+function loadTools() {
+  const files = fs.readdirSync(TOOLS_DIR).filter((f) => f.endsWith('.json'))
+  return files.map((f) => JSON.parse(fs.readFileSync(path.join(TOOLS_DIR, f), 'utf8')))
+}
+
+const toolsData = loadTools();
 
 function filterTools(query) {
   const q = query.trim().toLowerCase();

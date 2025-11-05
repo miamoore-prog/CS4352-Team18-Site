@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import toolsData from "../data/tools.json";
 import CarouselCard from "../components/CarouselCard";
 
 import SearchBar from "../components/SearchBar";
@@ -10,8 +9,20 @@ import SearchBar from "../components/SearchBar";
 export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const tools = toolsData.slice(0, 6); // only first 6 tools
+  const [tools, setTools] = useState([]);
 
+  useEffect(() => {
+    let mounted = true;
+    fetch('/api/tools')
+      .then((r) => r.json())
+      .then((data) => {
+        if (!mounted) return;
+        if (Array.isArray(data)) setTools(data.slice(0, 6));
+        else if (Array.isArray(data.tools)) setTools(data.tools.slice(0,6));
+      })
+      .catch(() => {});
+    return () => { mounted = false };
+  }, []);
 
   function onSearch(q) {
     // redirect to tools page with query

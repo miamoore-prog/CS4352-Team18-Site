@@ -1,0 +1,17 @@
+{
+  "id": "curipod",
+  "name": "Curipod",
+  "logo": "/logos/curipod.webp",
+  "about": "Interactive presentation and engagement tool for educators.",
+  "tags": ["education", "presentations", "engagement"],
+  "intents": ["education", "presentation"],
+  "primary_intent": "education",
+  "keywords": ["quiz", "presentation", "slides", "engagement"],
+  "summary": "Make lessons interactive with live questions, polls, and feedback.",
+  "details": "Curipod focuses on student engagement during lessons, enabling real-time participation and feedback.",
+  "howTo": [
+    "Create a slide with a prompt or question.",
+    "Launch the session and let students respond in real time.",
+    "Use analytics to review student understanding."
+  ]
+}
