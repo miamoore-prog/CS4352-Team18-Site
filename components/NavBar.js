@@ -31,6 +31,16 @@ export default function NavBar() {
                 Login
               </Button>
             </Link>
+
+            <Link href="/translate">
+              <Button variant="ghost" className="text-sm">
+                Translate
+              </Button>
+            </Link>
+
+
+
+
           </div>
         </div>
       </div>
