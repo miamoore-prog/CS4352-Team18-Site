@@ -77,7 +77,9 @@ export default function NavBar() {
 
             <Link href="/translate">
               <Button variant="ghost" className="text-sm">
-                Translate
+              
+                Translate | 翻译 | Dịch | Traducir | Tumọ
+                
               </Button>
             </Link>
           </div>
