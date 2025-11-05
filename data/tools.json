@@ -1,0 +1,42 @@
+[
+  {
+    "id": "chatgpt",
+    "name": "ChatGPT",
+    "tags": ["writing", "productivity", "editing"]
+  },
+  {
+    "id": "claude",
+    "name": "Anthropic Claude",
+    "tags": ["summaries", "longform", "research"]
+  },
+  {
+    "id": "midjourney",
+    "name": "Midjourney",
+    "tags": ["art", "concept", "visuals"]
+  },
+  {
+    "id": "dalle",
+    "name": "DALLE",
+    "tags": ["image", "moodboard", "ideation"]
+  },
+  {
+    "id": "zapier",
+    "name": "Zapier",
+    "tags": ["automation", "integrations"]
+  },
+  {
+    "id": "runway",
+    "name": "Runway",
+    "tags": ["video", "editing"]
+  },
+  {
+    "id": "magicschool",
+    "name": "MagicSchool",
+    "tags": ["education", "tutoring"]
+  },
+  {
+    "id": "curipod",
+    "name": "Curipod",
+    "tags": ["presentation", "teaching"]
+  }
+]

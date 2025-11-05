@@ -62,11 +62,18 @@ body {
 }
 
 /*animation for carousel */
-@keyframes carousel {
-  0% { transform: translateX(0) }
-  100% { transform: translateX(-50%) }
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
+
+/* when the track is hovered, pause the automatic scroll so users can interact */
+.chip-track:hover {
+  animation-play-state: paused !important;
+}
+
+/* restore landing-page carousel class expected by the home page */
 .animate-carousel {
-  animation: carousel 60s infinite linear;
+  animation: scroll-left 60s linear infinite;
   display: flex;
 }

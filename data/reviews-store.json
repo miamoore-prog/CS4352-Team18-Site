@@ -1,116 +1,418 @@
 {
   "chatgpt": [
     {
-      "id": "chatgpt-r20251105a",
-      "title": "Great for quick drafts",
-      "author": "Alex",
+      "id": "chatgpt-r20251105a1",
+      "title": "Best writing partner",
+      "author": "Lia",
       "rating": 5,
-      "text": "Saved me hours drafting customer outreach. The tone suggestions are particularly useful.",
-      "keywords": ["writing","productivity"],
-      "date": "2025-11-05T14:12:00.000Z",
-      "likes": 12
+      "text": "ChatGPT (large language model) has become my go-to for creative writing drafts and outlines. Super fast and flexible.",
+      "keywords": ["writing", "creativity"],
+      "date": "2025-11-05T10:12:00.000Z",
+      "likes": 10
     },
     {
-      "id": "chatgpt-r20251020b",
-      "title": null,
-      "author": "Sam",
+      "id": "chatgpt-r20251102b",
+      "title": "Powerful coding helper",
+      "author": "Evan",
+      "rating": 5,
+      "text": "As an AI coding assistant, it caught bugs I missed and even optimized my functions.",
+      "keywords": ["coding", "debugging"],
+      "date": "2025-11-02T11:35:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "chatgpt-r20251022c",
+      "title": "Brainstorm machine",
+      "author": "Nia",
+      "rating": 5,
+      "text": "Love using this conversational AI model for idea generation. Helps spark creative concepts I wouldn't think of.",
+      "keywords": ["brainstorming", "ideas"],
+      "date": "2025-10-22T08:20:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "chatgpt-r20251003d",
+      "title": "Occasional over-confidence",
+      "author": "Ben",
       "rating": 4,
-      "text": "Very capable, but sometimes the output needs editing for tone and factuality checks.",
-      "keywords": ["editing","accuracy"],
-      "date": "2025-10-20T09:30:00.000Z",
-      "likes": 3
-    },
-    {
-      "id": "chatgpt-r20250910c",
-      "title": "Unexpected hallucination",
-      "author": "Priya",
-      "rating": 3,
-      "text": "Most prompts are great, but I hit a hallucination when asking for obscure facts. Be cautious for research use.",
-      "keywords": ["hallucination","research"],
-      "date": "2025-09-10T18:00:00.000Z",
+      "text": "Great assistant but like most LLMs, sometimes answers confidently when it’s not accurate. Still super helpful.",
+      "keywords": ["accuracy", "trust"],
+      "date": "2025-10-03T14:45:00.000Z",
       "likes": 2
-    }
-  ],
-  "midjourney": [
-    {
-      "id": "midjourney-r20251001a",
-      "title": "Awesome concept art",
-      "author": "Jordan",
-      "rating": 5,
-      "text": "Amazing outputs for concept art — great starting point for iterations.",
-      "keywords": ["art","concept","visuals"],
-      "date": "2025-10-01T12:00:00.000Z",
-      "likes": 8
     },
     {
-      "id": "midjourney-r20250815b",
-      "title": null,
-      "author": "Casey",
-      "rating": 4,
-      "text": "Love the aesthetic results but sometimes composition needs manual cleanup.",
-      "keywords": ["composition","workflow"],
-      "date": "2025-08-15T08:00:00.000Z",
-      "likes": 1
-    }
-  ],
-  "dalle": [
-    {
-      "id": "dalle-r20251005a",
-      "title": "Fast ideation",
-      "author": "Maya",
+      "id": "chatgpt-r20250911e",
+      "title": "Best AI tutor",
+      "author": "Jess",
       "rating": 5,
-      "text": "Great for quick visual mockups. Colors and styles are convenient for moodboards.",
-      "keywords": ["moodboard","ideation"],
-      "date": "2025-10-05T16:20:00.000Z",
-      "likes": 5
+      "text": "I use it as a teaching-style AI model to get step-by-step explanations. Really clear and patient.",
+      "keywords": ["learning", "explanations"],
+      "date": "2025-09-11T09:10:00.000Z",
+      "likes": 8
     }
   ],
   "claude": [
     {
-      "id": "claude-r20250922a",
-      "title": "Helpful assistant",
-      "author": "Riley",
-      "rating": 4,
-      "text": "Good for long-form replies and summarization. Occasionally verbose but accurate.",
-      "keywords": ["summaries","longform"],
-      "date": "2025-09-22T11:00:00.000Z",
+      "id": "claude-r20251010a",
+      "title": "Amazing for essays",
+      "author": "Hugo",
+      "rating": 5,
+      "text": "Claude (AI reasoning model) writes thoughtful, structured essays that feel natural.",
+      "keywords": ["essays", "writing"],
+      "date": "2025-10-10T16:00:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "claude-r20251001b",
+      "title": "Research buddy",
+      "author": "Tara",
+      "rating": 5,
+      "text": "This conversational reasoning AI helps me break down academic texts and create summarized notes.",
+      "keywords": ["research", "summaries"],
+      "date": "2025-10-01T11:30:00.000Z",
       "likes": 4
+    },
+    {
+      "id": "claude-r20250910c",
+      "title": "Gentle tone",
+      "author": "Max",
+      "rating": 4,
+      "text": "Very polite and thoughtful. Sometimes too cautious, but great for sensitive writing.",
+      "keywords": ["tone", "writing"],
+      "date": "2025-09-10T10:00:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "claude-r20250902d",
+      "title": "Deep explanations",
+      "author": "Elena",
+      "rating": 5,
+      "text": "As a safety-focused LLM, Claude explains logic in a super clear way. Perfect for studying philosophy.",
+      "keywords": ["logic", "learning"],
+      "date": "2025-09-02T09:45:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "claude-r20250815e",
+      "title": "Long content pro",
+      "author": "Chris",
+      "rating": 5,
+      "text": "Handles long-form writing better than most AI chat models. Great for reports.",
+      "keywords": ["reports", "longform"],
+      "date": "2025-08-15T15:05:00.000Z",
+      "likes": 5
     }
   ],
-  "runway": [
+  "midjourney": [
     {
-      "id": "runway-r20250730a",
-      "title": "Great for quick edits",
-      "author": "Taylor",
+      "id": "midjourney-r20251101a",
+      "title": "Insane creativity",
+      "author": "Aria",
       "rating": 5,
-      "text": "The video-editing tools are surprisingly capable for quick cuts and style transfer.",
-      "keywords": ["video","editing"],
-      "date": "2025-07-30T10:00:00.000Z",
+      "text": "Midjourney (AI image generator) gives gorgeous artistic compositions. Perfect for moodboards.",
+      "keywords": ["art", "concept"],
+      "date": "2025-11-01T12:12:00.000Z",
+      "likes": 9
+    },
+    {
+      "id": "midjourney-r20251012b",
+      "title": "Too stylish sometimes",
+      "author": "Dean",
+      "rating": 4,
+      "text": "Its visual style is strong. As a generative art model, you sometimes need extra tweaks for realism.",
+      "keywords": ["style", "details"],
+      "date": "2025-10-12T09:00:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "midjourney-r20250920c",
+      "title": "Fashion inspo heaven",
+      "author": "Zara",
+      "rating": 5,
+      "text": "I use it for fashion concept sketches and it's wild how good it is.",
+      "keywords": ["fashion", "design"],
+      "date": "2025-09-20T17:00:00.000Z",
+      "likes": 7
+    },
+    {
+      "id": "midjourney-r20250905d",
+      "title": "High-concept visuals",
+      "author": "Theo",
+      "rating": 5,
+      "text": "Perfect for cinematic concept art. Feels like working with a visionary AI painter.",
+      "keywords": ["cinematic", "visuals"],
+      "date": "2025-09-05T11:11:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "midjourney-r20250825e",
+      "title": "Steep learning at first",
+      "author": "Maya",
+      "rating": 4,
+      "text": "Once you learn prompt crafting, the output from this creative AI model is unreal.",
+      "keywords": ["prompts", "learning"],
+      "date": "2025-08-25T07:25:00.000Z",
       "likes": 2
+    }
+  ],
+  "dalle": [
+    {
+      "id": "dalle-r20251104a",
+      "title": "Sharp realism",
+      "author": "Ali",
+      "rating": 5,
+      "text": "DALL·E (OpenAI image model) nails photorealistic concepts for product ideas.",
+      "keywords": ["realism", "product"],
+      "date": "2025-11-04T10:22:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "dalle-r20251001b",
+      "title": "Easy and fast",
+      "author": "Kayla",
+      "rating": 5,
+      "text": "Great quick generator for design mockups. Fastest prompt to output so far.",
+      "keywords": ["speed", "mockups"],
+      "date": "2025-10-01T10:00:00.000Z",
+      "likes": 5
+    },
+    {
+      "id": "dalle-r20250918c",
+      "title": "Great for social posts",
+      "author": "Ravi",
+      "rating": 4,
+      "text": "Image quality is great but sometimes faces get weird like most generative models.",
+      "keywords": ["social", "faces"],
+      "date": "2025-09-18T09:40:00.000Z",
+      "likes": 2
+    },
+    {
+      "id": "dalle-r20250901d",
+      "title": "Good stylized work",
+      "author": "June",
+      "rating": 5,
+      "text": "Love using it for cartoon and illustration styles for my site.",
+      "keywords": ["cartoon", "illustration"],
+      "date": "2025-09-01T13:00:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "dalle-r20250810e",
+      "title": "Smooth workflow",
+      "author": "Miles",
+      "rating": 4,
+      "text": "Integrates well with my design process and prompt tuning is simple.",
+      "keywords": ["workflow", "design"],
+      "date": "2025-08-10T15:30:00.000Z",
+      "likes": 4
     }
   ],
   "zapier": [
     {
-      "id": "zapier-r20250612a",
-      "title": "Automated workflows saved us time",
-      "author": "Morgan",
+      "id": "zapier-r20251102a",
+      "title": "Automation superpower",
+      "author": "Dana",
       "rating": 5,
-      "text": "Integration was straightforward and reduced manual tasks across apps.",
-      "keywords": ["automation","integrations"],
-      "date": "2025-06-12T09:00:00.000Z",
+      "text": "Zapier is an automation AI-assisted workflow tool. It runs our notifications, CRM syncs, and Google Sheets updates.",
+      "keywords": ["automation", "crm"],
+      "date": "2025-11-02T08:00:00.000Z",
+      "likes": 9
+    },
+    {
+      "id": "zapier-r20251010b",
+      "title": "Great small-team helper",
+      "author": "Tom",
+      "rating": 5,
+      "text": "We automated our form submissions to Slack alerts. No coding needed at all.",
+      "keywords": ["no-code", "workflows"],
+      "date": "2025-10-10T14:22:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "zapier-r20250915c",
+      "title": "Saves repetitive time",
+      "author": "Gina",
+      "rating": 5,
+      "text": "Perfect tool for automating repetitive admin tasks across apps.",
+      "keywords": ["productivity", "admin"],
+      "date": "2025-09-15T13:00:00.000Z",
+      "likes": 5
+    },
+    {
+      "id": "zapier-r20250901d",
+      "title": "Takes setup time",
+      "author": "Will",
+      "rating": 4,
+      "text": "First setup takes a bit, but once flows run, it feels magical.",
+      "keywords": ["setup", "efficiency"],
+      "date": "2025-09-01T09:00:00.000Z",
+      "likes": 2
+    },
+    {
+      "id": "zapier-r20250820e",
+      "title": "Integrations king",
+      "author": "Sol",
+      "rating": 5,
+      "text": "Connects all my tools together. Best AI-supported automation system.",
+      "keywords": ["integrations"],
+      "date": "2025-08-20T10:00:00.000Z",
       "likes": 7
+    }
+  ],
+  "runway": [
+    {
+      "id": "runway-r20251105a",
+      "title": "AI video wizard",
+      "author": "Nico",
+      "rating": 5,
+      "text": "Runway (AI video creator/editor) makes transitions and background removal super easy.",
+      "keywords": ["video", "editing"],
+      "date": "2025-11-05T09:40:00.000Z",
+      "likes": 8
+    },
+    {
+      "id": "runway-r20251002b",
+      "title": "Fast content edits",
+      "author": "Lara",
+      "rating": 4,
+      "text": "My go-to for quick reels and shorts edits using AI tools.",
+      "keywords": ["reels", "shorts"],
+      "date": "2025-10-02T11:15:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "runway-r20250922c",
+      "title": "Wild effects",
+      "author": "Omar",
+      "rating": 5,
+      "text": "Love the AI-powered effects for creative content.",
+      "keywords": ["effects", "creative"],
+      "date": "2025-09-22T16:30:00.000Z",
+      "likes": 5
+    },
+    {
+      "id": "runway-r20250905d",
+      "title": "Learning curve",
+      "author": "Kim",
+      "rating": 4,
+      "text": "Takes some learning but powerful once you get it.",
+      "keywords": ["learning", "video"],
+      "date": "2025-09-05T12:00:00.000Z",
+      "likes": 2
+    },
+    {
+      "id": "runway-r20250818e",
+      "title": "Great for prototyping",
+      "author": "Reese",
+      "rating": 5,
+      "text": "Used it to prototype video ads. Generative video models are getting crazy good.",
+      "keywords": ["ads", "prototyping"],
+      "date": "2025-08-18T10:50:00.000Z",
+      "likes": 6
     }
   ],
   "magicschool": [
     {
-      "id": "magicschool-r20251101a",
-      "title": "Great tutoring features",
-      "author": "Jordan",
+      "id": "magicschool-r20251104a",
+      "title": "Lesson planning boost",
+      "author": "Ana",
+      "rating": 5,
+      "text": "MagicSchool AI (education tutoring model) helps build structured lesson plans in minutes.",
+      "keywords": ["lesson plans", "education"],
+      "date": "2025-11-04T08:00:00.000Z",
+      "likes": 5
+    },
+    {
+      "id": "magicschool-r20251020b",
+      "title": "Homework helper",
+      "author": "Cory",
+      "rating": 5,
+      "text": "Use it to tutor kids in math and reading. Friendly and clear AI teacher.",
+      "keywords": ["tutoring", "learning"],
+      "date": "2025-10-20T13:33:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "magicschool-r20251002c",
+      "title": "Custom practice sets",
+      "author": "Jules",
       "rating": 4,
-      "text": "Helps structure lessons well; I'd like more interactive widgets though.",
-      "keywords": ["education","tutoring"],
-      "date": "2025-11-01T13:00:00.000Z",
-      "likes": 1
+      "text": "Makes personalized quizzes and practice sheets fast.",
+      "keywords": ["quizzes", "practice"],
+      "date": "2025-10-02T11:00:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "magicschool-r20250915d",
+      "title": "Teacher's buddy",
+      "author": "Pat",
+      "rating": 5,
+      "text": "As an AI classroom tool, it's like having a co-teacher.",
+      "keywords": ["classroom", "teacher"],
+      "date": "2025-09-15T08:45:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "magicschool-r20250830e",
+      "title": "Helpful explanations",
+      "author": "Rina",
+      "rating": 4,
+      "text": "Breaks down difficult topics into simple steps.",
+      "keywords": ["explanations", "learning"],
+      "date": "2025-08-30T10:10:00.000Z",
+      "likes": 2
+    }
+  ],
+  "curipod": [
+    {
+      "id": "curipod-r20251105a",
+      "title": "Super interactive!",
+      "author": "Bea",
+      "rating": 5,
+      "text": "Curipod (AI lesson content tool) makes live interactive lessons fun and easy.",
+      "keywords": ["interactive", "lessons"],
+      "date": "2025-11-05T09:00:00.000Z",
+      "likes": 7
+    },
+    {
+      "id": "curipod-r20251025b",
+      "title": "Great for engagement",
+      "author": "Drew",
+      "rating": 5,
+      "text": "Students participate way more when using Curipod’s AI-powered quizzes.",
+      "keywords": ["engagement", "quizzes"],
+      "date": "2025-10-25T14:22:00.000Z",
+      "likes": 4
+    },
+    {
+      "id": "curipod-r20251001c",
+      "title": "Fast slide creation",
+      "author": "Maria",
+      "rating": 4,
+      "text": "Makes lesson slides with built-in activities. Saves prep time.",
+      "keywords": ["slides", "prep"],
+      "date": "2025-10-01T08:30:00.000Z",
+      "likes": 3
+    },
+    {
+      "id": "curipod-r20250918d",
+      "title": "Fun assessments",
+      "author": "Oli",
+      "rating": 5,
+      "text": "Kids love the interactive assessment games.",
+      "keywords": ["assessment", "games"],
+      "date": "2025-09-18T12:15:00.000Z",
+      "likes": 6
+    },
+    {
+      "id": "curipod-r20250828e",
+      "title": "Easy onboarding",
+      "author": "Sara",
+      "rating": 4,
+      "text": "Simple setup and works great even for young students.",
+      "keywords": ["easy", "students"],
+      "date": "2025-08-28T07:55:00.000Z",
+      "likes": 2
     }
   ]
 }

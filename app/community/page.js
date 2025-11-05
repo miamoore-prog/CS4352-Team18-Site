@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Button, Input } from "../../components/ui";
 import tools from "../../data/tools.json";
 
 export default function CommunityPage() {
   const [storeKeys, setStoreKeys] = useState([]);
+  const [allStore, setAllStore] = useState({});
   const [selectedTool, setSelectedTool] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,7 @@ export default function CommunityPage() {
       const res = await fetch(`/api/reviews`);
       const data = await res.json();
       setStoreKeys(Object.keys(data || {}));
+      setAllStore(data || {});
     } catch (err) {
       console.error(err);
     }
@@ -93,6 +95,22 @@ export default function CommunityPage() {
 
   function addKeyword(k) {
     if (!k) return;
+    // try to find which tool this keyword belongs to (if any) so we can focus the right tool
+    const found = Object.entries(allStore || {}).find(([toolId, posts]) => {
+      try {
+        return Array.isArray(posts) && posts.some((p) => (p.keywords || []).map((x) => x.toLowerCase()).includes(k.toLowerCase()));
+      } catch (e) {
+        return false;
+      }
+    });
+    if (found) {
+      const toolId = found[0];
+      setSelectedTool(toolId);
+      setFilterKeywords((s) => (s.includes(k) ? s : [...s, k]));
+      // fetch immediately for the found tool
+      fetchReviewsWithParams(toolId, Array.from(new Set([...(filterKeywords || []), k])), sort);
+      return;
+    }
     setFilterKeywords((s) => (s.includes(k) ? s : [...s, k]));
   }
 
@@ -162,6 +180,35 @@ export default function CommunityPage() {
     return Array.from(kws).slice(0, 20);
   }, [reviews, selectedTool]);
 
+  // carousel refs/state for available keywords
+  const carouselContainerRef = useRef(null);
+  const carouselTrackRef = useRef(null);
+  const [carouselAnimate, setCarouselAnimate] = useState(false);
+  const [carouselDuration, setCarouselDuration] = useState(0);
+
+  useEffect(() => {
+    // measure and decide whether to animate (only when track is wider than container)
+    function update() {
+      const cont = carouselContainerRef.current;
+      const track = carouselTrackRef.current;
+      if (!cont || !track) return setCarouselAnimate(false);
+      const contW = cont.clientWidth;
+      const trackW = track.scrollWidth;
+      if (trackW > contW + 10) {
+        // duration proportional to width; 60px per second -> seconds = trackW/60
+        const dur = Math.max(8, Math.round(trackW / 60));
+        setCarouselDuration(dur);
+        setCarouselAnimate(true);
+      } else {
+        setCarouselAnimate(false);
+      }
+    }
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [availableKeywords]);
+
   return (
     <div className="flex flex-col gap-6">
       {/* Top filter bar */}
@@ -210,32 +257,65 @@ export default function CommunityPage() {
 
       <Card>
         <div className="flex items-center gap-4">
-          <div className="inline-flex gap-2">
-            {popular.map((p) => {
-              const active = filterKeywords.includes(p.name) || selectedTool === p.id;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => handlePopularClick(p)}
-                  className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${active ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
-                >
-                  {p.name}
-                </button>
-              );
-            })}
-          </div>
+          {/* combined scrolling track: include popular chips first, then keyword chips */}
+          <div className="flex-1 min-w-0">
+            <div ref={carouselContainerRef} className="relative w-full overflow-hidden">
+              <div
+                ref={carouselTrackRef}
+                className="inline-flex gap-2 whitespace-nowrap chip-track"
+                style={carouselAnimate ? { animation: `scroll-left ${carouselDuration}s linear infinite` } : {}}
+              >
+                {popular.map((p) => {
+                  const active = filterKeywords.includes(p.name) || selectedTool === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => handlePopularClick(p)}
+                      className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${active ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                      style={{ display: 'inline-flex' }}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
 
-          <div>
-            <div className="inline-flex gap-2">
-              {availableKeywords.map((k) => (
-                <button
-                  key={k}
-                  onClick={() => addKeyword(k)}
-                  className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
-                >
-                  {k}
-                </button>
-              ))}
+                {availableKeywords.map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => addKeyword(k)}
+                    className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                    style={{ display: 'inline-flex' }}
+                  >
+                    {k}
+                  </button>
+                ))}
+
+                {/* duplicate for smooth continuous scroll when animating */}
+                {carouselAnimate && (
+                  <>
+                    {popular.map((p) => (
+                      <button
+                        key={"dup-pop-" + p.id}
+                        onClick={() => handlePopularClick(p)}
+                        className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(p.name) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                        style={{ display: 'inline-flex' }}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                    {availableKeywords.map((k, i) => (
+                      <button
+                        key={"dup-" + k + i}
+                        onClick={() => addKeyword(k)}
+                        className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                        style={{ display: 'inline-flex' }}
+                      >
+                        {k}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -247,24 +327,28 @@ export default function CommunityPage() {
           <h3 className="font-semibold">Posts {loading ? '(loading...)' : ''}</h3>
           <div className="mt-3 space-y-3">
             {reviews.length === 0 && <div className="text-sm text-slate-500">No posts found.</div>}
-            {reviews.map((r) => (
-              <div key={r.id} className="border p-3 rounded">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">{r.title || r.author}</div>
-                    <div className="text-xs text-slate-500">{new Date(r.date).toLocaleDateString()} • {r.rating} / 5</div>
-                    <div className="text-xs text-amber-500 mt-1">{'★'.repeat(Math.max(0, Math.min(5, Math.round(r.rating || 0)))) + '☆'.repeat(5 - Math.max(0, Math.min(5, Math.round(r.rating || 0))))}</div>
+            {reviews.map((r) => {
+              const toolName = tools.find((t) => t.id === selectedTool)?.name || selectedTool || "Unknown";
+              return (
+                <div key={r.id} className="border p-3 rounded">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs text-slate-500">{toolName}</div>
+                      <div className="font-semibold">{r.title || r.author}</div>
+                      <div className="text-xs text-slate-500">{new Date(r.date).toLocaleDateString()} • {r.rating} / 5</div>
+                      <div className="text-xs text-amber-500 mt-1">{'★'.repeat(Math.max(0, Math.min(5, Math.round(r.rating || 0)))) + '☆'.repeat(5 - Math.max(0, Math.min(5, Math.round(r.rating || 0))))}</div>
+                    </div>
+                    <div>
+                      <button onClick={() => handleLike(r.id)} className="text-sm">👍 {r.likes || 0}</button>
+                    </div>
                   </div>
-                  <div>
-                    <button onClick={() => handleLike(r.id)} className="text-sm">👍 {r.likes || 0}</button>
-                  </div>
+                  <div className="mt-2 text-sm">{r.text}</div>
+                  {r.keywords && r.keywords.length > 0 && (
+                    <div className="mt-2 text-xs text-slate-500">{r.keywords.join(' • ')}</div>
+                  )}
                 </div>
-                <div className="mt-2 text-sm">{r.text}</div>
-                {r.keywords && r.keywords.length > 0 && (
-                  <div className="mt-2 text-xs text-slate-500">{r.keywords.join(' • ')}</div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       </div>
