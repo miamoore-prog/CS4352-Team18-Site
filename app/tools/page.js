@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import toolsData from "../../data/tools.json";
 import SearchBar from "../../components/SearchBar";
 import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
@@ -16,19 +15,48 @@ export default function ToolsPage() {
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState(null);
 
-  // We no longer rely on client-side fallback filtering. The server/Gemini
-  // provides all recommendations. Keep a trivial memo for compatibility.
-  const filtered = useMemo(() => toolsData, []);
+    // Explicit displayed tools state to avoid any render-order timing issues
+    const [displayedTools, setDisplayedTools] = useState([]);
 
-  // Explicit displayed tools state to avoid any render-order timing issues
-  const [displayedTools, setDisplayedTools] = useState(toolsData);
+    useEffect(() => {
+      let mounted = true;
+      fetch('/api/tools')
+        .then((r) => r.json())
+        .then((data) => {
+          if (!mounted) return;
+          const arr = Array.isArray(data) ? data : data.tools || [];
+          setDisplayedTools(arr);
+        })
+        .catch(() => {});
+      return () => { mounted = false };
+    }, []);
 
-  // Fetch recommendations from the server (Gemini). Called manually via the Search button.
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8; // Number of tool cards per page
+
+  // Automatically reset to first page when new tools are displayed
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [displayedTools]);
+
+  // Compute total pages
+  const totalPages = Math.ceil(displayedTools.length / pageSize);
+
+  // Compute which tools to show on current page
+  const paginatedTools = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return displayedTools.slice(start, end);
+  }, [displayedTools, currentPage, pageSize]);
+
+    // Fetch recommendations from the server (Gemini). Called manually via the Search button.
   async function fetchRecommendations(q, { signal } = {}) {
     if (!q || q.trim() === "") {
       setRecommendedIds(null);
       setRecommendationError(null);
       setLoadingRecommendations(false);
+      setDisplayedTools(toolsData);
       return;
     }
 
@@ -36,7 +64,7 @@ export default function ToolsPage() {
     setLoadingRecommendations(true);
 
     try {
-      // clear displayed tools while fetching to show loading state
+            // clear displayed tools while fetching to show loading state
       setDisplayedTools([]);
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -60,7 +88,7 @@ export default function ToolsPage() {
     } catch (err) {
       if (err.name === "AbortError") {
         return;
-      }
+    }
 
       setRecommendationError(String(err));
       setRecommendedIds([]);
@@ -70,19 +98,19 @@ export default function ToolsPage() {
     }
   }
 
-  // No live/debounced search: only search when the user presses the Search button.
+    // No live/debounced search: only search when the user presses the Search button.
 
   function handleQueryChange(value) {
     setQuery(value);
     setRecommendationError(null);
   }
 
-  // provide a manual search trigger (Search button) that calls the same API
+    // provide a manual search trigger (Search button) that calls the same API
   function handleSearch(value) {
     const q = typeof value === "string" && value.trim() !== "" ? value : query;
 
     // update parent query state to reflect what is being searched
-    if (q !== query) setQuery(q);
+    if (q !== query) setQuery(q);  
     // clear previous recommendations while fetching
     setRecommendedIds(null);
     fetchRecommendations(q);
@@ -92,25 +120,26 @@ export default function ToolsPage() {
   // a search automatically on mount so users see results immediately.
   useEffect(() => {
     if (initialQuery && initialQuery.trim() !== "") {
-      // ensure the displayed query matches the initialQuery
+            // ensure the displayed query matches the initialQuery
       if (initialQuery !== query) setQuery(initialQuery);
       // kick off the fetch once
       fetchRecommendations(initialQuery);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const sectionRef = useRef(null);//ref to the tools section
 
   return (
-    <div className="flex flex-col gap-6"> 
+    <div className="flex flex-col gap-6">
       <div className="card">
-        <SearchBar
-          value={query}
-          onChange={handleQueryChange}
-          onSearch={handleSearch}
+        <SearchBar 
+        value={query}
+        onChange={handleQueryChange}
+        onSearch={handleSearch} 
         />
       </div>
 
-      <section>
+      <section ref={sectionRef}>
         <div className="mb-4 text-sm text-slate-600">
           {loadingRecommendations
             ? "Searching..."
@@ -127,15 +156,51 @@ export default function ToolsPage() {
           )}
         </div>
 
+        {/* Display tool cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {displayedTools.map((t) => (
+          {paginatedTools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => setActiveTool(t)} />
           ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-6">
+            <button
+              onClick={() => {
+                setCurrentPage((p) => Math.max(1, p - 1));
+                setTimeout(() => {
+                  const y = sectionRef.current?.getBoundingClientRect().top + window.scrollY - 100;
+                  window.scrollTo({ top: y, behavior: "smooth" });
+                }, 0);
+              }}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded bg-purple-100 hover:bg-purple-200 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => {
+                setCurrentPage((p) => Math.min(totalPages, p + 1));
+                setTimeout(() => {
+                  const y = sectionRef.current?.getBoundingClientRect().top + window.scrollY - 100;
+                  window.scrollTo({ top: y, behavior: "smooth" });
+                }, 0);
+              }}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded bg-purple-100 hover:bg-purple-200 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
 
-      {activeTool && (
-        <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
+      {activeTool && ( 
+      <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
       )}
     </div>
   );

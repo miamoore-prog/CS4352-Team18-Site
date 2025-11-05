@@ -15,7 +15,7 @@ export default function ToolCard({ tool, onOpen }) {
 
   return (
     <Card
-      className="flex items-start space-x-4 cursor-pointer"
+      className="flex items-start space-x-4 cursor-pointer hover:scale-[1.02] hover:shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
       onClick={onOpen}
       role="button"
       tabIndex={0}

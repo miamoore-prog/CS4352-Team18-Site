@@ -1,0 +1,17 @@
+{
+  "id": "midjourney",
+  "name": "Midjourney",
+  "logo": "/logos/midjourney.webp",
+  "about": "An image-generation tool that turns text prompts into high-quality artwork.",
+  "tags": ["image", "art", "design"],
+  "intents": ["image", "design"],
+  "primary_intent": "image",
+  "keywords": ["image", "art", "illustration", "prompt", "visual"],
+  "summary": "Create concept art, social images, and visual ideas from short prompts.",
+  "details": "Midjourney specializes in creative image outputs. Use concise prompts and tweak style words to refine the image.",
+  "howTo": [
+    "Write a short descriptive prompt (subject, style, colors).",
+    "Select an aspect ratio or style if the tool supports it.",
+    "Generate, then iterate by adding or removing adjectives to refine the image."
+  ]
+}

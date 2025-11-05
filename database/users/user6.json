@@ -1,0 +1,11 @@
+{
+  "id": "user6",
+  "username": "frank",
+  "password": "test",
+  "displayName": "Frank Ocean",
+  "bookmarks": ["zapier", "chatgpt"],
+  "reviews": [
+    { "toolId": "zapier", "rating": 5, "text": "Saves me hours." }
+  ],
+  "threads": []
+}
