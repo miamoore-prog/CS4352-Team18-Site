@@ -11,10 +11,12 @@ export default function ToolModal({ tool, onClose }) {
     let mounted = true;
     async function load() {
       try {
-        const res = await fetch(`/api/reviews?toolId=${encodeURIComponent(tool.id)}`);
+        const res = await fetch(`/api/reviews?tool=${encodeURIComponent(tool.id)}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (mounted && Array.isArray(data.reviews)) setReviews(data.reviews);
+        if (!mounted) return;
+        if (Array.isArray(data)) setReviews(data);
+        else if (data && Array.isArray(data.reviews)) setReviews(data.reviews);
       } catch (e) {
         // ignore
       }

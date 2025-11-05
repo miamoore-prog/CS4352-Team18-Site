@@ -2,7 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card, Button, Input } from "../../components/ui";
-import tools from "../../data/tools.json";
+
+
+// load tools catalog at runtime from the canonical API (database/tools/*.json)
+const useToolsLoader = () => {
+  const [tools, setTools] = useState([]);
+  useEffect(() => {
+    let mounted = true;
+    fetch('/api/tools')
+      .then((r) => r.json())
+      .then((data) => {
+        const arr = Array.isArray(data) ? data : data.tools || [];
+        if (mounted) setTools(arr);
+      })
+      .catch(() => {});
+    return () => { mounted = false };
+  }, []);
+  return tools;
+};
 
 export default function CommunityPage() {
   const [storeKeys, setStoreKeys] = useState([]);
@@ -17,15 +34,16 @@ export default function CommunityPage() {
   const [form, setForm] = useState({ title: "", author: "", rating: 5, text: "", keywords: [] });
   const [composerTagInput, setComposerTagInput] = useState("");
 
-  // fetch list of available tools from data (client-side)
-  const toolIds = useMemo(() => (Array.isArray(tools) ? tools.map((t) => t.id) : []), []);
+  // fetch list of available tools from the canonical API (client-side)
+  const tools = useToolsLoader();
+  const toolIds = useMemo(() => (Array.isArray(tools) ? tools.map((t) => t.id) : []), [tools]);
 
   // popular models / companies (shown as clickable chips)
   const popular = useMemo(() => {
     if (!Array.isArray(tools)) return [];
     // pick the first 6 tools as 'popular' defaults
     return tools.slice(0, 6).map((t) => ({ id: t.id, name: t.name }));
-  }, []);
+  }, [tools]);
 
   useEffect(() => {
     // pick first tool by default
@@ -42,7 +60,13 @@ export default function CommunityPage() {
     try {
       const res = await fetch(`/api/reviews`);
       const data = await res.json();
-      setStoreKeys(Object.keys(data || {}));
+      // API returns { reviews: [...] } — derive unique tool ids
+      if (data && Array.isArray(data.reviews)) {
+        const ids = Array.from(new Set(data.reviews.map((r) => r.toolId).filter(Boolean)));
+        setStoreKeys(ids);
+      } else {
+        setStoreKeys(Object.keys(data || {}));
+      }
     } catch (err) {
       console.error(err);
     }
@@ -53,13 +77,14 @@ export default function CommunityPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("tool", selectedTool);
+  params.set("tool", selectedTool);
       if (filterKeywords.length > 0) params.set("keywords", filterKeywords.join(","));
       if (sort) params.set("sort", sort);
 
-      const res = await fetch(`/api/reviews?${params.toString()}`);
-      const data = await res.json();
-      setReviews(data || []);
+  const res = await fetch(`/api/reviews?${params.toString()}`);
+  const data = await res.json();
+  // API returns either an array (when filtered by tool) or the whole store object.
+  setReviews(Array.isArray(data) ? data : (data && data.reviews) ? data.reviews : (data || []));
     } catch (err) {
       console.error(err);
     } finally {
@@ -73,13 +98,13 @@ export default function CommunityPage() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("tool", toolId);
+  params.set("tool", toolId);
       if (keywordsArr.length > 0) params.set("keywords", keywordsArr.join(","));
       if (sortOpt) params.set("sort", sortOpt);
 
-      const res = await fetch(`/api/reviews?${params.toString()}`);
-      const data = await res.json();
-      setReviews(data || []);
+  const res = await fetch(`/api/reviews?${params.toString()}`);
+  const data = await res.json();
+  setReviews(Array.isArray(data) ? data : (data && data.reviews) ? data.reviews : (data || []));
     } catch (err) {
       console.error(err);
     } finally {
