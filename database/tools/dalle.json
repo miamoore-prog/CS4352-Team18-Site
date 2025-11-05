@@ -1,0 +1,16 @@
+{
+  "id": "dalle",
+  "name": "DALL·E",
+  "logo": "/logos/dalle.webp",
+  "about": "OpenAI's image generation model for photorealistic and artistic images from prompts.",
+  "tags": ["image", "ai", "openai"],
+  "intents": ["image", "art"],
+  "primary_intent": "image",
+  "keywords": ["image", "openai", "photorealistic", "prompt"],
+  "summary": "Generate images from text prompts with flexible styles and realism.",
+  "details": "DALL·E excels at generating creative or photorealistic images. Include style and composition cues in the prompt.",
+  "howTo": [
+    "Include subject, lighting, and style in the prompt.",
+    "If you need variations, request multiple outputs and pick the best."
+  ]
+}

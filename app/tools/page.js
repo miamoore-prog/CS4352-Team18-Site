@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import toolsData from "../../data/tools.json";
 import SearchBar from "../../components/SearchBar";
 import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
@@ -17,7 +16,20 @@ export default function ToolsPage() {
   const [recommendationError, setRecommendationError] = useState(null);
 
     // Explicit displayed tools state to avoid any render-order timing issues
-  const [displayedTools, setDisplayedTools] = useState(toolsData);
+    const [displayedTools, setDisplayedTools] = useState([]);
+
+    useEffect(() => {
+      let mounted = true;
+      fetch('/api/tools')
+        .then((r) => r.json())
+        .then((data) => {
+          if (!mounted) return;
+          const arr = Array.isArray(data) ? data : data.tools || [];
+          setDisplayedTools(arr);
+        })
+        .catch(() => {});
+      return () => { mounted = false };
+    }, []);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);

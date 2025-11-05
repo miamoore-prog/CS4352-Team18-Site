@@ -1,0 +1,17 @@
+{
+  "id": "claude",
+  "name": "Anthropic Claude",
+  "logo": "/logos/claude.webp",
+  "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
+  "tags": ["chat", "research", "summaries"],
+  "intents": ["writing", "research", "assistant"],
+  "primary_intent": "writing",
+  "keywords": ["summarize", "notes", "explain", "email", "draft"],
+  "summary": "Good for research, note-taking and clarifying complex topics.",
+  "details": "Claude is designed to be helpful and to provide reasoned answers. It's useful for long-form analysis and summarization.",
+  "howTo": [
+    "Start a conversation with your topic or paste the material to summarize.",
+    "Ask Claude for bullet summaries, highlights, or a plain-language explanation.",
+    "Use follow-ups to get more detail or examples."
+  ]
+}

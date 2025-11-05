@@ -1,0 +1,17 @@
+{
+  "id": "magicschool",
+  "name": "MagicSchool",
+  "logo": "/logos/magicschool.webp",
+  "about": "An AI tutoring and teaching assistant platform for educators and students.",
+  "tags": ["education", "tutoring", "ai"],
+  "intents": ["education", "assistant"],
+  "primary_intent": "education",
+  "keywords": ["education", "tutor", "lessons", "classes"],
+  "summary": "Build interactive lessons and get AI help for explanations and exercises.",
+  "details": "MagicSchool helps create lesson materials, quizzes, and explanations tailored to student levels.",
+  "howTo": [
+    "Provide learning objectives and topic.",
+    "Let the assistant generate lesson outlines and example exercises.",
+    "Adjust difficulty and format for your students."
+  ]
+}
