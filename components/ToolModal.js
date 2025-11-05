@@ -11,10 +11,14 @@ export default function ToolModal({ tool, onClose }) {
     let mounted = true;
     async function load() {
       try {
-        const res = await fetch(`/api/reviews?toolId=${encodeURIComponent(tool.id)}`);
+        const res = await fetch(
+          `/api/reviews?tool=${encodeURIComponent(tool.id)}`
+        );
         if (!res.ok) return;
         const data = await res.json();
-        if (mounted && Array.isArray(data.reviews)) setReviews(data.reviews);
+        if (!mounted) return;
+        if (Array.isArray(data)) setReviews(data);
+        else if (data && Array.isArray(data.reviews)) setReviews(data.reviews);
       } catch (e) {
         // ignore
       }
@@ -57,28 +61,43 @@ export default function ToolModal({ tool, onClose }) {
               const avg =
                 count === 0
                   ? 0
-                  : (reviews.reduce((s, r) => s + (r.rating || 0), 0) / count).toFixed(1);
+                  : (
+                      reviews.reduce((s, r) => s + (r.rating || 0), 0) / count
+                    ).toFixed(1);
 
               return (
                 <div>
                   <div className="flex items-center">
                     <div className="text-2xl font-semibold mr-3">{avg}</div>
-                    <div className="text-sm text-slate-600">{count} reviews</div>
+                    <div className="text-sm text-slate-600">
+                      {count} reviews
+                    </div>
                   </div>
 
                   <div className="mt-3 space-y-3 max-h-48 overflow-y-auto">
                     {count === 0 && (
-                      <div className="text-sm text-slate-500">No reviews yet.</div>
+                      <div className="text-sm text-slate-500">
+                        No reviews yet.
+                      </div>
                     )}
 
                     {reviews.map((r, i) => (
                       <div key={i} className="p-3 bg-slate-50 rounded">
                         <div className="flex items-center justify-between">
-                          <div className="font-semibold">{r.authorDisplay || r.author}</div>
-                          <div className="text-sm text-slate-500">{r.date || ''}</div>
+                          <div className="font-semibold">
+                            {r.authorDisplay || r.author}
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            {r.date || ""}
+                          </div>
                         </div>
-                        <div className="text-xs text-amber-500 mt-1">{'★'.repeat(r.rating || 0) + '☆'.repeat(5 - (r.rating || 0))}</div>
-                        <div className="mt-2 text-sm text-slate-700">{r.text}</div>
+                        <div className="text-xs text-amber-500 mt-1">
+                          {"★".repeat(r.rating || 0) +
+                            "☆".repeat(5 - (r.rating || 0))}
+                        </div>
+                        <div className="mt-2 text-sm text-slate-700">
+                          {r.text}
+                        </div>
                       </div>
                     ))}
                   </div>
