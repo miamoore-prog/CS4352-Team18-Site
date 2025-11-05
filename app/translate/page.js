@@ -1,4 +1,4 @@
-"use client"; // <-- This line is crucial for Next.js App Router (enables client-side only)
+"use client"; // <-- crucial for Next.js App Router for the user interaction
 
 import { useEffect, useState } from "react";
 
@@ -6,7 +6,7 @@ export default function TranslateButton() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Avoid SSR issues — only run in browser
+    
     if (typeof window === "undefined") return;
 
     // If Google Translate script not yet added, add it
@@ -19,7 +19,7 @@ export default function TranslateButton() {
       document.body.appendChild(script);
     }
 
-    // Define callback globally before the script loads
+    
     window.googleTranslateElementInit = () => {
       if (window.google?.translate) {
         new window.google.translate.TranslateElement(
@@ -50,7 +50,7 @@ export default function TranslateButton() {
       {/* Hidden Google container (used internally by the script) */}
       <div id="google_translate_element" style={{ display: "none" }}></div>
 
-      {/* Your own buttons */}
+      {/* the main language buttons */}
       <div className="flex gap-2">
         <button
           onClick={() => handleTranslate("zh-CN")}
