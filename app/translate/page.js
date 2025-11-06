@@ -1,38 +1,27 @@
-"use client"; 
-
-
-<h1>
-
-    Click on the language you want to read in!
-</h1>
-
-
-
-
-
-
-
+"use client";
 import { useEffect, useState } from "react";
+import Script from "next/script";
 
-export default function TranslateButton() {
+export default function Page() {
+  return (
+    <main className="p-8">
+      <h1>Click on the language you understand</h1>
+      <p>
+        Click on the language you can read in! Below we have a few buttons you can choose,
+        but there are more languages available in the dropdown once you click a button.
+      </p>
+      <TranslateWidget />
+    </main>
+  );
+}
+
+function TranslateWidget() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     
-    if (typeof window === "undefined") return;
-
-    // If Google Translate script not yet added, add it
-    if (!document.querySelector("#google-translate-script")) {
-      const script = document.createElement("script");
-      script.id = "google-translate-script";
-      script.src =
-        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-
-    
     window.googleTranslateElementInit = () => {
+      console.log("Google Translate Successful");
       if (window.google?.translate) {
         new window.google.translate.TranslateElement(
           {
@@ -58,12 +47,20 @@ export default function TranslateButton() {
   };
 
   return (
-    <div>
-      {/* Hidden Google container (used internally by the script) */}
+    <div className="p-4 bg-gray-100 rounded-md inline-block">
+      {/*  Google Translate script loaded here safely */}
+      <Script
+        id="google-translate-script"
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        strategy="afterInteractive"
+      />
+
+      <h2 className="text-lg font-semibold mb-2">Translate Page:</h2>
+
+      {/* Hidden container required for Google widget */}
       <div id="google_translate_element" style={{ display: "none" }}></div>
 
-      {/* the main language buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap mt-2">
         <button
           onClick={() => handleTranslate("zh-CN")}
           disabled={!ready}
@@ -85,27 +82,11 @@ export default function TranslateButton() {
         >
           English
         </button>
-
-        <button
-          onClick={() => handleTranslate("ja")}
-          disabled={!ready}
-          className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-        >
-          Spanish
-        </button>
-
-        <button
-          onClick={() => handleTranslate("fr")}
-          disabled={!ready}
-          className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
-        >
-          Youruba
-        </button>
-
-
-
-
       </div>
     </div>
   );
 }
+
+
+
+
