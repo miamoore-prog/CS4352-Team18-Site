@@ -1,0 +1,18 @@
+{
+  "id": "jasper",
+  "name": "Jasper AI",
+  "logo": "/logos/jasper.webp",
+  "about": "A marketing-focused writing assistant that helps generate ads, blogs, and social media content.",
+  "tags": ["writing", "marketing", "content creation"],
+  "intents": ["writing", "marketing", "automation"],
+  "primary_intent": "content generation",
+  "keywords": ["content", "ads", "blog", "marketing", "write"],
+  "summary": "Create high-quality marketing content in minutes.",
+  "details": "Jasper helps marketers and content creators produce engaging, SEO-friendly copy for blogs, websites, and campaigns — powered by AI templates and tones.",
+  "howTo": [
+    "Open Jasper and choose a content template (e.g., blog post).",
+    "Add keywords, tone, and a short product description.",
+    "Generate and edit the draft in Jasper’s editor.",
+    "Export or copy your finished content."
+  ]
+}

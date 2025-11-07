@@ -1,0 +1,18 @@
+{
+  "id": "perplexity",
+  "name": "Perplexity AI",
+  "logo": "/logos/perplexity.webp",
+  "about": "An AI-powered research assistant that answers complex questions with concise, cited information.",
+  "tags": ["search", "research", "assistant"],
+  "intents": ["research", "learning", "assistant"],
+  "primary_intent": "research",
+  "keywords": ["answers", "sources", "research", "ask", "find"],
+  "summary": "Find accurate answers fast, with reliable citations.",
+  "details": "Perplexity combines search and large language models to deliver accurate, cited answers in real time. It helps users quickly understand complex topics using trustworthy sources.",
+  "howTo": [
+    "Type a question into the Perplexity search bar.",
+    "Review the concise answer and view the cited sources.",
+    "Click a citation to read more from the original source.",
+    "Use follow-up questions to refine your research."
+  ]
+}

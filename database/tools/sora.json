@@ -1,0 +1,18 @@
+{
+  "id": "sora",
+  "name": "OpenAI Sora",
+  "logo": "/logos/sora.webp",
+  "about": "A cutting-edge AI model by OpenAI that generates realistic videos from text prompts.",
+  "tags": ["video", "creative", "AI"],
+  "intents": ["video creation", "storytelling", "cinematics"],
+  "primary_intent": "video generation",
+  "keywords": ["video", "film", "scene", "animation", "render"],
+  "summary": "Describe a scene — watch it come to life as a video.",
+  "details": "Sora is OpenAI’s advanced model that brings text descriptions to life as high-fidelity video. It’s designed for storytelling, concept art, and creative filmmaking.",
+  "howTo": [
+    "Provide a text prompt describing the desired video.",
+    "Adjust parameters for style, motion, and framing.",
+    "Render your generated video clip.",
+    "Use the output for concept visualization or storytelling."
+  ]
+}

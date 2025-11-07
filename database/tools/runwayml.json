@@ -1,0 +1,18 @@
+{
+  "id": "runwayml",
+  "name": "Runway ML",
+  "logo": "/logos/runwayml.webp",
+  "about": "An AI-powered video editing tool that lets you generate and edit videos with simple prompts.",
+  "tags": ["video", "editing", "creative"],
+  "intents": ["video editing", "creation", "AI video"],
+  "primary_intent": "video editing",
+  "keywords": ["video", "edit", "generate", "film", "animation"],
+  "summary": "Create or edit videos with AI in minutes, not hours.",
+  "details": "Runway ML combines AI and creativity to transform how videos are produced. You can remove backgrounds, generate scenes, and edit videos instantly with text commands.",
+  "howTo": [
+    "Upload or generate your video in Runway.",
+    "Use tools like 'Remove Background' or 'Text to Video'.",
+    "Fine-tune lighting, color, and motion automatically.",
+    "Export and share your polished video content."
+  ]
+}
