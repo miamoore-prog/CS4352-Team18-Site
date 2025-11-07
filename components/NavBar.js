@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui";
 import LanguageIcon from "./LanguageIcon";
+import GoogleTranslate from "./GoogleTranslate";
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
+  const [showTranslate, setShowTranslate] = useState(false);
   const pathname = usePathname();
+  const translateRef = useRef(null); // ref for dropdown area
 
   useEffect(() => {
     function read() {
@@ -21,30 +24,47 @@ export default function NavBar() {
       }
     }
 
-    // initial read
     read();
 
-    // react to storage changes from other tabs/windows
     function onStorage(e) {
       if (e.key === "mock_auth") read();
     }
     window.addEventListener("storage", onStorage);
-
-    // cleanup
     return () => {
       window.removeEventListener("storage", onStorage);
     };
   }, [pathname]);
 
+  // Close the dropdown if clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        translateRef.current &&
+        !translateRef.current.contains(event.target)
+      ) {
+        setShowTranslate(false);
+      }
+    }
+
+    if (showTranslate) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTranslate]);
+
   function logout() {
     localStorage.removeItem("mock_auth");
     setUser(null);
-    // reload to reflect state
     window.location.href = "/";
   }
 
   return (
-    <nav className="mb-6">
+    <nav className="mb-6 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/">
@@ -83,7 +103,7 @@ export default function NavBar() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 relative" ref={translateRef}>
           <div>
             {user ? (
               <div className="flex items-center space-x-3">
@@ -99,7 +119,16 @@ export default function NavBar() {
             )}
           </div>
 
-          <LanguageIcon />
+          {/* Globe icon that toggles the translator */}
+          <div
+            onClick={() => setShowTranslate(!showTranslate)}
+            className="p-1 hover:scale-105 transition-transform"
+          >
+            <LanguageIcon />
+          </div>
+
+          {/* Conditional Google Translate dropdown */}
+          <GoogleTranslate visible={showTranslate} />
         </div>
       </div>
     </nav>
