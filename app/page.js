@@ -1,7 +1,11 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+
 import CarouselCard from "../components/CarouselCard";
 
 import SearchBar from "../components/SearchBar";
@@ -13,15 +17,17 @@ export default function Home() {
 
   useEffect(() => {
     let mounted = true;
-    fetch('/api/tools')
+    fetch("/api/tools")
       .then((r) => r.json())
       .then((data) => {
         if (!mounted) return;
         if (Array.isArray(data)) setTools(data.slice(0, 6));
-        else if (Array.isArray(data.tools)) setTools(data.tools.slice(0,6));
+        else if (Array.isArray(data.tools)) setTools(data.tools.slice(0, 6));
       })
       .catch(() => {});
-    return () => { mounted = false };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   function onSearch(q) {
@@ -37,18 +43,21 @@ export default function Home() {
           AI Doesn't Have to Be Complicated.
         </h2>
         <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          We simplify the AI world for working professionals. Find the right tools, 
-          understand how they fit your job, and see how others like you are using them every day.
+          We simplify the AI world for working professionals. Find the right
+          tools, understand how they fit your job, and see how others like you
+          are using them every day.
         </p>
       </section>
 
       {/* Search Bar Section */}
       <section className="card p-6">
-        <SearchBar
-          value={query}
-          onChange={(v) => setQuery(v)}
-          onSearch={() => onSearch(query)}
-        />
+        <Suspense fallback={<div>Loading tools...</div>}>
+          <SearchBar
+            value={query}
+            onChange={(v) => setQuery(v)}
+            onSearch={() => onSearch(query)}
+          />
+        </Suspense>
       </section>
 
       {/* Carousel Section */}
