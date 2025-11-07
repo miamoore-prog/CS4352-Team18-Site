@@ -1,0 +1,18 @@
+{
+  "id": "copilot",
+  "name": "GitHub Copilot",
+  "logo": "/logos/copilot.webp",
+  "about": "An AI pair programmer that suggests code completions, functions, and documentation as you type.",
+  "tags": ["coding", "developer", "productivity"],
+  "intents": ["development", "automation", "assistant"],
+  "primary_intent": "coding assistance",
+  "keywords": ["code", "developer", "autocomplete", "suggest", "IDE"],
+  "summary": "Code faster and smarter with an AI assistant in your IDE.",
+  "details": "GitHub Copilot integrates directly with editors like VS Code, using OpenAI’s Codex model to autocomplete code and generate functions in real time.",
+  "howTo": [
+    "Install the GitHub Copilot extension in VS Code.",
+    "Log in with your GitHub account and enable Copilot.",
+    "Start typing — suggestions will appear automatically.",
+    "Accept or modify AI-generated code to fit your needs."
+  ]
+}

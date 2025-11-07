@@ -1,0 +1,18 @@
+{
+  "id": "pika",
+  "name": "Pika Labs",
+  "logo": "/logos/pika.webp",
+  "about": "An AI-powered video generator that transforms text prompts into short, cinematic video clips.",
+  "tags": ["video", "animation", "creative"],
+  "intents": ["video generation", "storytelling", "creative"],
+  "primary_intent": "video generation",
+  "keywords": ["video", "generate", "animation", "scene", "story"],
+  "summary": "Create cinematic video clips from text in seconds.",
+  "details": "Pika Labs enables creators to produce short videos directly from text descriptions. It supports editing, character motion, and camera control.",
+  "howTo": [
+    "Log into Pika Labs and start a new project.",
+    "Type a prompt like 'a spaceship flying through neon clouds'.",
+    "Preview and tweak the generated video clip.",
+    "Export your video for sharing or further editing."
+  ]
+}

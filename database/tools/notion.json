@@ -1,0 +1,18 @@
+{
+  "id": "notion-ai",
+  "name": "Notion AI",
+  "logo": "/logos/notion.webp",
+  "about": "An AI-powered writing assistant built into Notion to help you brainstorm, summarize, and edit ideas quickly.",
+  "tags": ["writing", "productivity", "organization"],
+  "intents": ["writing", "planning", "summarizing"],
+  "primary_intent": "writing",
+  "keywords": ["notes", "summarize", "write", "organize", "plan"],
+  "summary": "Boost your productivity with smart writing assistance inside Notion.",
+  "details": "Notion AI enhances your workflow by writing, summarizing, and brainstorming directly within your workspace. It saves time while keeping your writing clean and structured.",
+  "howTo": [
+    "Open a Notion page and activate Notion AI.",
+    "Choose a writing task like 'Summarize' or 'Brainstorm ideas.'",
+    "Edit or expand the generated content as needed.",
+    "Integrate your final version into your Notion workspace."
+  ]
+}

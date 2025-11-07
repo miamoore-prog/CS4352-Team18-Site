@@ -1,0 +1,18 @@
+{
+  "id": "grammarly",
+  "name": "Grammarly AI",
+  "logo": "/logos/grammarly.webp",
+  "about": "An intelligent writing assistant that improves grammar, tone, and clarity using AI feedback.",
+  "tags": ["writing", "editing", "grammar"],
+  "intents": ["editing", "communication", "productivity"],
+  "primary_intent": "proofreading",
+  "keywords": ["grammar", "tone", "clarity", "edit", "proofread"],
+  "summary": "Polish your writing with AI-powered grammar and tone suggestions.",
+  "details": "Grammarly AI refines your writing in real time, offering corrections, tone adjustments, and suggestions to enhance clarity and professionalism.",
+  "howTo": [
+    "Install Grammarly in your browser or as a desktop app.",
+    "Write or paste your text into the editor.",
+    "Review AI-suggested edits for grammar, clarity, and tone.",
+    "Apply recommendations to finalize your text."
+  ]
+}
