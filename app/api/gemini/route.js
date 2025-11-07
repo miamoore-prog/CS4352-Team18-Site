@@ -71,7 +71,24 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
         "for teaching",
         "for students",
         "in classroom",
-        "ai assistant"
+        "ai assistant",
+        "for school",
+        "homework help",
+        "study aid",
+        "ai tutor",
+        "ai tutoring",
+        "ai education",
+        "ai learning",
+        "ai art",
+        "ai image",
+        "ai music",
+        "ai video",
+        "for work",
+        "for business",
+        "productivity tools",
+        "email writing",
+        "workflow automation",
+        "scheduling",
       ];
       
       let foundPhrases = keyPhrases.filter(phrase => q_lower.includes(phrase));
@@ -141,6 +158,21 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "message",
           "draft",
           "letter",
+          "story",
+          "article",
+          "edit",
+          "proofread",
+          "blog",
+          "document",
+          "report",
+          "documentation",
+          "essay",
+          "paper",
+          "paragraph",
+          "grammar",
+          "rewrite",
+          "summarize",
+          "summary",
         ],
         image: [
           "image",
@@ -157,6 +189,17 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "ai art",
           "artwork",
           "graphics",
+          "logo",
+          "sketch",
+          "drawing",
+          "digital art",
+          "painting",
+          "visual",
+          "illustration",
+          "illustrate",
+          "photography",
+          "photo editing",
+          "picture editing",
         ],
         automation: [
           "automate",
@@ -165,9 +208,20 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "zap",
           "integrate",
           "integration",
+          "bot",
+          "robot",
+          "script",
+          "task",
+          "process",
+          "process automation",
+          "if this then that",
+          "trigger",
+          "action",
         ],
-        video: ["video", "filming", "videos", "record", "videoing", "recording", "edit", "editing", "clip", "footage"],
-        coding: ["code", "coding", "debug", "program"],
+        video: ["video", "filming", "videos", "record", "videoing", "recording", "edit", "editing", "clip", "footage", "movie", "animation", "record", "clip", "rendering", 
+          "shorts", "footage", "motion", "motion picture", "animation", "record", "videography", "videoing", "cinematography"
+        ],
+        coding: ["code", "coding", "debug", "program", "debugging", "developing", "software", "build", "application", "script", "coding language", "function", "procedure", "full stack", "backend", "frontend"],
         research: [
           "research",
           "summarize",
@@ -180,6 +234,27 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "understand",
           "comprehend",
           "learn",
+          "comprehend",
+          "investigate",
+          "explore",
+          "gather",
+          "information",
+          "data",
+          "facts",
+          "figures",
+          "statistics",
+          "insights",
+          "knowledge",
+          "paper",
+          "article",
+          "source",
+          "citation",
+          "reference",
+          "bibliography",
+          "literature",
+          "survey",
+          "notes",
+          "review",
         ],
         education: [
           "teach",
@@ -201,6 +276,25 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
           "homework",
           "practice",
           "exercises",
+          "lesson plan",
+          "curriculum",
+          "syllabus",
+          "practice problems",
+          "interactive learning",
+          "educational games",
+          "flashcards",
+          "educational videos",
+          "e-learning",
+          "online course",
+          "virtual classroom",
+          "note taking",
+          "tutoring",
+          "test prep",
+          "exam preparation",
+          "learning tools",
+          "study aids",
+          "academic support",
+          "learning resources",
         ],
       };
       for (const intent of Object.keys(map)) {
@@ -234,6 +328,40 @@ Respond ONLY with the JSON array and nothing else. If no catalog items match the
       return new Response(JSON.stringify(matched), { status: 200 });
     }
 
+// If no intent confidently detected, run keyword scoring before Gemini
+// Quick keyword-based matching (runs before Gemini for fast results)
+const qLower = query.toLowerCase();
+const queryWords = qLower.split(/[^\w]+/).filter(Boolean);
+
+const quickMatches = toolsData
+  .map((tool) => {
+    const text = [
+      tool.name,
+      tool.about,
+      tool.summary,
+      (tool.tags || []).join(" "),
+      (tool.keywords || []).join(" "),
+      tool.details || ""
+    ].join(" ").toLowerCase();
+
+    let score = 0;
+    for (const word of queryWords) {
+      if (text.includes(word)) score += 1;
+      else if (word.endsWith("s") && text.includes(word.slice(0, -1))) score += 0.5;
+      else if (word.endsWith("ing") && text.includes(word.slice(0, -3))) score += 0.5;
+    }
+
+    return { id: tool.id, name: tool.name, score, summary: tool.summary, tags: tool.tags };
+  })
+  .filter((t) => t.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 6);
+
+// If local keyword matches found, return them immediately
+if (quickMatches.length > 0) {
+  return new Response(JSON.stringify(quickMatches), { status: 200 });
+}
+    // Only now use Gemini if local logic found nothing suitable
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       // no API key configured
