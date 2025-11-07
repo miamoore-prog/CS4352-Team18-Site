@@ -1,0 +1,139 @@
+[
+  {
+    "id": "chatgpt",
+    "name": "ChatGPT",
+    "logo": "/logos/chatgpt.webp",
+    "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
+    "tags": ["chat", "writing", "coding", "assistant"],
+    "intents": ["writing", "coding", "assistant"],
+    "primary_intent": "writing",
+    "keywords": ["email", "draft", "summarize", "write", "brainstorm"],
+    "summary": "Ask questions, get drafts, and debug code quickly.",
+    "details": "ChatGPT provides versatile conversational capabilities. It can help you write emails, summarize documents, generate code snippets, and more.",
+    "howTo": [
+      "Open ChatGPT and type a clear question or request.",
+      "Provide context or examples if you want a tailored answer.",
+      "Review and edit the response; ask follow-up questions to refine output.",
+      "When using code snippets, test them in your environment and request clarifications if needed."
+    ]
+  },
+  {
+    "id": "claude",
+    "name": "Anthropic Claude",
+    "logo": "/logos/claude.webp",
+    "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
+    "tags": ["chat", "research", "summaries"],
+    "intents": ["writing", "research", "assistant"],
+    "primary_intent": "writing",
+    "keywords": ["summarize", "notes", "explain", "email", "draft"],
+    "summary": "Good for research, note-taking and clarifying complex topics.",
+    "details": "Claude is designed to be helpful and to provide reasoned answers. It's useful for long-form analysis and summarization.",
+    "howTo": [
+      "Start a conversation with your topic or paste the material to summarize.",
+      "Ask Claude for bullet summaries, highlights, or a plain-language explanation.",
+      "Use follow-ups to get more detail or examples."
+    ]
+  },
+  {
+    "id": "midjourney",
+    "name": "Midjourney",
+    "logo": "/logos/midjourney.webp",
+    "about": "An image-generation tool that turns text prompts into high-quality artwork.",
+    "tags": ["image", "art", "design"],
+    "intents": ["image", "design"],
+    "primary_intent": "image",
+    "keywords": ["image", "art", "illustration", "prompt", "visual"],
+    "summary": "Create concept art, social images, and visual ideas from short prompts.",
+    "details": "Midjourney specializes in creative image outputs. Use concise prompts and tweak style words to refine results.",
+    "howTo": [
+      "Write a short descriptive prompt (subject, style, colors).",
+      "Select an aspect ratio or style if the tool supports it.",
+      "Generate, then iterate by adding or removing adjectives to refine the image."
+    ]
+  },
+  {
+    "id": "dalle",
+    "name": "DALL·E",
+    "logo": "/logos/dalle.webp",
+    "about": "A fast image generator by OpenAI for photorealistic or stylized images from text.",
+    "tags": ["image", "photorealism", "illustration"],
+    "intents": ["image", "photorealism"],
+    "primary_intent": "image",
+    "keywords": ["image", "photorealistic", "illustration", "visual", "prompt"],
+    "summary": "Quickly make visuals for presentations, mockups, or social posts.",
+    "details": "DALL·E can generate diverse imagery. Be specific with backgrounds, lighting, and subjects for consistent outputs.",
+    "howTo": [
+      "Type the scene you want in simple sentences.",
+      "Add style cues like 'photorealistic' or 'watercolor'.",
+      "Pick the best result and download or refine with extra prompts."
+    ]
+  },
+  {
+    "id": "zapier",
+    "name": "Zapier",
+    "logo": "/logos/zapier.webp",
+    "about": "Automation platform that connects apps and automates repetitive tasks without code.",
+    "tags": ["automation", "workflow", "integrations"],
+    "intents": ["automation", "integrations"],
+    "primary_intent": "automation",
+    "keywords": ["automate", "workflow", "integration", "trigger", "zap"],
+    "summary": "Automate copying data, notifications, and routine tasks across apps.",
+    "details": "Zapier links web apps and runs simple automations called Zaps. It's approachable for non-technical users.",
+    "howTo": [
+      "Pick a trigger (e.g., new Gmail message).",
+      "Choose the action app (e.g., save to Google Sheets).",
+      "Test the Zap and turn it on to run automatically."
+    ]
+  },
+  {
+    "id": "runway",
+    "name": "Runway",
+    "logo": "/logos/runway.webp",
+    "about": "A suite for creators with AI-powered video, image and audio tools.",
+    "tags": ["video", "editing", "creative"],
+    "intents": ["video", "editing"],
+    "primary_intent": "video",
+    "keywords": ["video", "edit", "background removal", "text-to-video"],
+    "summary": "Edit video, remove backgrounds, and generate content with simple controls.",
+    "details": "Runway helps creators speed up editing workflows with AI features like background removal and text-to-video generation.",
+    "howTo": [
+      "Upload your footage or image.",
+      "Select an AI tool (e.g., background remove or color grade).",
+      "Apply settings and export the result."
+    ]
+  },
+  {
+    "id": "magicschool",
+    "name": "MagicSchool AI",
+    "logo": "/logos/magicschool.webp",
+    "about": "An AI-powered tutoring assistant that helps students learn concepts step-by-step and practice with targeted exercises.",
+    "tags": ["education", "tutoring", "learning", "explain"],
+    "intents": ["research", "writing", "education"],
+    "primary_intent": "education",
+    "keywords": ["tutor", "practice", "explain", "homework"],
+    "summary": "Get guided explanations, practice problems, and personalized study plans for many school subjects.",
+    "details": "MagicSchool AI provides interactive, curriculum-aligned explanations and exercises. It adapts to a student's level, generates practice questions, and offers hints and step-by-step solutions to reinforce understanding.",
+    "howTo": [
+      "Enter the topic or problem you want to study.",
+      "Pick a difficulty level and choose whether you want an explanation or practice set.",
+      "Work through problems and use hints or request step-by-step solutions when stuck."
+    ]
+  },
+  {
+    "id": "curipod",
+    "name": "Curipod",
+    "logo": "/logos/curipod.webp",
+    "about": "A tool for teachers to create interactive lessons, quizzes, and formative assessments that engage students.",
+    "tags": ["education", "lessons", "interactive", "assessment"],
+    "intents": ["education", "research"],
+    "primary_intent": "education",
+    "keywords": ["quiz", "poll", "lesson", "assessment"],
+    "summary": "Create quick interactive activities and assessments for students with built-in analytics.",
+    "details": "Curipod makes it easy to build interactive slides, polls, and quizzes that students can respond to in real time. Teachers can collect responses, view analytics, and adapt instruction based on student understanding.",
+    "howTo": [
+      "Create a new Curipod and add interactive slides or questions.",
+      "Share the join link or code with students during class.",
+      "Review responses and analytics to inform next steps."
+    ]
+  }
+]

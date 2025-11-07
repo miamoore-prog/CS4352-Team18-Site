@@ -1,6 +1,9 @@
 // Server route for /api/gemini
 // Note: Next.js app route handlers should not use the "use server" directive.
-import toolsData from "../../../data/tools.json";
+import fs from 'fs'
+import path from 'path'
+
+const TOOLS_DIR = path.resolve(process.cwd(), 'database', 'tools')
 import { GoogleGenAI } from "@google/genai";
 
 // POST /api/gemini
@@ -11,6 +14,24 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "missing query" }), {
         status: 400,
       });
+    }
+
+    // Load tools from database/tools folder and build a short tools catalog to provide context to the model.
+    let toolsFiles = []
+    try {
+      toolsFiles = fs.readdirSync(TOOLS_DIR).filter((f) => f.endsWith('.json'))
+    } catch (e) {
+      toolsFiles = []
+    }
+
+    const toolsData = []
+    for (const f of toolsFiles) {
+      try {
+        const raw = fs.readFileSync(path.join(TOOLS_DIR, f), 'utf8')
+        toolsData.push(JSON.parse(raw))
+      } catch (e) {
+        // ignore broken file
+      }
     }
 
     // Build a short tools catalog to provide context to the model. Include explicit 'intents' and 'keywords' so the model can match semantics.

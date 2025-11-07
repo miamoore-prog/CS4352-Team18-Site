@@ -1,0 +1,9 @@
+{
+  "id": "user5",
+  "username": "ellen",
+  "password": "test",
+  "displayName": "Ellen Page",
+  "bookmarks": ["claude"],
+  "reviews": [],
+  "threads": []
+}
