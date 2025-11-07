@@ -1,0 +1,18 @@
+{
+  "id": "cody",
+  "name": "Cody AI",
+  "logo": "/logos/cody.webp",
+  "about": "An AI code assistant built by Sourcegraph that answers questions about your codebase and automates development tasks.",
+  "tags": ["coding", "AI assistant", "developer tools"],
+  "intents": ["code understanding", "automation", "productivity"],
+  "primary_intent": "code explanation",
+  "keywords": ["code", "explain", "repository", "search", "automation"],
+  "summary": "Ask questions about your codebase and get precise answers.",
+  "details": "Cody AI understands your code contextually, making it easier to debug, explain logic, and generate boilerplate code. It integrates seamlessly with enterprise repositories.",
+  "howTo": [
+    "Install Cody in your IDE or Sourcegraph instance.",
+    "Connect it to your code repository.",
+    "Ask questions like 'Where is the login API defined?'.",
+    "Review Cody’s detailed, contextual explanation."
+  ]
+}

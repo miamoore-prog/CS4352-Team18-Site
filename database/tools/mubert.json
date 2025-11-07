@@ -1,0 +1,18 @@
+{
+  "id": "mubert",
+  "name": "Mubert",
+  "logo": "/logos/mubert.webp",
+  "about": "An AI music generator that creates royalty-free soundtracks for videos, podcasts, and creative projects.",
+  "tags": ["music", "soundtrack", "creator"],
+  "intents": ["music generation", "sound design", "production"],
+  "primary_intent": "soundtrack generation",
+  "keywords": ["music", "background", "track", "audio", "loop"],
+  "summary": "Generate royalty-free background music for your content.",
+  "details": "Mubert helps creators produce endless music streams tailored to mood, genre, or energy level — perfect for YouTube, podcasts, and apps.",
+  "howTo": [
+    "Create a Mubert account and open the generator.",
+    "Choose your genre, tempo, and mood settings.",
+    "Download loops or full-length tracks for your content.",
+    "Use tracks freely with Mubert’s creator license."
+  ]
+}

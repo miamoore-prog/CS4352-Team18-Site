@@ -1,0 +1,18 @@
+{
+  "id": "suno",
+  "name": "Suno AI",
+  "logo": "/logos/suno.webp",
+  "about": "An AI platform that turns text prompts into full-length songs with vocals, lyrics, and instrumentation.",
+  "tags": ["music", "audio", "songwriting"],
+  "intents": ["music generation", "composition", "creative"],
+  "primary_intent": "music generation",
+  "keywords": ["music", "lyrics", "create", "audio", "sing"],
+  "summary": "Generate complete songs instantly using text prompts.",
+  "details": "Suno AI enables anyone to create professional-quality music by simply describing the sound they want. It handles composition, lyrics, vocals, and mixing automatically.",
+  "howTo": [
+    "Go to Suno’s website and sign in.",
+    "Type a description like 'a chill pop song about friendship'.",
+    "Wait for the AI to compose and sing your song.",
+    "Download or remix the generated track."
+  ]
+}
