@@ -48,7 +48,9 @@ export default function NavBar() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/">
-            <span className="text-lg font-semibold text-slate-800">AI Compass</span>
+            <span className="text-lg font-semibold text-slate-800">
+              AI Compass
+            </span>
           </Link>
 
           <div className="hidden sm:flex items-center space-x-2">
@@ -67,26 +69,6 @@ export default function NavBar() {
                 About
               </Button>
             </Link>
-<<<<<<< HEAD
-              <Link href="/login">
-              <Button variant="ghost" className="text-sm">
-                Login
-              </Button>
-            </Link>
-
-            <Link href="/translate">
-              <Button variant="ghost" className="text-sm">
-              
-                Translate | 翻译 | Dịch | Traducir | Tumọ
-                
-              </Button>
-            </Link>
-
-
-
-
-=======
->>>>>>> origin/main
           </div>
         </div>
 
