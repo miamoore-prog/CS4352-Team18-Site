@@ -33,11 +33,12 @@ export default function CommunityPage() {
   const [currentUser, setCurrentUser] = useState(null);
 
   const [sort, setSort] = useState("recent");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
     author: "",
-    rating: 5,
     text: "",
   });
   // keywords and composer tag input removed from compose UI
@@ -110,6 +111,34 @@ export default function CommunityPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function performSearch(q) {
+    if (!q || !q.trim()) {
+      // empty search -> reload regular posts
+      fetchPosts();
+      return;
+    }
+    setSearching(true);
+    try {
+      const res = await fetch("/api/gemini-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q }),
+      });
+      if (!res.ok) {
+        // fallback to regular posts
+        fetchPosts();
+        return;
+      }
+      const data = await res.json();
+      setPosts(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error(e);
+      fetchPosts();
+    } finally {
+      setSearching(false);
     }
   }
 
@@ -197,7 +226,7 @@ export default function CommunityPage() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setForm({ title: "", author: "", rating: 5, text: "" });
+        setForm({ title: "", author: "", text: "" });
         setComposeTool(null);
         fetchPosts();
       }
@@ -284,6 +313,38 @@ export default function CommunityPage() {
           <div className="min-w-0 flex-1">
             <div className="text-sm text-slate-600">
               Showing: All posts{selectedTool ? ` • ${selectedTool}` : ""}
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                className="border rounded px-2 py-1 text-sm w-[20rem]"
+                placeholder="Describe your query in Natural Language"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    performSearch(searchQuery);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="px-3 py-1 bg-sky-600 text-white rounded text-sm"
+                onClick={() => performSearch(searchQuery)}
+                disabled={searching}
+              >
+                {searching ? "Searching..." : "Search"}
+              </button>
+              <button
+                type="button"
+                className="px-2 py-1 bg-slate-100 rounded text-sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  fetchPosts();
+                }}
+              >
+                Clear
+              </button>
             </div>
           </div>
         </div>
@@ -458,27 +519,7 @@ export default function CommunityPage() {
 
               {/* keywords removed from compose UI */}
 
-              {/* star rating control */}
-              <div className="flex gap-2 items-center">
-                <label className="text-sm">Rating</label>
-                <div className="flex items-center gap-1 ml-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-xl ${
-                        n <= (form.rating || 0)
-                          ? "text-amber-400"
-                          : "text-slate-300"
-                      }`}
-                      aria-label={`Set rating ${n}`}
-                    >
-                      {n <= (form.rating || 0) ? "★" : "☆"}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* rating removed from post compose UI */}
 
               <textarea
                 rows={5}
