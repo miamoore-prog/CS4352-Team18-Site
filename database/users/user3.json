@@ -9,9 +9,15 @@
     {
       "id": "t2",
       "title": "Image generation tips",
+      "createdAt": "2025-11-08T12:00:00.000Z",
       "posts": [
-        { "author": "charlie", "text": "Try adding style adjectives." }
-      ]
+        {
+          "author": "charlie",
+          "text": "Try adding style adjectives.",
+          "date": "2025-11-08T12:00:00.000Z"
+        }
+      ],
+      "likes": ["user1"]
     }
   ]
 }

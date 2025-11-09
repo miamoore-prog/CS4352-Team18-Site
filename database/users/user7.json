@@ -5,9 +5,25 @@
   "displayName": "Gina Torres",
   "bookmarks": ["midjourney", "runway"],
   "reviews": [
-    { "toolId": "midjourney", "rating": 5, "text": "Fantastic for concept art." }
+    {
+      "toolId": "midjourney",
+      "rating": 5,
+      "text": "Fantastic for concept art."
+    }
   ],
   "threads": [
-    { "id": "t4", "title": "Prompt styles", "posts": [{ "author": "gina", "text": "Share your favorite style prompts." }] }
+    {
+      "id": "t4",
+      "title": "Prompt styles",
+      "createdAt": "2025-11-05T10:00:00.000Z",
+      "posts": [
+        {
+          "author": "gina",
+          "text": "Share your favorite style prompts.",
+          "date": "2025-11-05T10:00:00.000Z"
+        }
+      ],
+      "likes": ["user8"]
+    }
   ]
 }
