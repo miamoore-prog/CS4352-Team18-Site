@@ -5,15 +5,43 @@
   "displayName": "Alice Cooper",
   "bookmarks": ["chatgpt", "dalle"],
   "reviews": [
-    { "toolId": "chatgpt", "rating": 5, "text": "Very helpful for drafts." }
+    {
+      "toolId": "chatgpt",
+      "rating": 5,
+      "text": "Very helpful for drafts."
+    }
   ],
   "threads": [
     {
       "id": "t1",
       "title": "Best prompts for email",
+      "createdAt": "2025-11-09T09:00:00.000Z",
       "posts": [
-        { "author": "alice", "text": "What's your favorite email prompt?" },
-        { "author": "bob", "text": "I like: 'Write a polite follow-up'" }
+        {
+          "author": "alice",
+          "text": "What's your favorite email prompt?",
+          "date": "2025-11-09T09:00:00.000Z"
+        },
+        {
+          "author": "bob",
+          "text": "I like: 'Write a polite follow-up'",
+          "date": "2025-11-09T09:15:00.000Z"
+        }
+      ],
+      "likes": ["user2", "user1"]
+    },
+    {
+      "id": "thread-1762714484960-673",
+      "title": "Chatgpt new version sucks, I really want the old version back",
+      "toolId": "chatgpt",
+      "keywords": [],
+      "createdAt": "2025-11-09T18:54:44.960Z",
+      "posts": [
+        {
+          "author": "alice",
+          "text": "Chatgpt old version really generate good responses. But in this new version with the auto-switching model. I feel like it lost its touch.",
+          "date": "2025-11-09T18:54:44.960Z"
+        }
       ]
     }
   ]

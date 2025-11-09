@@ -76,23 +76,39 @@ export default function NavBar() {
           <div className="hidden sm:flex items-center space-x-2">
             <Link href="/tools">
               <Button variant="ghost" className="text-sm">
-                Tools
+                Explore
               </Button>
             </Link>
-            <Link href="/community">
-              <Button variant="ghost" className="text-sm">
-                Community
-              </Button>
-            </Link>
+            {user && (
+              <Link href="/community">
+                <Button variant="ghost" className="text-sm">
+                  Community
+                </Button>
+              </Link>
+            )}
             <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
               </Button>
             </Link>
+            <Link href="/login">
+              <Button variant="ghost" className="text-sm">
+                Login
+              </Button>
+            </Link>
+
+            <Link href="/translate">
+              <Button variant="ghost" className="text-sm">
+                Translate | 翻译 | Dịch | Traducir | Tumọ
+              </Button>
+            </Link>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4 relative" ref={translateRef}>
+        <div
+          className="flex items-center space-x-4 relative"
+          ref={translateRef}
+        >
           <div>
             {user ? (
               <div className="flex items-center space-x-3">

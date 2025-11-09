@@ -5,5 +5,26 @@
   "displayName": "Ellen Page",
   "bookmarks": ["claude"],
   "reviews": [],
-  "threads": []
+  "threads": [
+    {
+      "id": "t6",
+      "title": "Claude vs ChatGPT: reasoning and chain-of-thought",
+      "toolId": "claude",
+      "keywords": ["reasoning", "benchmark", "evaluation"],
+      "createdAt": "2025-11-08T09:30:00.000Z",
+      "posts": [
+        {
+          "author": "ellen",
+          "text": "I've been stress-testing both Claude and ChatGPT on multi-step logic puzzles. Claude handles long context better in my tests.",
+          "date": "2025-11-08T09:30:00.000Z"
+        },
+        {
+          "author": "charlie",
+          "text": "Interesting — can you share an example prompt?",
+          "date": "2025-11-08T10:02:00.000Z"
+        }
+      ],
+      "likes": ["user3"]
+    }
+  ]
 }

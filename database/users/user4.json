@@ -8,6 +8,18 @@
     { "toolId": "runway", "rating": 4, "text": "Good for quick edits." }
   ],
   "threads": [
-    { "id": "t3", "title": "Video editing tips", "posts": [{ "author": "dana", "text": "How do you remove backgrounds?" }] }
+    {
+      "id": "t3",
+      "title": "Video editing tips",
+      "createdAt": "2025-11-07T16:30:00.000Z",
+      "posts": [
+        {
+          "author": "dana",
+          "text": "How do you remove backgrounds?",
+          "date": "2025-11-07T16:30:00.000Z"
+        }
+      ],
+      "likes": ["user6"]
+    }
   ]
 }
