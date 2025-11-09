@@ -9,6 +9,9 @@ import GoogleTranslate from "./GoogleTranslate";
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [bookmarkedTools, setBookmarkedTools] = useState([]);
+  const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTranslate, setShowTranslate] = useState(false);
   const pathname = usePathname();
   const translateRef = useRef(null); // ref for dropdown area
@@ -34,6 +37,76 @@ export default function NavBar() {
       window.removeEventListener("storage", onStorage);
     };
   }, [pathname]);
+
+  // derive user id for bookmark storage key
+  const getUserId = () => {
+    try {
+      const raw = localStorage.getItem("mock_auth");
+      if (!raw) return "anon";
+      const parsed = JSON.parse(raw);
+      return parsed.user?.id || "anon";
+    } catch (e) {
+      return "anon";
+    }
+  };
+
+  const bookmarksKey = () => `bookmarks:${getUserId()}`;
+
+  // load bookmarks for current user
+  useEffect(() => {
+    function readBookmarks() {
+      try {
+        const raw = localStorage.getItem(bookmarksKey());
+        const arr = raw ? JSON.parse(raw) : [];
+        setBookmarks(arr || []);
+      } catch (e) {
+        setBookmarks([]);
+      }
+    }
+    readBookmarks();
+    function onStorage(e) {
+      if (e.key === bookmarksKey()) {
+        try {
+          const arr = e.newValue ? JSON.parse(e.newValue) : [];
+          setBookmarks(arr || []);
+        } catch (err) {
+          setBookmarks([]);
+        }
+      }
+      if (e.key === "mock_auth") {
+        // user changed, reload bookmarks
+        readBookmarks();
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [pathname]);
+
+  // fetch tool metadata for bookmarked ids
+  useEffect(() => {
+    let mounted = true;
+    async function loadTools() {
+      if (!bookmarks || bookmarks.length === 0) {
+        setBookmarkedTools([]);
+        return;
+      }
+      try {
+        const res = await fetch("/api/tools");
+        if (!res.ok) return;
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : data.tools || [];
+        const picked = arr.filter((t) => bookmarks.includes(t.id));
+        if (!mounted) return;
+        setBookmarkedTools(picked);
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadTools();
+    return () => {
+      mounted = false;
+    };
+  }, [bookmarks]);
 
   // Close the dropdown if clicking outside
   useEffect(() => {
@@ -98,6 +171,46 @@ export default function NavBar() {
           className="flex items-center space-x-4 relative"
           ref={translateRef}
         >
+          {/* Bookmarks dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowBookmarks((v) => !v)}
+              className="px-2 py-1 rounded text-sm bg-slate-100"
+            >
+              Bookmarks{bookmarks.length ? ` (${bookmarks.length})` : ""}
+            </button>
+            {showBookmarks && (
+              <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg border rounded p-3 z-50">
+                <div className="font-semibold text-sm mb-2">
+                  Bookmarked tools
+                </div>
+                {bookmarkedTools.length === 0 ? (
+                  <div className="text-sm text-slate-500">
+                    No bookmarks yet.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {bookmarkedTools.map((t) => (
+                      <div
+                        key={t.id}
+                        className="flex items-center justify-between"
+                      >
+                        <Link
+                          href={`/tools/${t.id}`}
+                          onClick={() => setShowBookmarks(false)}
+                        >
+                          <div className="text-sm text-slate-700">{t.name}</div>
+                        </Link>
+                        <div className="text-xs text-slate-400">
+                          {t.tags?.slice(0, 2).join(", ")}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <div>
             {user ? (
               <div className="flex items-center space-x-3">
