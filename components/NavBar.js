@@ -91,17 +91,6 @@ export default function NavBar() {
                 About
               </Button>
             </Link>
-            <Link href="/login">
-              <Button variant="ghost" className="text-sm">
-                Login
-              </Button>
-            </Link>
-
-            <Link href="/translate">
-              <Button variant="ghost" className="text-sm">
-                Translate | 翻译 | Dịch | Traducir | Tumọ
-              </Button>
-            </Link>
           </div>
         </div>
 

@@ -130,11 +130,13 @@ export async function GET(req) {
   if (sort === "liked") {
     // threads may not have explicit likes; fall back to comment count as proxy
     results.sort((a, b) => {
-      const likesA = a.likes || 0;
-      const likesB = b.likes || 0;
+      // ensure we compare numeric like counts (likes stored as arrays)
+      const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
+      const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
       if (likesB !== likesA) return likesB - likesA;
-      const ca = Array.isArray(a.posts) ? a.posts.length - 1 : 0;
-      const cb = Array.isArray(b.posts) ? b.posts.length - 1 : 0;
+      // fall back to comment count (posts length - 1 for replies)
+      const ca = Array.isArray(a.posts) ? Math.max(0, a.posts.length - 1) : 0;
+      const cb = Array.isArray(b.posts) ? Math.max(0, b.posts.length - 1) : 0;
       return cb - ca;
     });
   }
