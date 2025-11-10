@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "./ui";
 import LanguageIcon from "./LanguageIcon";
 import GoogleTranslate from "./GoogleTranslate";
+import { BookOpen } from "lucide-react"; // Import for Articles icon
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
@@ -14,7 +15,7 @@ export default function NavBar() {
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTranslate, setShowTranslate] = useState(false);
   const pathname = usePathname();
-  const translateRef = useRef(null); // ref for dropdown area
+  const translateRef = useRef(null);
 
   useEffect(() => {
     function read() {
@@ -38,7 +39,6 @@ export default function NavBar() {
     };
   }, [pathname]);
 
-  // derive user id for bookmark storage key
   const getUserId = () => {
     try {
       const raw = localStorage.getItem("mock_auth");
@@ -52,7 +52,6 @@ export default function NavBar() {
 
   const bookmarksKey = () => `bookmarks:${getUserId()}`;
 
-  // load bookmarks for current user
   useEffect(() => {
     function readBookmarks() {
       try {
@@ -74,7 +73,6 @@ export default function NavBar() {
         }
       }
       if (e.key === "mock_auth") {
-        // user changed, reload bookmarks
         readBookmarks();
       }
     }
@@ -82,7 +80,6 @@ export default function NavBar() {
     return () => window.removeEventListener("storage", onStorage);
   }, [pathname]);
 
-  // fetch tool metadata for bookmarked ids
   useEffect(() => {
     let mounted = true;
     async function loadTools() {
@@ -108,7 +105,6 @@ export default function NavBar() {
     };
   }, [bookmarks]);
 
-  // Close the dropdown if clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -139,6 +135,7 @@ export default function NavBar() {
   return (
     <nav className="mb-6 relative">
       <div className="flex items-center justify-between">
+        {/* LEFT SECTION */}
         <div className="flex items-center space-x-4">
           <Link href="/">
             <span className="text-lg font-semibold text-slate-800">
@@ -152,6 +149,7 @@ export default function NavBar() {
                 Explore
               </Button>
             </Link>
+
             {user && (
               <Link href="/community">
                 <Button variant="ghost" className="text-sm">
@@ -159,14 +157,27 @@ export default function NavBar() {
                 </Button>
               </Link>
             )}
+
             <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About
               </Button>
             </Link>
+
+            {/* Articles Link with Icon */}
+            <Link href="/articles">
+              <Button
+                variant="ghost"
+                className="flex items-center space-x-1 text-sm"
+              >
+                <BookOpen size={16} />
+                <span>Articles</span>
+              </Button>
+            </Link>
           </div>
         </div>
 
+        {/* RIGHT SECTION */}
         <div
           className="flex items-center space-x-4 relative"
           ref={translateRef}
@@ -211,6 +222,7 @@ export default function NavBar() {
               </div>
             )}
           </div>
+
           <div>
             {user ? (
               <div className="flex items-center space-x-3">
@@ -226,7 +238,7 @@ export default function NavBar() {
             )}
           </div>
 
-          {/* Globe icon that toggles the translator */}
+          {/* Globe icon for translator */}
           <div
             onClick={() => setShowTranslate(!showTranslate)}
             className="p-1 hover:scale-105 transition-transform"
