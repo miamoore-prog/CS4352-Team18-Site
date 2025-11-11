@@ -6,16 +6,18 @@ import { usePathname } from "next/navigation";
 import { Button } from "./ui";
 import LanguageIcon from "./LanguageIcon";
 import GoogleTranslate from "./GoogleTranslate";
-import { BookOpen } from "lucide-react"; // Import for Articles icon
+import { BookOpen, Bookmark, ChevronDown } from "lucide-react"; // Import icons
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showRequests, setShowRequests] = useState(false);
   const [showTranslate, setShowTranslate] = useState(false);
   const pathname = usePathname();
   const translateRef = useRef(null);
+  const requestsRef = useRef(null);
 
   useEffect(() => {
     function read() {
@@ -126,6 +128,18 @@ export default function NavBar() {
     };
   }, [showTranslate]);
 
+  // close requests dropdown when clicking outside
+  useEffect(() => {
+    function onDoc(e) {
+      if (requestsRef.current && !requestsRef.current.contains(e.target)) {
+        setShowRequests(false);
+      }
+    }
+    if (showRequests) document.addEventListener("mousedown", onDoc);
+    else document.removeEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [showRequests]);
+
   function logout() {
     localStorage.removeItem("mock_auth");
     setUser(null);
@@ -150,7 +164,8 @@ export default function NavBar() {
               </Button>
             </Link>
 
-            {user && (
+            {/* Requests removed from left side — moved to right side near Bookmarks */}
+            {user && user.role !== "admin" && (
               <Link href="/community">
                 <Button variant="ghost" className="text-sm">
                   Community
@@ -170,7 +185,7 @@ export default function NavBar() {
                 variant="ghost"
                 className="flex items-center space-x-1 text-sm"
               >
-                <BookOpen size={16} />
+                {/* <BookOpen size={16} /> */}
                 <span>Articles</span>
               </Button>
             </Link>
@@ -186,9 +201,13 @@ export default function NavBar() {
           <div className="relative">
             <button
               onClick={() => setShowBookmarks((v) => !v)}
-              className="px-2 py-1 rounded text-sm bg-slate-100"
+              className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center"
+              aria-expanded={showBookmarks}
             >
-              Bookmarks{bookmarks.length ? ` (${bookmarks.length})` : ""}
+              <Bookmark size={16} className="mr-2" />
+              <span>
+                Bookmarks{bookmarks.length ? ` (${bookmarks.length})` : ""}
+              </span>
             </button>
             {showBookmarks && (
               <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg border rounded p-3 z-50">
@@ -219,6 +238,61 @@ export default function NavBar() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* Requests / Admin dropdown (click to open) placed next to bookmarks */}
+          <div className="relative ml-2" ref={requestsRef}>
+            <button
+              onClick={() => setShowRequests((v) => !v)}
+              className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center gap-2"
+              aria-expanded={showRequests}
+              aria-haspopup="menu"
+            >
+              <span>
+                {user && user.role === "admin" ? "Admin" : "Requests"}
+              </span>
+              <ChevronDown
+                size={14}
+                className={showRequests ? "transform rotate-180" : ""}
+              />
+            </button>
+            {showRequests && (
+              <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-md z-50">
+                <div className="flex flex-col">
+                  {user && user.role === "admin" ? (
+                    <>
+                      <Link
+                        href="/tools/admin"
+                        className="px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        Manage tools
+                      </Link>
+                      <Link
+                        href="/tools/requests/admin"
+                        className="px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        View requests
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/tools/request"
+                        className="px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        Request tool
+                      </Link>
+                      <Link
+                        href="/tools/requests"
+                        className="px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        My requests
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>
