@@ -3,7 +3,10 @@
   "username": "alice",
   "password": "test",
   "displayName": "Alice Cooper",
-  "bookmarks": ["chatgpt", "dalle"],
+  "bookmarks": [
+    "chatgpt",
+    "dalle"
+  ],
   "reviews": [
     {
       "toolId": "chatgpt",
@@ -28,7 +31,13 @@
           "date": "2025-11-09T09:15:00.000Z"
         }
       ],
-      "likes": ["user2", "user1"]
+      "likes": [
+        "user2",
+        "user1"
+      ],
+      "flagged": true,
+      "flaggedBy": "admin-1",
+      "flaggedAt": "2025-11-11T18:44:44.621Z"
     },
     {
       "id": "thread-1762714484960-673",
@@ -41,8 +50,21 @@
           "author": "alice",
           "text": "Chatgpt old version really generate good responses. But in this new version with the auto-switching model. I feel like it lost its touch.",
           "date": "2025-11-09T18:54:44.960Z"
+        },
+        {
+          "author": "admin-1",
+          "text": "can you elaborate?",
+          "date": "2025-11-11T18:55:18.046Z"
+        },
+        {
+          "author": "user1",
+          "text": "i tried it and i do not like it",
+          "date": "2025-11-11T18:55:42.838Z"
         }
-      ]
+      ],
+      "flagged": true,
+      "flaggedBy": "admin-1",
+      "flaggedAt": "2025-11-11T18:42:11.086Z"
     }
   ]
 }

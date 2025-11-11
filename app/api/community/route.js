@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { findUserById } from "../../../lib/mockAuth";
 
 const USERS_DIR = path.join(process.cwd(), "database", "users");
 
@@ -59,6 +60,8 @@ export async function GET(req) {
     const user = u.data;
     if (!user.threads) continue;
     for (const t of user.threads) {
+      // preserve flagged state if present
+      const flagged = t.flagged || false;
       const firstPost =
         Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
       const fallbackNow = new Date().toISOString();
@@ -76,6 +79,7 @@ export async function GET(req) {
         ownerId: user.id,
         ownerName: user.displayName || user.username,
         posts,
+        flagged,
         likes: Array.isArray(t.likes) ? t.likes : [],
         toolId: t.toolId || null,
         keywords: t.keywords || [],
@@ -99,6 +103,19 @@ export async function GET(req) {
 
   // apply filters
   let results = threads;
+  // filter out flagged threads for non-admins and non-owners
+  const reqUserId = req.headers.get("x-user-id") || null;
+  const requesterIsAdmin =
+    reqUserId &&
+    findUserById(reqUserId) &&
+    findUserById(reqUserId).role === "admin";
+  results = results.filter((r) => {
+    if (!r.flagged) return true;
+    // flagged: show only to admin or owner
+    if (requesterIsAdmin) return true;
+    if (reqUserId && r.ownerId === reqUserId) return true;
+    return false;
+  });
   if (filterTool) {
     results = results.filter((r) => r.toolId === filterTool);
   }
@@ -184,6 +201,7 @@ export async function POST(req) {
             date: now,
           },
         ],
+        flagged: false,
       };
       user.threads = user.threads || [];
       user.threads.push(thread);
@@ -260,6 +278,88 @@ export async function POST(req) {
               liked,
               likes: t.likes.length,
             }),
+            { status: 200 }
+          );
+        }
+      }
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
+    }
+
+    // admin-only: flag/unflag a thread
+    if (action === "flag") {
+      const threadId = body.threadId;
+      const flag = !!body.flag;
+      if (!threadId)
+        return new Response(JSON.stringify({ error: "missing threadId" }), {
+          status: 400,
+        });
+      const user = findUserById(userId);
+      if (!user || user.role !== "admin")
+        return new Response(JSON.stringify({ error: "unauthorized" }), {
+          status: 403,
+        });
+
+      const users = await readUsers();
+      for (const u of users) {
+        const obj = u.data;
+        if (!obj.threads) continue;
+        const t = obj.threads.find((x) => x.id === threadId);
+        if (t) {
+          t.flagged = flag;
+          t.flaggedBy = flag ? userId : undefined;
+          t.flaggedAt = flag ? new Date().toISOString() : undefined;
+          await writeUserFile(u.file, obj);
+          return new Response(
+            JSON.stringify({ ok: true, threadId, flagged: flag }),
+            { status: 200 }
+          );
+        }
+      }
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
+    }
+
+    // admin-only: delete a comment by index (mark deletedByAdmin)
+    if (action === "deleteComment") {
+      const threadId = body.threadId;
+      const idx =
+        typeof body.commentIndex === "number" ? body.commentIndex : null;
+      if (!threadId)
+        return new Response(JSON.stringify({ error: "missing threadId" }), {
+          status: 400,
+        });
+      const user = findUserById(userId);
+      if (!user || user.role !== "admin")
+        return new Response(JSON.stringify({ error: "unauthorized" }), {
+          status: 403,
+        });
+
+      const users = await readUsers();
+      for (const u of users) {
+        const obj = u.data;
+        if (!obj.threads) continue;
+        const t = obj.threads.find((x) => x.id === threadId);
+        if (t) {
+          if (!Array.isArray(t.posts))
+            return new Response(JSON.stringify({ error: "no posts" }), {
+              status: 400,
+            });
+          if (idx === null || idx < 0 || idx >= t.posts.length)
+            return new Response(JSON.stringify({ error: "invalid index" }), {
+              status: 400,
+            });
+          const c = t.posts[idx];
+          c.deletedByAdmin = true;
+          c.deletedAt = new Date().toISOString();
+          c.deletedBy = userId;
+          c.deletedText = c.text;
+          c.text = "";
+          await writeUserFile(u.file, obj);
+          return new Response(
+            JSON.stringify({ ok: true, threadId, commentIndex: idx }),
             { status: 200 }
           );
         }

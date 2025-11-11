@@ -31,6 +31,7 @@ export default function CommunityPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserObj, setCurrentUserObj] = useState(null);
 
   const [sort, setSort] = useState("recent");
   const [searchQuery, setSearchQuery] = useState("");
@@ -65,6 +66,10 @@ export default function CommunityPage() {
     const token = auth ? JSON.parse(auth).token : null;
     if (token) {
       setCurrentUser(token);
+      try {
+        const parsed = JSON.parse(auth);
+        setCurrentUserObj(parsed.user || null);
+      } catch (e) {}
       fetchStoreKeys();
     }
 
@@ -74,6 +79,9 @@ export default function CommunityPage() {
         const a = e.newValue ? JSON.parse(e.newValue) : null;
         const t = a ? a.token : null;
         setCurrentUser(t);
+        try {
+          setCurrentUserObj(a ? a.user : null);
+        } catch (e) {}
         if (t) fetchStoreKeys();
         else {
           setStoreKeys([]);
@@ -85,9 +93,24 @@ export default function CommunityPage() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  // keep currentUserObj in sync when currentUser changes (login in same tab)
+  useEffect(() => {
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const parsed = auth ? JSON.parse(auth) : null;
+      setCurrentUserObj(parsed ? parsed.user : null);
+    } catch (e) {
+      setCurrentUserObj(null);
+    }
+  }, [currentUser]);
+
   async function fetchStoreKeys() {
     try {
-      const res = await fetch(`/api/community`);
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      const headers = {};
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch(`/api/community`, { headers });
       const data = await res.json();
       const ids = Array.from(
         new Set((data || []).map((r) => r.toolId).filter(Boolean))
@@ -104,7 +127,13 @@ export default function CommunityPage() {
       const params = new URLSearchParams();
       if (selectedTool) params.set("tool", selectedTool);
       if (sort) params.set("sort", sort);
-      const res = await fetch(`/api/community?${params.toString()}`);
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      const headers = {};
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch(`/api/community?${params.toString()}`, {
+        headers,
+      });
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -154,7 +183,13 @@ export default function CommunityPage() {
       const params = new URLSearchParams();
       if (toolId) params.set("tool", toolId);
       if (sortOpt) params.set("sort", sortOpt);
-      const res = await fetch(`/api/community?${params.toString()}`);
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      const headers = {};
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch(`/api/community?${params.toString()}`, {
+        headers,
+      });
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -200,6 +235,49 @@ export default function CommunityPage() {
       }
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  // admin: flag or unflag a thread
+  async function toggleFlag(threadId, currentFlag) {
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "flag", threadId, flag: !currentFlag }),
+      });
+      if (res.ok) fetchPosts();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // admin: delete (hide) a comment by index in t.posts
+  async function adminDeleteComment(threadId, commentIndex) {
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
+      if (!confirm("Delete this comment (admin)?")) return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          action: "deleteComment",
+          threadId,
+          commentIndex,
+        }),
+      });
+      if (res.ok) fetchPosts();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -287,6 +365,22 @@ export default function CommunityPage() {
 
   // tag filtering removed — no availableKeywords
 
+  // split flagged posts for admins vs visible posts for general feed
+  const flaggedPosts = Array.isArray(posts)
+    ? posts.filter((p) => p.flagged)
+    : [];
+  // visiblePosts: include non-flagged posts, plus flagged posts when the
+  // viewer is the owner or an admin
+  const visiblePosts = Array.isArray(posts)
+    ? posts.filter((p) => {
+        if (!p.flagged) return true;
+        // show flagged to owner or admin
+        const isOwner = currentUser && p.ownerId === currentUser;
+        const isAdmin = currentUserObj && currentUserObj.role === "admin";
+        return isOwner || isAdmin;
+      })
+    : [];
+
   if (!currentUser) {
     return (
       <div className="py-12">
@@ -367,6 +461,59 @@ export default function CommunityPage() {
 
       {/* popular section removed */}
 
+      {/* Admin flagged posts section (admins only) */}
+      {currentUserObj && currentUserObj.role === "admin" && (
+        <div className="w-full">
+          <Card>
+            <h3 className="font-semibold">Flagged posts</h3>
+            <div className="mt-3 space-y-3">
+              {flaggedPosts.length === 0 && (
+                <div className="text-sm text-slate-500">No flagged posts.</div>
+              )}
+              {flaggedPosts.map((t) => {
+                const first =
+                  Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
+                const date = t.date || (first && first.date) || null;
+                return (
+                  <div key={t.id} className="border p-3 rounded bg-yellow-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold">
+                          {t.title || t.ownerName}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          {date ? new Date(date).toLocaleDateString() : ""} •{" "}
+                          {t.ownerName}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="px-2 py-1 bg-white border rounded text-sm"
+                          onClick={() => router.push(`/community/${t.id}`)}
+                        >
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          className="px-2 py-1 bg-red-600 text-white rounded text-sm"
+                          onClick={() => toggleFlag(t.id, true)}
+                        >
+                          Unflag
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm">
+                      {first ? first.text : ""}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Posts column - match top filter box width (full width of content area) */}
       <div className="w-full">
         <Card>
@@ -374,10 +521,10 @@ export default function CommunityPage() {
             Posts {loading ? "(loading...)" : ""}
           </h3>
           <div className="mt-3 space-y-3">
-            {posts.length === 0 && (
+            {visiblePosts.length === 0 && (
               <div className="text-sm text-slate-500">No posts found.</div>
             )}
-            {posts.map((t) => {
+            {visiblePosts.map((t) => {
               const first =
                 Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
               const comments = Array.isArray(t.posts) ? t.posts.slice(1) : [];
@@ -410,8 +557,36 @@ export default function CommunityPage() {
                         </span>
                         <span className="text-xs">♥</span>
                       </button>
+                      {/* admin controls: flag/unflag thread (placed next to like) */}
+                      {currentUserObj && currentUserObj.role === "admin" && (
+                        <div className="flex items-center gap-2 ml-2">
+                          {t.flagged ? (
+                            <span className="text-sm text-red-600">
+                              Flagged
+                            </span>
+                          ) : null}
+                          <button
+                            type="button"
+                            className="px-2 py-1 border rounded text-sm bg-white"
+                            onClick={() => toggleFlag(t.id, !!t.flagged)}
+                          >
+                            {t.flagged ? "Unflag" : "Flag"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  {/* owner-only alert when post is flagged */}
+                  {t.flagged &&
+                    currentUser &&
+                    t.ownerId === currentUser &&
+                    (!currentUserObj || currentUserObj.role !== "admin") && (
+                      <div className="mt-3 p-2 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
+                        Your post is being flagged and is currently under review
+                        by an administrator.
+                      </div>
+                    )}
 
                   <div className="mt-2 text-sm">{first ? first.text : ""}</div>
                   {t.keywords && t.keywords.length > 0 && (
@@ -422,18 +597,76 @@ export default function CommunityPage() {
 
                   {/* comments: show up to 3, then a view more link */}
                   <div className="mt-3 space-y-2">
-                    {comments.slice(0, 3).map((c, idx) => (
-                      <div
-                        key={idx}
-                        className="text-sm border rounded p-2 bg-slate-50"
-                      >
-                        <div className="text-xs text-slate-500">
-                          {c.author} •{" "}
-                          {c.date ? new Date(c.date).toLocaleString() : ""}
+                    {comments.slice(0, 3).map((c, idx) => {
+                      const postIndex = idx + 1; // index in t.posts
+                      if (c.deletedByAdmin) {
+                        if (currentUserObj && currentUserObj.role === "admin") {
+                          return (
+                            <div
+                              key={idx}
+                              className="text-sm border rounded p-2 bg-slate-50"
+                            >
+                              <div className="text-xs text-slate-500">
+                                {c.author} •{" "}
+                                {c.date
+                                  ? new Date(c.date).toLocaleString()
+                                  : ""}{" "}
+                                •{" "}
+                                <span className="italic text-red-600">
+                                  deleted by admin
+                                </span>
+                              </div>
+                              <div className="mt-1">{c.deletedText || ""}</div>
+                              <div className="mt-2">
+                                <button
+                                  className="text-xs text-red-600"
+                                  onClick={() =>
+                                    adminDeleteComment(t.id, postIndex)
+                                  }
+                                >
+                                  Delete (again)
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div
+                            key={idx}
+                            className="text-sm border rounded p-2 bg-slate-50"
+                          >
+                            <div className="text-xs text-slate-500">
+                              Comment deleted by admin
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div
+                          key={idx}
+                          className="text-sm border rounded p-2 bg-slate-50"
+                        >
+                          <div className="text-xs text-slate-500">
+                            {c.author} •{" "}
+                            {c.date ? new Date(c.date).toLocaleString() : ""}
+                          </div>
+                          <div className="mt-1">{c.text}</div>
+                          {currentUserObj &&
+                            currentUserObj.role === "admin" && (
+                              <div className="mt-2">
+                                <button
+                                  className="text-xs text-red-600"
+                                  onClick={() =>
+                                    adminDeleteComment(t.id, postIndex)
+                                  }
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                         </div>
-                        <div className="mt-1">{c.text}</div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     {comments.length > 3 && (
                       <div>

@@ -270,6 +270,12 @@ export default function NavBar() {
                         Manage tools
                       </Link>
                       <Link
+                        href="/community"
+                        className="px-3 py-2 text-sm hover:bg-slate-50"
+                      >
+                        Manage community
+                      </Link>
+                      <Link
                         href="/tools/requests/admin"
                         className="px-3 py-2 text-sm hover:bg-slate-50"
                       >
