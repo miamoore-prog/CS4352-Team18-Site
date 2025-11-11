@@ -67,11 +67,21 @@ export async function GET(req) {
       const fallbackNow = new Date().toISOString();
       const date = t.createdAt || (firstPost && firstPost.date) || fallbackNow;
       // normalize post authors to friendly first-name when possible
-      const posts = (t.posts || []).map((p) => ({
-        ...p,
-        author: resolveAuthorName(p.author),
-        date: p.date || fallbackNow,
-      }));
+      const posts = (t.posts || []).map((p) => {
+        const rawAuthor = p.author;
+        // attempt to resolve to a user record to detect admin role
+        const byId = users.find((u) => u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor));
+        const authorName = resolveAuthorName(rawAuthor);
+        const authorIsAdmin = !!(byId && byId.data && byId.data.role === "admin");
+        return {
+          ...p,
+          authorId: rawAuthor,
+          author: authorName,
+          authorName,
+          authorIsAdmin,
+          date: p.date || fallbackNow,
+        };
+      });
 
       threads.push({
         id: t.id,
@@ -367,6 +377,33 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "thread not found" }), {
         status: 404,
       });
+    }
+
+    // admin-only: delete a thread entirely
+    if (action === "deleteThread") {
+      const threadId = body.threadId;
+      if (!threadId)
+        return new Response(JSON.stringify({ error: "missing threadId" }), {
+          status: 400,
+        });
+      const user = findUserById(userId);
+      if (!user || user.role !== "admin")
+        return new Response(JSON.stringify({ error: "unauthorized" }), {
+          status: 403,
+        });
+
+      const users = await readUsers();
+      for (const u of users) {
+        const obj = u.data;
+        if (!obj.threads) continue;
+        const idx = obj.threads.findIndex((x) => x.id === threadId);
+        if (idx !== -1) {
+          obj.threads.splice(idx, 1);
+          await writeUserFile(u.file, obj);
+          return new Response(JSON.stringify({ ok: true, threadId }), { status: 200 });
+        }
+      }
+      return new Response(JSON.stringify({ error: "thread not found" }), { status: 404 });
     }
 
     return new Response(JSON.stringify({ error: "unsupported action" }), {

@@ -35,9 +35,7 @@
         "user2",
         "user1"
       ],
-      "flagged": true,
-      "flaggedBy": "admin-1",
-      "flaggedAt": "2025-11-11T18:44:44.621Z"
+      "flagged": false
     },
     {
       "id": "thread-1762714484960-673",

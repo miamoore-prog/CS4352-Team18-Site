@@ -281,6 +281,26 @@ export default function CommunityPage() {
     }
   }
 
+  // admin: delete a thread entirely
+  async function adminDeleteThread(threadId) {
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
+      if (!confirm('Delete this thread? This action will permanently remove the thread.')) return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ action: "deleteThread", threadId }),
+      });
+      if (res.ok) fetchPosts();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   async function submitReview(e) {
     e.preventDefault();
     // allow composer to specify a tool (composeTool) or fall back to selectedTool
@@ -501,6 +521,13 @@ export default function CommunityPage() {
                         >
                           Unflag
                         </button>
+                        <button
+                          type="button"
+                          className="px-2 py-1 bg-red-700 text-white rounded text-sm ml-2"
+                          onClick={() => adminDeleteThread(t.id)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                     <div className="mt-2 text-sm">
@@ -607,14 +634,7 @@ export default function CommunityPage() {
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
                               <div className="text-xs text-slate-500">
-                                {c.author} •{" "}
-                                {c.date
-                                  ? new Date(c.date).toLocaleString()
-                                  : ""}{" "}
-                                •{" "}
-                                <span className="italic text-red-600">
-                                  deleted by admin
-                                </span>
+                                {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""} • <span className="italic text-red-600">deleted by admin</span>
                               </div>
                               <div className="mt-1">{c.deletedText || ""}</div>
                               <div className="mt-2">
@@ -647,8 +667,7 @@ export default function CommunityPage() {
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
                           <div className="text-xs text-slate-500">
-                            {c.author} •{" "}
-                            {c.date ? new Date(c.date).toLocaleString() : ""}
+                            {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""}
                           </div>
                           <div className="mt-1">{c.text}</div>
                           {currentUserObj &&

@@ -145,7 +145,7 @@ export default function AdminRequestsPage() {
                   </div>
                   <div className="text-sm text-slate-600">{r.usage}</div>
                   <div className="text-xs text-slate-400">
-                    Submitted: {r.createdAt} • By:{" "}
+                    Submitted: {r.createdAt ? new Date(r.createdAt).toLocaleString() : ""} • By: {" "}
                     {userMap[r.authorId]
                       ? userMap[r.authorId].role === "admin"
                         ? "admin"
@@ -189,7 +189,7 @@ export default function AdminRequestsPage() {
                     return (
                       <div key={i} className="border p-3 rounded bg-slate-50">
                         <div className="text-xs text-slate-500">
-                          {name} • {c.createdAt}
+                          {name} • {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
                         </div>
                         <div className="mt-1 text-sm">{c.text}</div>
                       </div>
