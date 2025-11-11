@@ -323,27 +323,42 @@ export default function CommunityPage() {
     );
   }
 
-  // tag filtering removed — no availableKeywords
+  // tag filtering state and derived lists (must be declared before any early returns)
+  const [filterKeywords, setFilterKeywords] = useState([]);
 
-  if (!currentUser) {
-    return (
-      <div className="py-12">
-        <Card className="max-w-2xl mx-auto text-center p-8">
-          <h3 className="text-lg font-semibold mb-2">
-            Community is for signed-in users
-          </h3>
-          <p className="text-sm text-slate-600 mb-4">
-            Please log in to view and participate in community discussions.
-          </p>
-          <div className="flex justify-center">
-            <Button onClick={() => router.push("/login")}>Sign in</Button>
-          </div>
-        </Card>
-      </div>
-    );
+  const availableKeywords = useMemo(() => {
+    const s = new Set();
+    try {
+      Object.values(allStore || {}).forEach((arr) => {
+        if (!Array.isArray(arr)) return;
+        arr.forEach((item) => {
+          (item.keywords || []).forEach((k) => {
+            if (k && typeof k === "string") s.add(k);
+          });
+        });
+      });
+    } catch (e) {
+      // ignore
+    }
+    return Array.from(s);
+  }, [allStore]);
+
+  const popular = useMemo(() => {
+    if (!Array.isArray(tools)) return [];
+    return tools.slice(0, 12).map((t) => ({ id: t.id, name: t.name }));
+  }, [tools]);
+
+  function handlePopularClick(p) {
+    if (selectedTool === p.id) {
+      setSelectedTool(null);
+    } else {
+      setSelectedTool(p.id);
+      // clear keyword filters when selecting a tool
+      setFilterKeywords([]);
+    }
   }
 
-  // carousel refs/state for available keywords
+  // carousel refs/state for available keywords (hooks must be declared unconditionally)
   const carouselContainerRef = useRef(null);
   const carouselTrackRef = useRef(null);
   const [carouselAnimate, setCarouselAnimate] = useState(false);
@@ -372,6 +387,23 @@ export default function CommunityPage() {
     return () => window.removeEventListener("resize", update);
   }, [availableKeywords]);
 
+  if (!currentUser) {
+    return (
+      <div className="py-12">
+        <Card className="max-w-2xl mx-auto text-center p-8">
+          <h3 className="text-lg font-semibold mb-2">
+            Community is for signed-in users
+          </h3>
+          <p className="text-sm text-slate-600 mb-4">
+            Please log in to view and participate in community discussions.
+          </p>
+          <div className="flex justify-center">
+            <Button onClick={() => router.push("/login")}>Sign in</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-6">
       {/* Top filter bar */}
