@@ -19,6 +19,7 @@ export default function AdminToolsPage() {
     details: "",
     howTo: "",
   });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [msg, setMsg] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
@@ -198,12 +199,72 @@ export default function AdminToolsPage() {
             />
           </div>
           <div>
-            <label className="text-sm">Logo path (e.g. /logos/foo.webp)</label>
-            <input
-              value={form.logo}
-              onChange={(e) => setForm({ ...form, logo: e.target.value })}
-              className="w-full border p-2 rounded"
-            />
+            <label className="text-sm">Logo (enter URL or upload file)</label>
+            <div className="flex items-center gap-2">
+              <input
+                value={form.logo}
+                onChange={(e) => setForm({ ...form, logo: e.target.value })}
+                placeholder="/logos/foo.png or https://..."
+                className="flex-1 border p-2 rounded"
+              />
+              <label className="inline-block bg-slate-100 px-3 py-2 rounded cursor-pointer text-sm">
+                Upload
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const f = e.target.files && e.target.files[0];
+                    if (!f) return;
+                    setUploadingLogo(true);
+                    try {
+                      const reader = new FileReader();
+                      const p = await new Promise((res, rej) => {
+                        reader.onload = () => res(reader.result);
+                        reader.onerror = rej;
+                        reader.readAsDataURL(f);
+                      });
+                      // p is data:<contentType>;base64,XXXX
+                      const m = String(p).match(/^data:(.+);base64,(.+)$/);
+                      if (!m) throw new Error("invalid file data");
+                      const contentType = m[1];
+                      const b64 = m[2];
+                      const filename = f.name || "upload.png";
+                      const resp = await fetch("/api/admin/upload-image", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          filename,
+                          contentType,
+                          data: b64,
+                        }),
+                      });
+                      if (!resp.ok) throw new Error("upload failed");
+                      const js = await resp.json();
+                      if (js && js.url) {
+                        setForm({ ...form, logo: js.url });
+                      }
+                    } catch (err) {
+                      setMsg({ ok: false, text: String(err) });
+                    } finally {
+                      setUploadingLogo(false);
+                    }
+                  }}
+                />
+              </label>
+            </div>
+            {uploadingLogo && (
+              <div className="text-sm text-slate-500 mt-1">Uploading...</div>
+            )}
+            {form.logo && (
+              <div className="mt-2">
+                <img
+                  src={form.logo}
+                  alt="logo"
+                  className="w-16 h-16 object-contain rounded"
+                />
+              </div>
+            )}
           </div>
           <div>
             <label className="text-sm">About</label>
@@ -410,6 +471,61 @@ export default function AdminToolsPage() {
                 }
                 className="w-full border p-2 rounded"
               />
+            </div>
+            <div>
+              <label className="text-sm">Or upload new logo</label>
+              <div className="flex items-center gap-2">
+                <label className="inline-block bg-slate-100 px-3 py-2 rounded cursor-pointer text-sm">
+                  Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const f = e.target.files && e.target.files[0];
+                      if (!f) return;
+                      try {
+                        const reader = new FileReader();
+                        const p = await new Promise((res, rej) => {
+                          reader.onload = () => res(reader.result);
+                          reader.onerror = rej;
+                          reader.readAsDataURL(f);
+                        });
+                        const m = String(p).match(/^data:(.+);base64,(.+)$/);
+                        if (!m) throw new Error("invalid file data");
+                        const contentType = m[1];
+                        const b64 = m[2];
+                        const filename = f.name || "upload.png";
+                        const resp = await fetch("/api/admin/upload-image", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            filename,
+                            contentType,
+                            data: b64,
+                          }),
+                        });
+                        if (!resp.ok) throw new Error("upload failed");
+                        const js = await resp.json();
+                        if (js && js.url) {
+                          setEditForm({ ...editForm, logo: js.url });
+                        }
+                      } catch (err) {
+                        setMsg({ ok: false, text: String(err) });
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+              {editForm.logo && (
+                <div className="mt-2">
+                  <img
+                    src={editForm.logo}
+                    alt="logo"
+                    className="w-16 h-16 object-contain rounded"
+                  />
+                </div>
+              )}
             </div>
             <div>
               <label className="text-sm">About</label>
