@@ -152,13 +152,11 @@ export default function NavBar() {
                 Explore
               </Button>
             </Link>
-            {user && (
-              <Link href="/community">
-                <Button variant="ghost" className="text-sm">
-                  Community
-                </Button>
-              </Link>
-            )}
+            <Link href="/community">
+              <Button variant="ghost" className="text-sm">
+                Community
+              </Button>
+            </Link>
             <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About

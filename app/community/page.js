@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
 
@@ -27,6 +27,7 @@ export default function CommunityPage() {
   const router = useRouter();
 
   const [storeKeys, setStoreKeys] = useState([]);
+  const [allStore, setAllStore] = useState({});
   const [selectedTool, setSelectedTool] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -89,10 +90,26 @@ export default function CommunityPage() {
     try {
       const res = await fetch(`/api/community`);
       const data = await res.json();
-      const ids = Array.from(
-        new Set((data || []).map((r) => r.toolId).filter(Boolean))
-      );
-      setStoreKeys(ids);
+      // data may be an array (older API shape) or an object keyed by toolId (newer shape)
+      if (Array.isArray(data)) {
+        const ids = Array.from(
+          new Set((data || []).map((r) => r.toolId).filter(Boolean))
+        );
+        setStoreKeys(ids);
+        const map = {};
+        (data || []).forEach((r) => {
+          const tid = r.toolId || "_global";
+          map[tid] = map[tid] || [];
+          map[tid].push(r);
+        });
+        setAllStore(map);
+      } else if (data && typeof data === "object") {
+        setStoreKeys(Object.keys(data || {}));
+        setAllStore(data || {});
+      } else {
+        setStoreKeys([]);
+        setAllStore({});
+      }
     } catch (err) {
       console.error(err);
     }
@@ -169,15 +186,36 @@ export default function CommunityPage() {
   }, [selectedTool, sort]);
 
   function addKeyword(k) {
-    // removed: tag filtering not needed
+    if (!k) return;
+    // try to find which tool this keyword belongs to (if any) so we can focus the right tool
+    const found = Object.entries(allStore || {}).find(([toolId, postsArr]) => {
+      try {
+        return (
+          Array.isArray(postsArr) &&
+          postsArr.some((p) => (p.keywords || []).map((x) => x.toLowerCase()).includes(k.toLowerCase()))
+        );
+      } catch (e) {
+        return false;
+      }
+    });
+    if (found) {
+      const toolId = found[0];
+      setSelectedTool(toolId);
+      setFilterKeywords((s) => (s.includes(k) ? s : [...s, k]));
+      // fetch immediately for the found tool
+      fetchReviewsWithParams(toolId, Array.from(new Set([...(filterKeywords || []), k])), sort);
+      return;
+    }
+    setFilterKeywords((s) => (s.includes(k) ? s : [...s, k]));
   }
 
   function removeKeyword(k) {
-    // removed: tag filtering not needed
+    setFilterKeywords((s) => s.filter((x) => x !== k));
   }
 
   async function applyFilter() {
-    // removed: tag filtering not needed
+    // apply current filters by refetching with selectedTool and filterKeywords
+    await fetchReviewsWithParams(selectedTool, filterKeywords, sort);
   }
 
   // popular handlers removed
@@ -305,6 +343,35 @@ export default function CommunityPage() {
     );
   }
 
+  // carousel refs/state for available keywords
+  const carouselContainerRef = useRef(null);
+  const carouselTrackRef = useRef(null);
+  const [carouselAnimate, setCarouselAnimate] = useState(false);
+  const [carouselDuration, setCarouselDuration] = useState(0);
+
+  useEffect(() => {
+    // measure and decide whether to animate (only when track is wider than container)
+    function update() {
+      const cont = carouselContainerRef.current;
+      const track = carouselTrackRef.current;
+      if (!cont || !track) return setCarouselAnimate(false);
+      const contW = cont.clientWidth;
+      const trackW = track.scrollWidth;
+      if (trackW > contW + 10) {
+        // duration proportional to width; 60px per second -> seconds = trackW/60
+        const dur = Math.max(8, Math.round(trackW / 60));
+        setCarouselDuration(dur);
+        setCarouselAnimate(true);
+      } else {
+        setCarouselAnimate(false);
+      }
+    }
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [availableKeywords]);
+
   return (
     <div className="flex flex-col gap-6">
       {/* Top filter bar */}
@@ -363,9 +430,72 @@ export default function CommunityPage() {
         </div>
       </Card>
 
-      {/* tag filtering removed */}
+  {/* tag filtering removed */}
+      <Card>
+        <div className="flex items-center gap-4">
+          {/* combined scrolling track: include popular chips first, then keyword chips */}
+          <div className="flex-1 min-w-0">
+            <div ref={carouselContainerRef} className="relative w-full overflow-hidden">
+              <div
+                ref={carouselTrackRef}
+                className="inline-flex gap-2 whitespace-nowrap chip-track"
+                style={carouselAnimate ? { animation: `scroll-left ${carouselDuration}s linear infinite` } : {}}
+              >
+                {popular.map((p) => {
+                  const active = filterKeywords.includes(p.name) || selectedTool === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => handlePopularClick(p)}
+                      className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${active ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                      style={{ display: 'inline-flex' }}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
 
-      {/* popular section removed */}
+                {availableKeywords.map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => addKeyword(k)}
+                    className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                    style={{ display: 'inline-flex' }}
+                  >
+                    {k}
+                  </button>
+                ))}
+
+                {/* duplicate for smooth continuous scroll when animating */}
+                {carouselAnimate && (
+                  <>
+                    {popular.map((p) => (
+                      <button
+                        key={"dup-pop-" + p.id}
+                        onClick={() => handlePopularClick(p)}
+                        className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(p.name) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                        style={{ display: 'inline-flex' }}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                    {availableKeywords.map((k, i) => (
+                      <button
+                        key={"dup-" + k + i}
+                        onClick={() => addKeyword(k)}
+                        className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${filterKeywords.includes(k) ? 'bg-sky-100 text-slate-900 border-sky-200' : 'bg-white text-slate-900 border-slate-200'}`}
+                        style={{ display: 'inline-flex' }}
+                      >
+                        {k}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+  </Card>
 
       {/* Posts column - match top filter box width (full width of content area) */}
       <div className="w-full">
