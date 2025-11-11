@@ -287,7 +287,12 @@ export default function CommunityPage() {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (!confirm('Delete this thread? This action will permanently remove the thread.')) return;
+      if (
+        !confirm(
+          "Delete this thread? This action will permanently remove the thread."
+        )
+      )
+        return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -634,7 +639,17 @@ export default function CommunityPage() {
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
                               <div className="text-xs text-slate-500">
-                                {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""} • <span className="italic text-red-600">deleted by admin</span>
+                                {c.authorIsAdmin
+                                  ? "admin"
+                                  : c.authorName || c.author}{" "}
+                                •{" "}
+                                {c.date
+                                  ? new Date(c.date).toLocaleString()
+                                  : ""}{" "}
+                                •{" "}
+                                <span className="italic text-red-600">
+                                  deleted by admin
+                                </span>
                               </div>
                               <div className="mt-1">{c.deletedText || ""}</div>
                               <div className="mt-2">
@@ -667,7 +682,10 @@ export default function CommunityPage() {
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
                           <div className="text-xs text-slate-500">
-                            {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""}
+                            {c.authorIsAdmin
+                              ? "admin"
+                              : c.authorName || c.author}{" "}
+                            • {c.date ? new Date(c.date).toLocaleString() : ""}
                           </div>
                           <div className="mt-1">{c.text}</div>
                           {currentUserObj &&

@@ -83,7 +83,11 @@ export default function ThreadPage({ params }) {
       const res = await fetch("/api/community", {
         method: "POST",
         headers,
-        body: JSON.stringify({ action: "deleteComment", threadId, commentIndex }),
+        body: JSON.stringify({
+          action: "deleteComment",
+          threadId,
+          commentIndex,
+        }),
       });
       if (res.ok) {
         // refresh
@@ -203,15 +207,17 @@ export default function ThreadPage({ params }) {
           {comments.map((c, idx) => (
             <div key={idx} className="border p-3 rounded bg-slate-50">
               <div className="text-xs text-slate-500">
-                {(c.authorIsAdmin ? "admin" : c.authorName || c.author)} •{' '}
-                {c.date ? new Date(c.date).toLocaleString() : ''}
+                {c.authorIsAdmin ? "admin" : c.authorName || c.author} •{" "}
+                {c.date ? new Date(c.date).toLocaleString() : ""}
               </div>
               <div className="mt-1 text-sm">
                 {c.deletedByAdmin ? (
-                  currentUserObj && currentUserObj.role === 'admin' ? (
+                  currentUserObj && currentUserObj.role === "admin" ? (
                     <div>
-                      <div className="italic text-red-600">deleted by admin</div>
-                      <div className="mt-1">{c.deletedText || ''}</div>
+                      <div className="italic text-red-600">
+                        deleted by admin
+                      </div>
+                      <div className="mt-1">{c.deletedText || ""}</div>
                       <div className="mt-2">
                         <button
                           className="text-xs text-red-600"
@@ -223,7 +229,9 @@ export default function ThreadPage({ params }) {
                     </div>
                   ) : (
                     <div className="text-sm border rounded p-2 bg-slate-50">
-                      <div className="text-xs text-slate-500">Comment deleted by admin</div>
+                      <div className="text-xs text-slate-500">
+                        Comment deleted by admin
+                      </div>
                     </div>
                   )
                 ) : (

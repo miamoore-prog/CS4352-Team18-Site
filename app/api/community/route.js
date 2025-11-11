@@ -70,9 +70,16 @@ export async function GET(req) {
       const posts = (t.posts || []).map((p) => {
         const rawAuthor = p.author;
         // attempt to resolve to a user record to detect admin role
-        const byId = users.find((u) => u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor));
+        const byId = users.find(
+          (u) =>
+            u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor)
+        );
         const authorName = resolveAuthorName(rawAuthor);
-        const authorIsAdmin = !!(byId && byId.data && byId.data.role === "admin");
+        const authorIsAdmin = !!(
+          byId &&
+          byId.data &&
+          byId.data.role === "admin"
+        );
         return {
           ...p,
           authorId: rawAuthor,
@@ -400,10 +407,14 @@ export async function POST(req) {
         if (idx !== -1) {
           obj.threads.splice(idx, 1);
           await writeUserFile(u.file, obj);
-          return new Response(JSON.stringify({ ok: true, threadId }), { status: 200 });
+          return new Response(JSON.stringify({ ok: true, threadId }), {
+            status: 200,
+          });
         }
       }
-      return new Response(JSON.stringify({ error: "thread not found" }), { status: 404 });
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
     }
 
     return new Response(JSON.stringify({ error: "unsupported action" }), {
