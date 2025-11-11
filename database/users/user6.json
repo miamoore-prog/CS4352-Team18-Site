@@ -4,8 +4,27 @@
   "password": "test",
   "displayName": "Frank Ocean",
   "bookmarks": ["zapier", "chatgpt"],
-  "reviews": [
-    { "toolId": "zapier", "rating": 5, "text": "Saves me hours." }
-  ],
-  "threads": []
+  "reviews": [{ "toolId": "zapier", "rating": 5, "text": "Saves me hours." }],
+  "threads": [
+    {
+      "id": "t7",
+      "title": "Automating writing tasks with Zapier + ChatGPT",
+      "toolId": "zapier",
+      "keywords": ["automation", "workflow", "productivity"],
+      "createdAt": "2025-11-07T14:20:00.000Z",
+      "posts": [
+        {
+          "author": "frank",
+          "text": "I connected Gmail -> Zapier -> ChatGPT to auto-draft replies for routine emails. Saved me hours each week.",
+          "date": "2025-11-07T14:20:00.000Z"
+        },
+        {
+          "author": "dana",
+          "text": "Do you sanitize sensitive content before sending to the model?",
+          "date": "2025-11-07T15:05:00.000Z"
+        }
+      ],
+      "likes": ["user4", "user7"]
+    }
+  ]
 }

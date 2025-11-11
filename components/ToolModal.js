@@ -6,6 +6,11 @@ import { Card, Button } from "./ui";
 export default function ToolModal({ tool, onClose }) {
   const [showHowTo, setShowHowTo] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [myReview, setMyReview] = useState(null);
+  const [editingText, setEditingText] = useState("");
+  const [editingRating, setEditingRating] = useState(null);
+  const [editingEnabled, setEditingEnabled] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -28,6 +33,41 @@ export default function ToolModal({ tool, onClose }) {
       mounted = false;
     };
   }, [tool.id]);
+
+  useEffect(() => {
+    // detect mock auth in client
+    if (typeof window !== "undefined") {
+      const a = localStorage.getItem("mock_auth");
+      if (a) {
+        try {
+          const parsed = JSON.parse(a);
+          setCurrentUser(parsed.token || null);
+        } catch (e) {}
+      }
+    }
+  }, []);
+
+  // derive myReview when reviews or currentUser change
+  useEffect(() => {
+    if (!currentUser) {
+      setMyReview(null);
+      setEditingText("");
+      setEditingRating(null);
+      setEditingEnabled(false);
+      return;
+    }
+    const found = reviews.find(
+      (r) =>
+        (r.authorId && r.authorId === currentUser) ||
+        (r.author && r.author === currentUser)
+    );
+    setMyReview(found || null);
+    setEditingText(found ? found.text : "");
+    setEditingRating(
+      found && typeof found.rating !== "undefined" ? found.rating : null
+    );
+    setEditingEnabled(false);
+  }, [reviews, currentUser]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -52,7 +92,8 @@ export default function ToolModal({ tool, onClose }) {
 
         <div className="mt-4 text-sm text-slate-700">{tool.details}</div>
 
-        {/* Reviews / ratings section (Amazon-style inspiration) */}
+        {/* Reviews / ratings section — show only aggregated stats (avg & count)
+            and a "View more" link that navigates to the tool-specific review page. */}
         <div className="mt-6">
           <h4 className="font-semibold">Customer reviews</h4>
           <div className="mt-3">
@@ -66,45 +107,174 @@ export default function ToolModal({ tool, onClose }) {
                     ).toFixed(1);
 
               return (
-                <div>
-                  <div className="flex items-center">
-                    <div className="text-2xl font-semibold mr-3">{avg}</div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-2xl font-semibold">{avg}</div>
                     <div className="text-sm text-slate-600">
                       {count} reviews
                     </div>
                   </div>
 
-                  <div className="mt-3 space-y-3 max-h-48 overflow-y-auto">
-                    {count === 0 && (
-                      <div className="text-sm text-slate-500">
-                        No reviews yet.
-                      </div>
-                    )}
-
-                    {reviews.map((r, i) => (
-                      <div key={i} className="p-3 bg-slate-50 rounded">
-                        <div className="flex items-center justify-between">
-                          <div className="font-semibold">
-                            {r.authorDisplay || r.author}
-                          </div>
-                          <div className="text-sm text-slate-500">
-                            {r.date || ""}
-                          </div>
-                        </div>
-                        <div className="text-xs text-amber-500 mt-1">
-                          {"★".repeat(r.rating || 0) +
-                            "☆".repeat(5 - (r.rating || 0))}
-                        </div>
-                        <div className="mt-2 text-sm text-slate-700">
-                          {r.text}
-                        </div>
-                      </div>
-                    ))}
+                  <div>
+                    <a
+                      href={`/tools/${tool.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Button variant="ghost">View more</Button>
+                    </a>
                   </div>
                 </div>
               );
             })()}
           </div>
+        </div>
+
+        {/* Add / edit review UI */}
+        <div className="mt-4 border-t pt-4">
+          <h4 className="font-semibold">Your review</h4>
+          {!currentUser && (
+            <div className="text-sm text-slate-500">
+              Please sign in to add a review.
+            </div>
+          )}
+          {currentUser && (
+            <div className="mt-2 space-y-2">
+              <div>
+                <div className="text-xs text-slate-500">Rating (optional)</div>
+                <div className="flex items-center gap-1 mt-1">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => editingEnabled && setEditingRating(n)}
+                      className={`text-xl ${
+                        n <= (editingRating || 0)
+                          ? "text-amber-400"
+                          : "text-slate-300"
+                      }`}
+                      aria-label={`Set rating ${n}`}
+                      disabled={!editingEnabled}
+                    >
+                      {n <= (editingRating || 0) ? "★" : "☆"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <textarea
+                rows={4}
+                className={`w-full border p-2 rounded ${
+                  !editingEnabled ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+                placeholder="Write your review"
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+                disabled={!editingEnabled}
+              />
+
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={async () => {
+                    if (!editingEnabled) {
+                      // enable editing mode
+                      setEditingEnabled(true);
+                      return;
+                    }
+
+                    // submit upsert when editingEnabled
+                    try {
+                      const headers = { "Content-Type": "application/json" };
+                      if (currentUser) headers["x-user-id"] = currentUser;
+                      const res = await fetch("/api/reviews", {
+                        method: "POST",
+                        headers,
+                        body: JSON.stringify({
+                          toolId: tool.id,
+                          rating: editingRating,
+                          text: editingText,
+                        }),
+                      });
+                      if (res.ok) {
+                        const updated = await res.json();
+                        // reload reviews
+                        const rres = await fetch(
+                          `/api/reviews?tool=${encodeURIComponent(tool.id)}`
+                        );
+                        const data = await rres.json();
+                        setReviews(Array.isArray(data) ? data : []);
+                        // exit editing mode
+                        setEditingEnabled(false);
+                      } else {
+                        console.error("failed to save review");
+                      }
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                >
+                  {editingEnabled
+                    ? myReview
+                      ? "Save changes"
+                      : "Submit review"
+                    : myReview
+                    ? "Update review"
+                    : "Add review"}
+                </Button>
+
+                {editingEnabled && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      // cancel editing and revert
+                      setEditingEnabled(false);
+                      setEditingText(myReview ? myReview.text : "");
+                      setEditingRating(
+                        myReview && typeof myReview.rating !== "undefined"
+                          ? myReview.rating
+                          : null
+                      );
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+
+                {myReview && (
+                  <Button
+                    variant="ghost"
+                    onClick={async () => {
+                      // simple delete: remove the user's review from the store
+                      try {
+                        const headers = { "Content-Type": "application/json" };
+                        if (currentUser) headers["x-user-id"] = currentUser;
+                        // perform remove by writing an empty text update? for now implement client-side delete via a POST with special action
+                        const res = await fetch("/api/reviews", {
+                          method: "POST",
+                          headers,
+                          body: JSON.stringify({
+                            toolId: tool.id,
+                            action: "delete-my-review",
+                          }),
+                        });
+                        if (res.ok) {
+                          const rres = await fetch(
+                            `/api/reviews?tool=${encodeURIComponent(tool.id)}`
+                          );
+                          const data = await rres.json();
+                          setReviews(Array.isArray(data) ? data : []);
+                          setEditingEnabled(false);
+                        }
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-4">

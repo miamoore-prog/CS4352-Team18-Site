@@ -15,25 +15,26 @@ export default function ToolsPage() {
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState(null);
 
-
   // Explicit displayed tools state to avoid any render-order timing issues
   const [displayedTools, setDisplayedTools] = useState([]);
   // keep a full catalog so we can reset and filter deterministically
   const [allTools, setAllTools] = useState([]);
 
-    useEffect(() => {
-      let mounted = true;
-      fetch('/api/tools')
-        .then((r) => r.json())
-        .then((data) => {
-          if (!mounted) return;
-          const arr = Array.isArray(data) ? data : data.tools || [];
-          setAllTools(arr);
-          setDisplayedTools(arr);
-        })
-        .catch(() => {});
-      return () => { mounted = false };
-    }, []);
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/tools")
+      .then((r) => r.json())
+      .then((data) => {
+        if (!mounted) return;
+        const arr = Array.isArray(data) ? data : data.tools || [];
+        setAllTools(arr);
+        setDisplayedTools(arr);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,7 +55,7 @@ export default function ToolsPage() {
     return displayedTools.slice(start, end);
   }, [displayedTools, currentPage, pageSize]);
 
-    // Fetch recommendations from the server (Gemini). Called manually via the Search button.
+  // Fetch recommendations from the server (Gemini). Called manually via the Search button.
   async function fetchRecommendations(q, { signal } = {}) {
     if (!q || q.trim() === "") {
       setRecommendedIds(null);
@@ -68,7 +69,7 @@ export default function ToolsPage() {
     setLoadingRecommendations(true);
 
     try {
-            // clear displayed tools while fetching to show loading state
+      // clear displayed tools while fetching to show loading state
       setDisplayedTools([]);
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -83,8 +84,8 @@ export default function ToolsPage() {
         const ids = data.map((d) => d.id).filter(Boolean);
 
         setRecommendedIds(ids);
-  // set displayed tools immediately
-  setDisplayedTools(allTools.filter((t) => ids.includes(t.id)));
+        // set displayed tools immediately
+        setDisplayedTools(allTools.filter((t) => ids.includes(t.id)));
       } else {
         setRecommendedIds([]);
         setDisplayedTools([]);
@@ -92,7 +93,7 @@ export default function ToolsPage() {
     } catch (err) {
       if (err.name === "AbortError") {
         return;
-    }
+      }
 
       setRecommendationError(String(err));
       setRecommendedIds([]);
@@ -102,19 +103,19 @@ export default function ToolsPage() {
     }
   }
 
-    // No live/debounced search: only search when the user presses the Search button.
+  // No live/debounced search: only search when the user presses the Search button.
 
   function handleQueryChange(value) {
     setQuery(value);
     setRecommendationError(null);
   }
 
-    // provide a manual search trigger (Search button) that calls the same API
+  // provide a manual search trigger (Search button) that calls the same API
   function handleSearch(value) {
     const q = typeof value === "string" && value.trim() !== "" ? value : query;
 
     // update parent query state to reflect what is being searched
-    if (q !== query) setQuery(q);  
+    if (q !== query) setQuery(q);
     // clear previous recommendations while fetching
     setRecommendedIds(null);
     fetchRecommendations(q);
@@ -124,22 +125,22 @@ export default function ToolsPage() {
   // a search automatically on mount so users see results immediately.
   useEffect(() => {
     if (initialQuery && initialQuery.trim() !== "") {
-            // ensure the displayed query matches the initialQuery
+      // ensure the displayed query matches the initialQuery
       if (initialQuery !== query) setQuery(initialQuery);
       // kick off the fetch once
       fetchRecommendations(initialQuery);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const sectionRef = useRef(null);//ref to the tools section
+  const sectionRef = useRef(null); //ref to the tools section
 
   return (
     <div className="flex flex-col gap-6">
       <div className="card">
-        <SearchBar 
-        value={query}
-        onChange={handleQueryChange}
-        onSearch={handleSearch} 
+        <SearchBar
+          value={query}
+          onChange={handleQueryChange}
+          onSearch={handleSearch}
         />
       </div>
 
@@ -174,7 +175,10 @@ export default function ToolsPage() {
               onClick={() => {
                 setCurrentPage((p) => Math.max(1, p - 1));
                 setTimeout(() => {
-                  const y = sectionRef.current?.getBoundingClientRect().top + window.scrollY - 100;
+                  const y =
+                    sectionRef.current?.getBoundingClientRect().top +
+                    window.scrollY -
+                    100;
                   window.scrollTo({ top: y, behavior: "smooth" });
                 }, 0);
               }}
@@ -190,7 +194,10 @@ export default function ToolsPage() {
               onClick={() => {
                 setCurrentPage((p) => Math.min(totalPages, p + 1));
                 setTimeout(() => {
-                  const y = sectionRef.current?.getBoundingClientRect().top + window.scrollY - 100;
+                  const y =
+                    sectionRef.current?.getBoundingClientRect().top +
+                    window.scrollY -
+                    100;
                   window.scrollTo({ top: y, behavior: "smooth" });
                 }, 0);
               }}
@@ -203,8 +210,8 @@ export default function ToolsPage() {
         )}
       </section>
 
-      {activeTool && ( 
-      <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
+      {activeTool && (
+        <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
       )}
     </div>
   );

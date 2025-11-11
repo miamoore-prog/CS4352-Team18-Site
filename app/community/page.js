@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
 
 // load tools catalog at runtime from the canonical API (database/tools/*.json)
@@ -23,23 +24,24 @@ const useToolsLoader = () => {
 };
 
 export default function CommunityPage() {
+  const router = useRouter();
+
   const [storeKeys, setStoreKeys] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const [filterKeywords, setFilterKeywords] = useState([]);
-  const [keywordInput, setKeywordInput] = useState("");
   const [sort, setSort] = useState("recent");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
     author: "",
-    rating: 5,
     text: "",
-    keywords: [],
   });
-  const [composerTagInput, setComposerTagInput] = useState("");
+  // keywords and composer tag input removed from compose UI
 
   // fetch list of available tools from the canonical API (client-side)
   const tools = useToolsLoader();
@@ -49,65 +51,94 @@ export default function CommunityPage() {
   );
 
   // popular models / companies (shown as clickable chips)
-  const popular = useMemo(() => {
-    if (!Array.isArray(tools)) return [];
-    // pick the first 6 tools as 'popular' defaults
-    return tools.slice(0, 6).map((t) => ({ id: t.id, name: t.name }));
-  }, [tools]);
+  // popular section removed
 
   useEffect(() => {
-    // pick first tool by default
-    if (toolIds.length > 0) {
-      setSelectedTool((s) => s || toolIds[0]);
+    // Do not auto-select a tool by default. Showing the full 'All posts' feed
+    // is more useful so users see existing community content immediately.
+  }, [toolIds, storeKeys]);
+
+  useEffect(() => {
+    // only fetch community data when logged in
+    const auth =
+      typeof window !== "undefined" && localStorage.getItem("mock_auth");
+    const token = auth ? JSON.parse(auth).token : null;
+    if (token) {
+      setCurrentUser(token);
+      fetchStoreKeys();
     }
-  }, [toolIds]);
 
-  useEffect(() => {
-    fetchStoreKeys();
+    // listen for login/logout from other tabs
+    function onStorage(e) {
+      if (e.key === "mock_auth") {
+        const a = e.newValue ? JSON.parse(e.newValue) : null;
+        const t = a ? a.token : null;
+        setCurrentUser(t);
+        if (t) fetchStoreKeys();
+        else {
+          setStoreKeys([]);
+          setPosts([]);
+        }
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   async function fetchStoreKeys() {
     try {
-      const res = await fetch(`/api/reviews`);
+      const res = await fetch(`/api/community`);
       const data = await res.json();
-      // API returns { reviews: [...] } — derive unique tool ids
-      if (data && Array.isArray(data.reviews)) {
-        const ids = Array.from(
-          new Set(data.reviews.map((r) => r.toolId).filter(Boolean))
-        );
-        setStoreKeys(ids);
-      } else {
-        setStoreKeys(Object.keys(data || {}));
-      }
+      const ids = Array.from(
+        new Set((data || []).map((r) => r.toolId).filter(Boolean))
+      );
+      setStoreKeys(ids);
     } catch (err) {
       console.error(err);
     }
   }
 
-  async function fetchReviews() {
-    if (!selectedTool) return;
+  async function fetchPosts() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("tool", selectedTool);
-      if (filterKeywords.length > 0)
-        params.set("keywords", filterKeywords.join(","));
+      if (selectedTool) params.set("tool", selectedTool);
       if (sort) params.set("sort", sort);
-
-      const res = await fetch(`/api/reviews?${params.toString()}`);
+      const res = await fetch(`/api/community?${params.toString()}`);
       const data = await res.json();
-      // API returns either an array (when filtered by tool) or the whole store object.
-      setReviews(
-        Array.isArray(data)
-          ? data
-          : data && data.reviews
-          ? data.reviews
-          : data || []
-      );
+      setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function performSearch(q) {
+    if (!q || !q.trim()) {
+      // empty search -> reload regular posts
+      fetchPosts();
+      return;
+    }
+    setSearching(true);
+    try {
+      const res = await fetch("/api/gemini-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q }),
+      });
+      if (!res.ok) {
+        // fallback to regular posts
+        fetchPosts();
+        return;
+      }
+      const data = await res.json();
+      setPosts(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error(e);
+      fetchPosts();
+    } finally {
+      setSearching(false);
     }
   }
 
@@ -117,23 +148,15 @@ export default function CommunityPage() {
     keywordsArr = [],
     sortOpt = sort
   ) {
-    if (!toolId) return;
+    // allow toolId to be falsy to request the global feed
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      params.set("tool", toolId);
-      if (keywordsArr.length > 0) params.set("keywords", keywordsArr.join(","));
+      if (toolId) params.set("tool", toolId);
       if (sortOpt) params.set("sort", sortOpt);
-
-      const res = await fetch(`/api/reviews?${params.toString()}`);
+      const res = await fetch(`/api/community?${params.toString()}`);
       const data = await res.json();
-      setReviews(
-        Array.isArray(data)
-          ? data
-          : data && data.reviews
-          ? data.reviews
-          : data || []
-      );
+      setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -142,47 +165,39 @@ export default function CommunityPage() {
   }
 
   useEffect(() => {
-    fetchReviews();
-  }, [selectedTool]);
+    fetchPosts();
+  }, [selectedTool, sort]);
 
   function addKeyword(k) {
-    if (!k) return;
-    setFilterKeywords((s) => (s.includes(k) ? s : [...s, k]));
+    // removed: tag filtering not needed
   }
 
   function removeKeyword(k) {
-    setFilterKeywords((s) => s.filter((x) => x !== k));
+    // removed: tag filtering not needed
   }
 
   async function applyFilter() {
-    await fetchReviews();
+    // removed: tag filtering not needed
   }
 
-  // handle clicking a popular chip: set selected tool and add as keyword, then fetch with both params
-  function handlePopularClick(p) {
-    const newTool = p.id;
-    // add the human-friendly tool name to keyword filters (so chips match availableKeywords which are names/tags)
-    const newKeys = filterKeywords.includes(p.name)
-      ? filterKeywords
-      : [...filterKeywords, p.name];
-    setSelectedTool(newTool);
-    setFilterKeywords(newKeys);
-    // fetch directly with computed params so state update timing doesn't block refresh
-    fetchReviewsWithParams(newTool, newKeys, sort);
-  }
+  // popular handlers removed
 
   async function handleLike(reviewId) {
     try {
-      await fetch("/api/reviews", {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return; // must be signed in
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "like",
-          toolId: selectedTool,
-          reviewId,
-        }),
+        headers,
+        body: JSON.stringify({ action: "like", threadId: reviewId }),
       });
-      fetchReviews();
+      if (res.ok) {
+        // refresh posts; could update optimistically
+        fetchPosts();
+      }
     } catch (err) {
       console.error(err);
     }
@@ -190,26 +205,30 @@ export default function CommunityPage() {
 
   async function submitReview(e) {
     e.preventDefault();
-    if (!selectedTool || !form.text) return;
+    // allow composer to specify a tool (composeTool) or fall back to selectedTool
+    const toolToUse = composeTool || selectedTool || null;
+    if (!form.text) return;
     try {
       const payload = {
-        toolId: selectedTool,
-        // new posts use a title; keep backward compatibility by also sending author when no title
+        toolId: toolToUse,
         title: form.title || null,
-        author: form.author || null,
-        rating: form.rating || 5,
         text: form.text,
-        keywords: form.keywords,
+        // keywords intentionally removed from post payload
+        keywords: [],
       };
-      const res = await fetch("/api/reviews", {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setForm({ title: "", author: "", rating: 5, text: "", keywords: [] });
-        setComposerTagInput("");
-        fetchReviews();
+        setForm({ title: "", author: "", text: "" });
+        setComposeTool(null);
+        fetchPosts();
       }
     } catch (err) {
       console.error(err);
@@ -217,20 +236,74 @@ export default function CommunityPage() {
   }
 
   const [showCompose, setShowCompose] = useState(false);
+  const [composeTool, setComposeTool] = useState(null);
 
-  // derive keyword buttons from reviews (simple heuristic)
-  const availableKeywords = useMemo(() => {
-    const kws = new Set();
-    reviews.forEach((r) => (r.keywords || []).forEach((k) => kws.add(k)));
-    // also include tags from the tools data for the selected tool
-    try {
-      const t = Array.isArray(tools)
-        ? tools.find((x) => x.id === selectedTool)
-        : null;
-      if (t && t.tags) t.tags.forEach((tg) => kws.add(tg));
-    } catch (e) {}
-    return Array.from(kws).slice(0, 20);
-  }, [reviews, selectedTool]);
+  // small comment box component (defined inside CommunityPage)
+  function CommentBox({ threadId, onPosted }) {
+    const [text, setText] = useState("");
+    const [sending, setSending] = useState(false);
+    async function post() {
+      if (!text) return;
+      setSending(true);
+      try {
+        const auth = localStorage.getItem("mock_auth");
+        const token = auth ? JSON.parse(auth).token : null;
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["x-user-id"] = token;
+        const res = await fetch("/api/community", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ action: "comment", threadId, text }),
+        });
+        if (res.ok) {
+          setText("");
+          onPosted && onPosted();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setSending(false);
+      }
+    }
+    return (
+      <div className="flex gap-2">
+        <input
+          className="flex-1 border rounded px-2 py-1"
+          placeholder="Write a comment..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+        <button
+          type="button"
+          className="px-3 py-1 bg-sky-600 text-white rounded"
+          onClick={post}
+          disabled={sending}
+        >
+          {sending ? "..." : "Comment"}
+        </button>
+      </div>
+    );
+  }
+
+  // tag filtering removed — no availableKeywords
+
+  if (!currentUser) {
+    return (
+      <div className="py-12">
+        <Card className="max-w-2xl mx-auto text-center p-8">
+          <h3 className="text-lg font-semibold mb-2">
+            Community is for signed-in users
+          </h3>
+          <p className="text-sm text-slate-600 mb-4">
+            Please log in to view and participate in community discussions.
+          </p>
+          <div className="flex justify-center">
+            <Button onClick={() => router.push("/login")}>Sign in</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -238,25 +311,42 @@ export default function CommunityPage() {
       <Card className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1 flex items-center gap-4">
           <div className="min-w-0 flex-1">
-            <Input
-              placeholder="Filter keywords or search"
-              value={keywordInput}
-              onChange={(e) => setKeywordInput(e.target.value)}
-            />
+            <div className="text-sm text-slate-600">
+              Showing: All posts{selectedTool ? ` • ${selectedTool}` : ""}
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                className="border rounded px-2 py-1 text-sm w-[20rem]"
+                placeholder="Describe your query in Natural Language"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    performSearch(searchQuery);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="px-3 py-1 bg-sky-600 text-white rounded text-sm"
+                onClick={() => performSearch(searchQuery)}
+                disabled={searching}
+              >
+                {searching ? "Searching..." : "Search"}
+              </button>
+              <button
+                type="button"
+                className="px-2 py-1 bg-slate-100 rounded text-sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  fetchPosts();
+                }}
+              >
+                Clear
+              </button>
+            </div>
           </div>
-
-          <Button
-            onClick={() => {
-              addKeyword(keywordInput);
-              setKeywordInput("");
-            }}
-          >
-            Add
-          </Button>
-
-          <Button onClick={applyFilter} variant="ghost">
-            Filter
-          </Button>
         </div>
 
         <div className="flex items-center gap-4">
@@ -273,61 +363,9 @@ export default function CommunityPage() {
         </div>
       </Card>
 
-      {/* Selected keyword chips (pills) */}
-      <div className="flex flex-wrap gap-2">
-        {filterKeywords.map((k) => (
-          <button
-            key={k}
-            onClick={() => removeKeyword(k)}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md bg-sky-100 text-slate-900 border-sky-200"
-          >
-            <span className="font-medium">{k}</span>
-            <span className="text-xs text-slate-400">×</span>
-          </button>
-        ))}
-      </div>
+      {/* tag filtering removed */}
 
-      <Card>
-        <div className="flex items-center gap-4">
-          <div className="inline-flex gap-2">
-            {popular.map((p) => {
-              const active =
-                filterKeywords.includes(p.name) || selectedTool === p.id;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => handlePopularClick(p)}
-                  className={`px-3 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${
-                    active
-                      ? "bg-sky-100 text-slate-900 border-sky-200"
-                      : "bg-white text-slate-900 border-slate-200"
-                  }`}
-                >
-                  {p.name}
-                </button>
-              );
-            })}
-          </div>
-
-          <div>
-            <div className="inline-flex gap-2">
-              {availableKeywords.map((k) => (
-                <button
-                  key={k}
-                  onClick={() => addKeyword(k)}
-                  className={`px-2 py-1 rounded-md text-sm border transition shadow-sm hover:shadow-md ${
-                    filterKeywords.includes(k)
-                      ? "bg-sky-100 text-slate-900 border-sky-200"
-                      : "bg-white text-slate-900 border-slate-200"
-                  }`}
-                >
-                  {k}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Card>
+      {/* popular section removed */}
 
       {/* Posts column - match top filter box width (full width of content area) */}
       <div className="w-full">
@@ -336,44 +374,83 @@ export default function CommunityPage() {
             Posts {loading ? "(loading...)" : ""}
           </h3>
           <div className="mt-3 space-y-3">
-            {reviews.length === 0 && (
+            {posts.length === 0 && (
               <div className="text-sm text-slate-500">No posts found.</div>
             )}
-            {reviews.map((r) => (
-              <div key={r.id} className="border p-3 rounded">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold">{r.title || r.author}</div>
-                    <div className="text-xs text-slate-500">
-                      {new Date(r.date).toLocaleDateString()} • {r.rating} / 5
+            {posts.map((t) => {
+              const first =
+                Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
+              const comments = Array.isArray(t.posts) ? t.posts.slice(1) : [];
+              const date = t.date || (first && first.date) || null;
+              return (
+                <div key={t.id} className="border p-3 rounded">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">
+                        {t.title || t.ownerName}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {date ? new Date(date).toLocaleDateString() : ""} •{" "}
+                        {t.ownerName}
+                      </div>
                     </div>
-                    <div className="text-xs text-amber-500 mt-1">
-                      {"★".repeat(
-                        Math.max(0, Math.min(5, Math.round(r.rating || 0)))
-                      ) +
-                        "☆".repeat(
-                          5 -
-                            Math.max(0, Math.min(5, Math.round(r.rating || 0)))
-                        )}
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className={`inline-flex items-center gap-2 px-2 py-1 rounded text-sm ${
+                          Array.isArray(t.likes) &&
+                          t.likes.includes(currentUser)
+                            ? "bg-pink-50 text-pink-600 border border-pink-100"
+                            : "bg-white text-slate-700 border border-slate-100"
+                        }`}
+                        onClick={() => handleLike(t.id)}
+                      >
+                        <span>
+                          {Array.isArray(t.likes) ? t.likes.length : 0}
+                        </span>
+                        <span className="text-xs">♥</span>
+                      </button>
                     </div>
                   </div>
-                  <div>
-                    <button
-                      onClick={() => handleLike(r.id)}
-                      className="text-sm"
-                    >
-                      👍 {r.likes || 0}
-                    </button>
+
+                  <div className="mt-2 text-sm">{first ? first.text : ""}</div>
+                  {t.keywords && t.keywords.length > 0 && (
+                    <div className="mt-2 text-xs text-slate-500">
+                      {t.keywords.join(" • ")}
+                    </div>
+                  )}
+
+                  {/* comments: show up to 3, then a view more link */}
+                  <div className="mt-3 space-y-2">
+                    {comments.slice(0, 3).map((c, idx) => (
+                      <div
+                        key={idx}
+                        className="text-sm border rounded p-2 bg-slate-50"
+                      >
+                        <div className="text-xs text-slate-500">
+                          {c.author} •{" "}
+                          {c.date ? new Date(c.date).toLocaleString() : ""}
+                        </div>
+                        <div className="mt-1">{c.text}</div>
+                      </div>
+                    ))}
+
+                    {comments.length > 3 && (
+                      <div>
+                        <a
+                          className="text-sm text-sky-600 hover:underline"
+                          href={`/community/${t.id}`}
+                        >
+                          View more ({comments.length})
+                        </a>
+                      </div>
+                    )}
+
+                    <CommentBox threadId={t.id} onPosted={() => fetchPosts()} />
                   </div>
                 </div>
-                <div className="mt-2 text-sm">{r.text}</div>
-                {r.keywords && r.keywords.length > 0 && (
-                  <div className="mt-2 text-xs text-slate-500">
-                    {r.keywords.join(" • ")}
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       </div>
@@ -381,7 +458,10 @@ export default function CommunityPage() {
       {/* Floating compose button */}
       <button
         aria-label="Create post"
-        onClick={() => setShowCompose(true)}
+        onClick={() => {
+          setComposeTool(selectedTool);
+          setShowCompose(true);
+        }}
         className="fixed bottom-6 right-6 bg-violet-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-violet-700 transition"
       >
         +
@@ -420,103 +500,26 @@ export default function CommunityPage() {
                 }
               />
 
-              {/* quick suggested keywords for posts */}
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "review",
-                  "problem solving",
-                  "model issue",
-                  "bug",
-                  "feature request",
-                ].map((k) => (
-                  <button
-                    type="button"
-                    key={k}
-                    onClick={() =>
-                      setForm((s) => ({
-                        ...s,
-                        keywords: s.keywords
-                          ? Array.from(new Set([...s.keywords, k]))
-                          : [k],
-                      }))
-                    }
-                    className="px-2 py-1 bg-sky-50 rounded-full text-sm hover:bg-sky-100 transition"
-                  >
-                    {k}
-                  </button>
-                ))}
+              <div>
+                <label className="text-sm">Tool</label>
+                <select
+                  className="ml-2 px-2 py-1 border rounded w-full mt-1"
+                  value={composeTool || ""}
+                  onChange={(e) => setComposeTool(e.target.value || null)}
+                >
+                  <option value="">(No tool)</option>
+                  {Array.isArray(tools) &&
+                    tools.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                </select>
               </div>
 
-              {/* tag-input UI: show tags and an input to add more */}
-              <div className="border rounded p-2">
-                <div className="flex flex-wrap gap-2">
-                  {(form.keywords || []).map((tk) => (
-                    <span
-                      key={tk}
-                      className="inline-flex items-center gap-2 px-2 py-1 bg-slate-100 rounded-full text-sm"
-                    >
-                      <span>{tk}</span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setForm((s) => ({
-                            ...s,
-                            keywords: (s.keywords || []).filter(
-                              (x) => x !== tk
-                            ),
-                          }))
-                        }
-                        className="text-xs text-slate-500"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                  <input
-                    className="outline-none px-2 py-1 text-sm"
-                    placeholder="Add keyword and press Enter"
-                    value={composerTagInput}
-                    onChange={(e) => setComposerTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === ",") {
-                        e.preventDefault();
-                        const v = composerTagInput.trim().replace(/,$/, "");
-                        if (v) {
-                          setForm((s) => ({
-                            ...s,
-                            keywords: s.keywords
-                              ? Array.from(new Set([...s.keywords, v]))
-                              : [v],
-                          }));
-                          setComposerTagInput("");
-                        }
-                      }
-                    }}
-                  />
-                </div>
-              </div>
+              {/* keywords removed from compose UI */}
 
-              {/* star rating control */}
-              <div className="flex gap-2 items-center">
-                <label className="text-sm">Rating</label>
-                <div className="flex items-center gap-1 ml-2">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setForm((s) => ({ ...s, rating: n }))}
-                      className={`text-xl ${
-                        n <= (form.rating || 0)
-                          ? "text-amber-400"
-                          : "text-slate-300"
-                      }`}
-                      aria-label={`Set rating ${n}`}
-                    >
-                      {n <= (form.rating || 0) ? "★" : "☆"}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* rating removed from post compose UI */}
 
               <textarea
                 rows={5}
