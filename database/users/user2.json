@@ -3,7 +3,9 @@
   "username": "bob",
   "password": "test",
   "displayName": "Bob Marley",
-  "bookmarks": ["midjourney"],
+  "bookmarks": [
+    "midjourney"
+  ],
   "reviews": [
     {
       "toolId": "midjourney",
@@ -16,7 +18,11 @@
       "id": "t5",
       "title": "Cinematic renders in MidJourney",
       "toolId": "midjourney",
-      "keywords": ["cinematic", "lighting", "concept art"],
+      "keywords": [
+        "cinematic",
+        "lighting",
+        "concept art"
+      ],
       "createdAt": "2025-11-09T10:00:00.000Z",
       "posts": [
         {
@@ -43,9 +49,17 @@
           "author": "user1",
           "text": "spamming comments",
           "date": "2025-11-09T18:25:43.747Z"
+        },
+        {
+          "author": "user1",
+          "text": "hello",
+          "date": "2025-11-11T03:57:30.745Z"
         }
       ],
-      "likes": ["user1", "user7"]
+      "likes": [
+        "user7",
+        "user1"
+      ]
     }
   ]
 }

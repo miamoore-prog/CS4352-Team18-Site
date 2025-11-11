@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button } from "../../../components/ui";
 
 export default function ThreadPage({ params }) {
-  const { threadId } = params || {};
+  // `params` can be a Promise in the app-router when rendered on the client.
+  // Unwrap it with React's `use` hook before accessing properties to avoid
+  // the Next.js runtime warning about sync dynamic APIs.
+  const { threadId } = use(params) || {};
   const [thread, setThread] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);

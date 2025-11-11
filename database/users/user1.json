@@ -3,7 +3,10 @@
   "username": "alice",
   "password": "test",
   "displayName": "Alice Cooper",
-  "bookmarks": ["chatgpt", "dalle"],
+  "bookmarks": [
+    "chatgpt",
+    "dalle"
+  ],
   "reviews": [
     {
       "toolId": "chatgpt",
@@ -28,7 +31,10 @@
           "date": "2025-11-09T09:15:00.000Z"
         }
       ],
-      "likes": ["user2", "user1"]
+      "likes": [
+        "user2",
+        "user1"
+      ]
     },
     {
       "id": "thread-1762714484960-673",
@@ -42,6 +48,29 @@
           "text": "Chatgpt old version really generate good responses. But in this new version with the auto-switching model. I feel like it lost its touch.",
           "date": "2025-11-09T18:54:44.960Z"
         }
+      ],
+      "likes": []
+    },
+    {
+      "id": "thread-1762833342080-311",
+      "title": "Chat Suckss",
+      "toolId": "chatgpt",
+      "keywords": [],
+      "createdAt": "2025-11-11T03:55:42.080Z",
+      "posts": [
+        {
+          "author": "alice",
+          "text": "hey so chat sucks\n",
+          "date": "2025-11-11T03:55:42.080Z"
+        },
+        {
+          "author": "user1",
+          "text": "no",
+          "date": "2025-11-11T03:55:47.754Z"
+        }
+      ],
+      "likes": [
+        "user1"
       ]
     }
   ]
