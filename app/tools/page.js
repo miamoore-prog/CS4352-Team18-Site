@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import SearchBar from "../../components/SearchBar";
 import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
 
 export default function ToolsPage() {
-  const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("query") || "";
-  const [query, setQuery] = useState(initialQuery);
+  // read query from window.location on mount instead of useSearchParams to avoid CSR bailout during prerender
+  const [query, setQuery] = useState("");
   const [activeTool, setActiveTool] = useState(null);
   const [recommendedIds, setRecommendedIds] = useState(null);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
@@ -124,11 +122,16 @@ export default function ToolsPage() {
   // If the page was opened with a query param (navigated from home), run
   // a search automatically on mount so users see results immediately.
   useEffect(() => {
-    if (initialQuery && initialQuery.trim() !== "") {
-      // ensure the displayed query matches the initialQuery
-      if (initialQuery !== query) setQuery(initialQuery);
-      // kick off the fetch once
-      fetchRecommendations(initialQuery);
+    // read any ?query=... from the URL on client mount
+    try {
+      const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const initialQuery = params ? params.get('query') || '' : '';
+      if (initialQuery && initialQuery.trim() !== '') {
+        if (initialQuery !== query) setQuery(initialQuery);
+        fetchRecommendations(initialQuery);
+      }
+    } catch (e) {
+      // ignore
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
