@@ -1,0 +1,28 @@
+[
+  {
+    "id": "req-1762884357232",
+    "toolName": "nano banana",
+    "usage": "this is for image editing\n\ni think we can do cool things with it",
+    "contact": "alice123@gmail.com",
+    "createdAt": "2025-11-11T18:05:57.232Z",
+    "authorId": "user1",
+    "status": "open",
+    "comments": [
+      {
+        "authorId": "user1",
+        "text": "i also think it can be used for video editing",
+        "createdAt": "2025-11-11T18:20:29.963Z"
+      },
+      {
+        "authorId": "admin-1",
+        "text": "how can we use it for video editing?",
+        "createdAt": "2025-11-11T18:20:52.906Z"
+      },
+      {
+        "authorId": "user1",
+        "text": "i think it is the new version that is just released or i might confuse it with sora 2",
+        "createdAt": "2025-11-11T18:24:03.057Z"
+      }
+    ]
+  }
+]
