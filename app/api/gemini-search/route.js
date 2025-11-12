@@ -32,18 +32,14 @@ export async function POST(req) {
       const user = u.data;
       if (!user.threads) continue;
       for (const t of user.threads) {
-        const first = Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
-        const snippetParts = [
-          t.title || "",
-          (first && first.text) || "",
-        ].filter(Boolean);
-        // include up to two more post snippets
-        if (Array.isArray(t.posts)) {
+        const first = t.posts?.[0];
+        const snippetParts = [t.title, first?.text].filter(Boolean);
+        if (t.posts) {
           for (let i = 1; i < Math.min(3, t.posts.length); i++) {
             snippetParts.push(t.posts[i].text || "");
           }
         }
-        const snippet = snippetParts.join(" \n\n").slice(0, 2000);
+        const snippet = snippetParts.join("\n\n").slice(0, 2000);
         threads.push({
           id: t.id,
           title: t.title || "",
@@ -53,36 +49,22 @@ export async function POST(req) {
           toolId: t.toolId || null,
           keywords: t.keywords || [],
           snippet,
-          date:
-            t.createdAt || (first && first.date) || new Date().toISOString(),
+          date: t.createdAt || first?.date || new Date().toISOString(),
           likes: Array.isArray(t.likes) ? t.likes : [],
         });
       }
     }
 
-    // Quick local fallback ranking (token overlap)
     function localRank(q) {
-      const qTokens = q
-        .toLowerCase()
-        .split(/[^\w]+/)
-        .filter(Boolean);
+      const words = q.toLowerCase().split(/\s+/);
       const scored = threads
         .map((th) => {
-          const hay = (
-            th.title +
-            " " +
-            th.snippet +
-            " " +
-            (th.ownerName || "")
-          ).toLowerCase();
+          const text = [th.title, th.snippet, th.ownerName]
+            .join(" ")
+            .toLowerCase();
           let score = 0;
-          for (const tk of qTokens) {
-            if (!tk) continue;
-            if (hay.includes(tk)) score += 1;
-            else if (tk.endsWith("s") && hay.includes(tk.slice(0, -1)))
-              score += 0.5;
-            else if (tk.endsWith("ing") && hay.includes(tk.slice(0, -3)))
-              score += 0.5;
+          for (const word of words) {
+            if (text.includes(word)) score++;
           }
           return { thread: th, score };
         })
@@ -92,7 +74,6 @@ export async function POST(req) {
       return scored;
     }
 
-    // If no GEMINI key, return local ranking
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       const ranked = localRank(query).map((r) => {
@@ -102,24 +83,20 @@ export async function POST(req) {
       return new Response(JSON.stringify(ranked), { status: 200 });
     }
 
-    // Only include a compact list of items to stay within prompt length
     const items = threads.map((t) => ({
       id: t.id,
       title: t.title,
       snippet: t.snippet,
     }));
-    const prompt = `You are given a user search query and a list of community threads. Each thread has an id, title, and a short text snippet (first post plus a few comments).
+    const prompt = `Search query: "${query}"
 
-User query:
-"""${query.replace(/"/g, '"')}"""
-
-Task: Return a JSON array (best effort, up to 20 items) of objects: { id: string, score: number (0-1), reason: short justification } ordered by relevance. Only return the JSON array and nothing else.
+Find the most relevant threads from this list. Return a JSON array with up to 20 results, each having: id, score (0-1), and reason.
 
 Threads:
 ${JSON.stringify(items)}
-`;
 
-    // Call Gemini
+Return only the JSON array.`;
+
     try {
       const { GoogleGenAI } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey });
@@ -131,7 +108,6 @@ ${JSON.stringify(items)}
       try {
         const parsed = JSON.parse(text);
         if (!Array.isArray(parsed)) throw new Error("not-array");
-        // map back to full thread objects
         const out = parsed
           .map((p) => {
             const t = threads.find((tt) => tt.id === p.id);
@@ -145,7 +121,6 @@ ${JSON.stringify(items)}
           .filter(Boolean);
         return new Response(JSON.stringify(out), { status: 200 });
       } catch (e) {
-        // parsing failed, fallback to local rank
         const ranked = localRank(query).map((r) => {
           const t = threads.find((tt) => tt.id === r.id);
           return { ...t, score: r.score };
@@ -153,7 +128,6 @@ ${JSON.stringify(items)}
         return new Response(JSON.stringify(ranked), { status: 200 });
       }
     } catch (e) {
-      // If Gemini call fails, fallback to local rank
       const ranked = localRank(query).map((r) => {
         const t = threads.find((tt) => tt.id === r.id);
         return { ...t, score: r.score };

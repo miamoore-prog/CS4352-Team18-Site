@@ -3,8 +3,6 @@ import { useState } from "react";
 
 export default function ArticlesPage() {
   const [search, setSearch] = useState("");
-
-  // 📰 Hardcoded articles (simple, safe version)
   const articles = [
     {
       title: "How AI Is Transforming the Workplace",
@@ -33,7 +31,6 @@ export default function ArticlesPage() {
     },
   ];
 
-  // 🔍 Filter results based on search
   const filteredArticles = articles.filter(
     (article) =>
       article.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -42,12 +39,10 @@ export default function ArticlesPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      {/* 🧭 Header */}
       <h1 className="text-3xl font-bold mb-6 text-center text-slate-800">
         Explore AI & Tech Articles
       </h1>
 
-      {/* 🔤 Search bar */}
       <input
         type="text"
         placeholder="Search by topic or author..."
@@ -56,7 +51,6 @@ export default function ArticlesPage() {
         className="border border-gray-300 rounded-lg p-3 w-full mb-6 focus:outline-none focus:ring-2 focus:ring-purple-500"
       />
 
-      {/* 📚 Articles List */}
       <div className="space-y-4">
         {filteredArticles.length > 0 ? (
           filteredArticles.map((article, index) => (
@@ -82,11 +76,9 @@ export default function ArticlesPage() {
         )}
       </div>
 
-      {/* 👇 Footer Note */}
       <p className="text-sm text-gray-500 text-center mt-8">
         Built by Team 18 for CS/CGS 4352 – Introduction to Human-Computer
         Interaction. <br />
-        (Future version could dynamically fetch articles using Gemini API.)
       </p>
     </div>
   );

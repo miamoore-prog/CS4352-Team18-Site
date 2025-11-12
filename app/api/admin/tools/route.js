@@ -53,7 +53,6 @@ export async function POST(req) {
       });
     }
     const body = await req.json();
-    // expect at least id and name
     const { id, name } = body || {};
     if (!id || !name) {
       return new Response(JSON.stringify({ error: "missing id or name" }), {
@@ -62,7 +61,6 @@ export async function POST(req) {
     }
 
     const filePath = path.join(TOOLS_DIR, `${id}.json`);
-    // write the object using provided fields but ensure id and name are set
     const toWrite = { ...body, id, name };
     await fs.promises.writeFile(
       filePath,
@@ -102,7 +100,6 @@ export async function PATCH(req) {
     }
     const raw = await fs.promises.readFile(filePath, "utf8");
     const parsed = JSON.parse(raw);
-    // Apply allowed updates from the request body (merge)
     const allowed = [
       "name",
       "logo",

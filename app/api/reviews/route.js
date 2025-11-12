@@ -42,7 +42,6 @@ export async function GET(req) {
     if (tool) {
       const items = store[tool] || [];
 
-      // enrich authorDisplay where possible
       for (const it of items) {
         if (!it.authorDisplay) {
           const aid = it.authorId || it.author;
@@ -74,12 +73,10 @@ export async function GET(req) {
           .slice()
           .sort((a, b) => (b.likes || 0) - (a.likes || 0));
       } else if (sort === "oldest") {
-        // oldest first
         filtered = filtered
           .slice()
           .sort((a, b) => new Date(a.date) - new Date(b.date));
       } else {
-        // default: recent (by date)
         filtered = filtered
           .slice()
           .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -146,7 +143,6 @@ export async function POST(req) {
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
     }
 
-    // Upsert review: if a review by this user exists for the tool, append an edit entry to history; otherwise create a new review.
     const { toolId, title, rating, text, keywords } = body;
     if (!toolId || !text) {
       return new Response(
@@ -157,7 +153,6 @@ export async function POST(req) {
 
     store[toolId] = store[toolId] || [];
 
-    // If userId provided, try to find existing review by authorId
     if (userId) {
       let existing = store[toolId].find(
         (r) =>
@@ -166,7 +161,6 @@ export async function POST(req) {
       );
       const now = new Date().toISOString();
       if (existing) {
-        // ensure history exists and include the prior rating if available
         existing.history = existing.history || [
           {
             date: existing.date || now,
@@ -175,7 +169,6 @@ export async function POST(req) {
               typeof existing.rating !== "undefined" ? existing.rating : null,
           },
         ];
-        // push new edit entry; record the rating at this edit (explicit or current)
         const editRating =
           typeof rating !== "undefined" && rating !== null
             ? Number(rating)
@@ -195,13 +188,11 @@ export async function POST(req) {
           ? keywords
           : existing.keywords || [];
         await writeStore(store);
-        // resolve display name if possible
         existing.authorDisplay =
           existing.authorDisplay || (await tryResolveAuthorDisplay(userId));
         return new Response(JSON.stringify(existing), { status: 200 });
       }
 
-      // create new review with authorId
       const newReview = {
         id: `${toolId}-r${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         title: title || null,
@@ -243,7 +234,6 @@ export async function POST(req) {
       return new Response(JSON.stringify(newReview), { status: 201 });
     }
 
-    // Fallback: anonymous review (preserve legacy behavior) — require rating for anonymous
     if (!rating) {
       return new Response(
         JSON.stringify({ error: "rating required for anonymous review" }),

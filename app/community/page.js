@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
 
-// load tools catalog at runtime from the canonical API (database/tools/*.json)
 const useToolsLoader = () => {
   const [tools, setTools] = useState([]);
   useEffect(() => {
@@ -42,25 +41,16 @@ export default function CommunityPage() {
     author: "",
     text: "",
   });
-  // keywords and composer tag input removed from compose UI
 
-  // fetch list of available tools from the canonical API (client-side)
   const tools = useToolsLoader();
   const toolIds = useMemo(
     () => (Array.isArray(tools) ? tools.map((t) => t.id) : []),
     [tools]
   );
 
-  // popular models / companies (shown as clickable chips)
-  // popular section removed
+  useEffect(() => {}, [toolIds, storeKeys]);
 
   useEffect(() => {
-    // Do not auto-select a tool by default. Showing the full 'All posts' feed
-    // is more useful so users see existing community content immediately.
-  }, [toolIds, storeKeys]);
-
-  useEffect(() => {
-    // only fetch community data when logged in
     const auth =
       typeof window !== "undefined" && localStorage.getItem("mock_auth");
     const token = auth ? JSON.parse(auth).token : null;
@@ -73,7 +63,6 @@ export default function CommunityPage() {
       fetchStoreKeys();
     }
 
-    // listen for login/logout from other tabs
     function onStorage(e) {
       if (e.key === "mock_auth") {
         const a = e.newValue ? JSON.parse(e.newValue) : null;
@@ -93,7 +82,6 @@ export default function CommunityPage() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  // keep currentUserObj in sync when currentUser changes (login in same tab)
   useEffect(() => {
     try {
       const auth = localStorage.getItem("mock_auth");
@@ -171,51 +159,9 @@ export default function CommunityPage() {
     }
   }
 
-  // helper: fetch reviews using explicit params (used when we change tool and keywords together)
-  async function fetchReviewsWithParams(
-    toolId,
-    keywordsArr = [],
-    sortOpt = sort
-  ) {
-    // allow toolId to be falsy to request the global feed
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (toolId) params.set("tool", toolId);
-      if (sortOpt) params.set("sort", sortOpt);
-      const auth = localStorage.getItem("mock_auth");
-      const token = auth ? JSON.parse(auth).token : null;
-      const headers = {};
-      if (token) headers["x-user-id"] = token;
-      const res = await fetch(`/api/community?${params.toString()}`, {
-        headers,
-      });
-      const data = await res.json();
-      setPosts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
     fetchPosts();
   }, [selectedTool, sort]);
-
-  function addKeyword(k) {
-    // removed: tag filtering not needed
-  }
-
-  function removeKeyword(k) {
-    // removed: tag filtering not needed
-  }
-
-  async function applyFilter() {
-    // removed: tag filtering not needed
-  }
-
-  // popular handlers removed
 
   async function handleLike(reviewId) {
     try {
@@ -287,7 +233,12 @@ export default function CommunityPage() {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (!confirm('Delete this thread? This action will permanently remove the thread.')) return;
+      if (
+        !confirm(
+          "Delete this thread? This action will permanently remove the thread."
+        )
+      )
+        return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -383,8 +334,6 @@ export default function CommunityPage() {
     );
   }
 
-  // tag filtering removed — no availableKeywords
-
   // split flagged posts for admins vs visible posts for general feed
   const flaggedPosts = Array.isArray(posts)
     ? posts.filter((p) => p.flagged)
@@ -477,10 +426,6 @@ export default function CommunityPage() {
         </div>
       </Card>
 
-      {/* tag filtering removed */}
-
-      {/* popular section removed */}
-
       {/* Admin flagged posts section (admins only) */}
       {currentUserObj && currentUserObj.role === "admin" && (
         <div className="w-full">
@@ -541,7 +486,7 @@ export default function CommunityPage() {
         </div>
       )}
 
-      {/* Posts column - match top filter box width (full width of content area) */}
+      {/* Posts */}
       <div className="w-full">
         <Card>
           <h3 className="font-semibold">
@@ -584,7 +529,7 @@ export default function CommunityPage() {
                         </span>
                         <span className="text-xs">♥</span>
                       </button>
-                      {/* admin controls: flag/unflag thread (placed next to like) */}
+                      {/* admin controls: flag/unflag thread */}
                       {currentUserObj && currentUserObj.role === "admin" && (
                         <div className="flex items-center gap-2 ml-2">
                           {t.flagged ? (
@@ -634,7 +579,17 @@ export default function CommunityPage() {
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
                               <div className="text-xs text-slate-500">
-                                {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""} • <span className="italic text-red-600">deleted by admin</span>
+                                {c.authorIsAdmin
+                                  ? "admin"
+                                  : c.authorName || c.author}{" "}
+                                •{" "}
+                                {c.date
+                                  ? new Date(c.date).toLocaleString()
+                                  : ""}{" "}
+                                •{" "}
+                                <span className="italic text-red-600">
+                                  deleted by admin
+                                </span>
                               </div>
                               <div className="mt-1">{c.deletedText || ""}</div>
                               <div className="mt-2">
@@ -667,7 +622,10 @@ export default function CommunityPage() {
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
                           <div className="text-xs text-slate-500">
-                            {(c.authorIsAdmin ? 'admin' : (c.authorName || c.author))} • {c.date ? new Date(c.date).toLocaleString() : ""}
+                            {c.authorIsAdmin
+                              ? "admin"
+                              : c.authorName || c.author}{" "}
+                            • {c.date ? new Date(c.date).toLocaleString() : ""}
                           </div>
                           <div className="mt-1">{c.text}</div>
                           {currentUserObj &&
@@ -768,10 +726,6 @@ export default function CommunityPage() {
                     ))}
                 </select>
               </div>
-
-              {/* keywords removed from compose UI */}
-
-              {/* rating removed from post compose UI */}
 
               <textarea
                 rows={5}

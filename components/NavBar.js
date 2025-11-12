@@ -179,13 +179,11 @@ export default function NavBar() {
               </Button>
             </Link>
 
-            {/* Articles Link with Icon */}
             <Link href="/articles">
               <Button
                 variant="ghost"
                 className="flex items-center space-x-1 text-sm"
               >
-                {/* <BookOpen size={16} /> */}
                 <span>Articles</span>
               </Button>
             </Link>

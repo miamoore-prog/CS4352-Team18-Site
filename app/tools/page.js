@@ -6,16 +6,12 @@ import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
 
 export default function ToolsPage() {
-  // read query from window.location on mount instead of useSearchParams to avoid CSR bailout during prerender
   const [query, setQuery] = useState("");
   const [activeTool, setActiveTool] = useState(null);
   const [recommendedIds, setRecommendedIds] = useState(null);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState(null);
-
-  // Explicit displayed tools state to avoid any render-order timing issues
   const [displayedTools, setDisplayedTools] = useState([]);
-  // keep a full catalog so we can reset and filter deterministically
   const [allTools, setAllTools] = useState([]);
 
   useEffect(() => {
@@ -34,26 +30,21 @@ export default function ToolsPage() {
     };
   }, []);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8; // Number of tool cards per page
+  const pageSize = 8;
 
-  // Automatically reset to first page when new tools are displayed
   useEffect(() => {
     setCurrentPage(1);
   }, [displayedTools]);
 
-  // Compute total pages
   const totalPages = Math.ceil(displayedTools.length / pageSize);
 
-  // Compute which tools to show on current page
   const paginatedTools = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     return displayedTools.slice(start, end);
   }, [displayedTools, currentPage, pageSize]);
 
-  // Fetch recommendations from the server (Gemini). Called manually via the Search button.
   async function fetchRecommendations(q, { signal } = {}) {
     if (!q || q.trim() === "") {
       setRecommendedIds(null);
@@ -67,7 +58,6 @@ export default function ToolsPage() {
     setLoadingRecommendations(true);
 
     try {
-      // clear displayed tools while fetching to show loading state
       setDisplayedTools([]);
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -80,9 +70,7 @@ export default function ToolsPage() {
 
       if (Array.isArray(data) && data.length > 0) {
         const ids = data.map((d) => d.id).filter(Boolean);
-
         setRecommendedIds(ids);
-        // set displayed tools immediately
         setDisplayedTools(allTools.filter((t) => ids.includes(t.id)));
       } else {
         setRecommendedIds([]);

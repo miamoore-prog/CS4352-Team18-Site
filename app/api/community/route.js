@@ -38,7 +38,6 @@ export async function GET(req) {
 
   const users = await readUsers();
   const threads = [];
-  // helper to resolve an author identifier (could be user id, username, or displayName)
   function resolveAuthorName(author) {
     if (!author) return author;
     // try id match first
@@ -53,26 +52,29 @@ export async function GET(req) {
         byUsername.data.username ||
         byUsername.data.id
       );
-    // otherwise, return the raw author string
     return String(author);
   }
   for (const u of users) {
     const user = u.data;
     if (!user.threads) continue;
     for (const t of user.threads) {
-      // preserve flagged state if present
       const flagged = t.flagged || false;
       const firstPost =
         Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
       const fallbackNow = new Date().toISOString();
       const date = t.createdAt || (firstPost && firstPost.date) || fallbackNow;
-      // normalize post authors to friendly first-name when possible
       const posts = (t.posts || []).map((p) => {
         const rawAuthor = p.author;
-        // attempt to resolve to a user record to detect admin role
-        const byId = users.find((u) => u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor));
+        const byId = users.find(
+          (u) =>
+            u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor)
+        );
         const authorName = resolveAuthorName(rawAuthor);
-        const authorIsAdmin = !!(byId && byId.data && byId.data.role === "admin");
+        const authorIsAdmin = !!(
+          byId &&
+          byId.data &&
+          byId.data.role === "admin"
+        );
         return {
           ...p,
           authorId: rawAuthor,
@@ -98,7 +100,6 @@ export async function GET(req) {
     }
   }
 
-  // if a threadId is requested, return the single thread
   const threadId = params.get("threadId");
   if (threadId) {
     const thread = threads.find((tr) => tr.id === threadId);
@@ -111,9 +112,7 @@ export async function GET(req) {
     });
   }
 
-  // apply filters
   let results = threads;
-  // filter out flagged threads for non-admins and non-owners
   const reqUserId = req.headers.get("x-user-id") || null;
   const requesterIsAdmin =
     reqUserId &&
@@ -121,7 +120,6 @@ export async function GET(req) {
     findUserById(reqUserId).role === "admin";
   results = results.filter((r) => {
     if (!r.flagged) return true;
-    // flagged: show only to admin or owner
     if (requesterIsAdmin) return true;
     if (reqUserId && r.ownerId === reqUserId) return true;
     return false;
@@ -145,7 +143,6 @@ export async function GET(req) {
     });
   }
 
-  // support other sort modes
   if (sort === "oldest") {
     results.sort((a, b) => {
       const da = a.date ? new Date(a.date).getTime() : 0;
@@ -155,13 +152,10 @@ export async function GET(req) {
   }
 
   if (sort === "liked") {
-    // threads may not have explicit likes; fall back to comment count as proxy
     results.sort((a, b) => {
-      // ensure we compare numeric like counts (likes stored as arrays)
       const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
       const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
       if (likesB !== likesA) return likesB - likesA;
-      // fall back to comment count (posts length - 1 for replies)
       const ca = Array.isArray(a.posts) ? Math.max(0, a.posts.length - 1) : 0;
       const cb = Array.isArray(b.posts) ? Math.max(0, b.posts.length - 1) : 0;
       return cb - ca;
@@ -184,7 +178,6 @@ export async function POST(req) {
         return new Response(JSON.stringify({ error: "missing user" }), {
           status: 400,
         });
-      // find user file
       const users = await readUsers();
       const target = users.find((u) => u.data.id === userId);
       if (!target)
@@ -222,7 +215,6 @@ export async function POST(req) {
     }
 
     if (action === "comment") {
-      // body: { action: 'comment', threadId, text }
       const threadId = body.threadId;
       const text = body.text || "";
       const commenter = body.author || (userId ? userId : "anonymous");
@@ -252,7 +244,6 @@ export async function POST(req) {
     }
 
     if (action === "like") {
-      // body: { action: 'like', threadId }
       const threadId = body.threadId;
       if (!threadId)
         return new Response(JSON.stringify({ error: "missing threadId" }), {
@@ -276,7 +267,6 @@ export async function POST(req) {
             t.likes.push(userId);
             liked = true;
           } else {
-            // toggle off
             t.likes.splice(idx, 1);
             liked = false;
           }
@@ -297,7 +287,6 @@ export async function POST(req) {
       });
     }
 
-    // admin-only: flag/unflag a thread
     if (action === "flag") {
       const threadId = body.threadId;
       const flag = !!body.flag;
@@ -332,7 +321,6 @@ export async function POST(req) {
       });
     }
 
-    // admin-only: delete a comment by index (mark deletedByAdmin)
     if (action === "deleteComment") {
       const threadId = body.threadId;
       const idx =
@@ -379,7 +367,6 @@ export async function POST(req) {
       });
     }
 
-    // admin-only: delete a thread entirely
     if (action === "deleteThread") {
       const threadId = body.threadId;
       if (!threadId)
@@ -400,10 +387,14 @@ export async function POST(req) {
         if (idx !== -1) {
           obj.threads.splice(idx, 1);
           await writeUserFile(u.file, obj);
-          return new Response(JSON.stringify({ ok: true, threadId }), { status: 200 });
+          return new Response(JSON.stringify({ ok: true, threadId }), {
+            status: 200,
+          });
         }
       }
-      return new Response(JSON.stringify({ error: "thread not found" }), { status: 404 });
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
     }
 
     return new Response(JSON.stringify({ error: "unsupported action" }), {

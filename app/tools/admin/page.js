@@ -26,8 +26,6 @@ export default function AdminToolsPage() {
 
   useEffect(() => {
     // fetch current user
-    // Prefer client-side mock_auth (set at login) so the page recognizes the user
-    // immediately without relying on the server header.
     try {
       const raw = localStorage.getItem("mock_auth");
       if (raw) {

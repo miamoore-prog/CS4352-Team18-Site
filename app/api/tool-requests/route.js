@@ -29,12 +29,10 @@ function isAdmin(userId) {
 }
 
 export async function POST(req) {
-  // POST handles two actions: create request (default) or add comment when body.action === 'comment'
   try {
     const body = await req.json();
     const userId = req.headers.get("x-user-id") || null;
 
-    // add comment to existing request
     if (body && body.action === "comment") {
       const { id, text } = body || {};
       if (!id || !text)
@@ -72,7 +70,6 @@ export async function POST(req) {
       });
     }
 
-    // create new request
     const { toolName, usage, contact } = body || {};
     if (!toolName || !usage) {
       return new Response(
@@ -114,7 +111,6 @@ export async function GET(req) {
         headers: { "Content-Type": "application/json" },
       });
     }
-    // if not admin and user present, return only their requests
     if (userId) {
       const mine = arr.filter((r) => r.authorId === userId);
       return new Response(JSON.stringify(mine), {
@@ -122,7 +118,6 @@ export async function GET(req) {
         headers: { "Content-Type": "application/json" },
       });
     }
-    // anonymous users get empty list
     return new Response(JSON.stringify([]), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -135,7 +130,6 @@ export async function GET(req) {
 }
 
 export async function PATCH(req) {
-  // allow admin to close a request (set status) or set status to open; also allow admin to add an internal note via comments
   try {
     const body = await req.json();
     const userId = req.headers.get("x-user-id") || null;
