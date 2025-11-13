@@ -209,7 +209,7 @@ export default function NavBar() {
           className="flex items-center space-x-4 relative"
           ref={translateRef}
         >
-          {/* Bookmarks dropdown (hidden when logged out) */}
+          {/* profile dropdown on click */}
           {user && (
             <div className="relative">
               <button
@@ -323,13 +323,11 @@ export default function NavBar() {
 
           {/* profile dropdown on hover */}
           {user ? (
-            <div
-              className="relative"
-              ref={profileRef}
-              onMouseEnter={() => setShowProfileMenu(true)}
-              onMouseLeave={() => setShowProfileMenu(false)}
-            >
-              <button className="flex items-center gap-3 px-3 py-1 rounded text-sm hover:bg-slate-50">
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center gap-3 px-3 py-1 rounded text-sm hover:bg-slate-50"
+              >
                 <span className="text-sm text-slate-600">
                   {user.displayName}
                 </span>
