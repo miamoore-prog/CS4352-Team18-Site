@@ -29,6 +29,31 @@ export default function ArticlesPage() {
       author: "Nature",
       link: "https://www.nature.com/",
     },
+    {
+      title: "Understanding the Nuances of Human-Like Intelligence",
+      author: "MIT News",
+      link: "https://news.mit.edu/2025/understanding-nuances-human-intelligence-phillip-isola-1111",
+    },
+    {
+      title: "Charting the Future of AI, From Safer Answers to Faster Thinking",
+      author: "MIT News",
+      link: "https://news.mit.edu/2025/charting-the-future-of-ai-from-safer-answers-to-faster-thinking-1106",
+    },
+    {
+      title: "MIT Researchers Propose a New Model for Legible, Modular Software",
+      author: "MIT News",
+      link: "https://news.mit.edu/2025/mit-researchers-propose-new-model-for-legible-modular-software-1106",
+    },
+    {
+      title: "Top 10: AI Leaders",
+      author: "AI Magazine",
+      link: "https://aimagazine.com/news/what-do-governments-risk-without-smarter-ai-procurement",
+    },
+    {
+      title: "Universities are embracing AI: Will Students Get Smarter or Stop Thinking?",
+      author: "Nature",
+      link: "https://www.nature.com/articles/d41586-025-03340-w",
+    },
   ];
 
   const filteredArticles = articles.filter(
