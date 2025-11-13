@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, Button } from "../../components/ui";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -10,6 +11,7 @@ export default function ProfilePage() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [tab, setTab] = useState("bookmarks");
   const [loadingTools, setLoadingTools] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     try {
@@ -109,9 +111,7 @@ export default function ProfilePage() {
               >
                 Private Profile
               </button>
-              <Link href="/tools/request">
-                <a className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline">Request a tool</a>
-              </Link>
+              <Link href="/tools/request" className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline">Request a tool</Link>
             </div>
           </Card>
         </div>
@@ -130,15 +130,16 @@ export default function ProfilePage() {
                     {bookmarkedTools.map((t) => (
                       <div key={t.id} className="flex items-center justify-between border rounded p-3">
                         <div>
-                          <Link href={`/tools/${t.id}`}>
-                            <a className="font-semibold text-slate-800">{t.name}</a>
-                          </Link>
+                          <Link href={`/tools/${t.id}`} className="font-semibold text-slate-800">{t.name}</Link>
                           <div className="text-xs text-slate-500">{(t.tags || []).slice(0,2).join(", ")}</div>
                         </div>
                         <div>
-                          <Link href={`/tools/${t.id}`}>
-                            <Button variant="ghost">View</Button>
-                          </Link>
+                          <Button
+                            variant="ghost"
+                            onClick={() => router.push(`/tools/${t.id}`)}
+                          >
+                            View
+                          </Button>
                         </div>
                       </div>
                     ))}
