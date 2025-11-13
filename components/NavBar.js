@@ -195,8 +195,9 @@ export default function NavBar() {
           className="flex items-center space-x-4 relative"
           ref={translateRef}
         >
-          {/* Bookmarks dropdown */}
-          <div className="relative">
+          {/* Bookmarks dropdown (hidden when logged out) */}
+          {user && (
+            <div className="relative">
             <button
               onClick={() => setShowBookmarks((v) => !v)}
               className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center"
@@ -238,10 +239,12 @@ export default function NavBar() {
                 )}
               </div>
             )}
-          </div>
+            </div>
+          )}
 
-          {/* Requests / Admin dropdown (click to open) placed next to bookmarks */}
-          <div className="relative ml-2" ref={requestsRef}>
+          {/* Requests / Admin dropdown (click to open) placed next to bookmarks; hidden when logged out */}
+          {user && (
+            <div className="relative ml-2" ref={requestsRef}>
             <button
               onClick={() => setShowRequests((v) => !v)}
               className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center gap-2"
@@ -299,7 +302,8 @@ export default function NavBar() {
                 </div>
               </div>
             )}
-          </div>
+            </div>
+          )}
 
           <div>
             {user ? (
