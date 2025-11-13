@@ -10,6 +10,8 @@ export default function ProfilePage() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [tab, setTab] = useState("bookmarks");
   const [loadingTools, setLoadingTools] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
   useEffect(() => {
     try {
@@ -66,6 +68,32 @@ export default function ProfilePage() {
     loadTools();
   }, [bookmarks]);
 
+  useEffect(() => {
+    async function loadRequests() {
+      if (!user) return setRequests([]);
+      setLoadingRequests(true);
+      try {
+        const headers = {};
+        const raw = localStorage.getItem("mock_auth");
+        if (raw) {
+          try {
+            const p = JSON.parse(raw);
+            if (p.token) headers["x-user-id"] = p.token;
+          } catch (e) {}
+        }
+        const res = await fetch("/api/tool-requests", { headers });
+        if (!res.ok) return setRequests([]);
+        const data = await res.json();
+        setRequests(Array.isArray(data) ? data : []);
+      } catch (e) {
+        setRequests([]);
+      } finally {
+        setLoadingRequests(false);
+      }
+    }
+    loadRequests();
+  }, [user]);
+
   if (!user)
     return (
       <div className="py-12">
@@ -109,9 +137,7 @@ export default function ProfilePage() {
               >
                 Private Profile
               </button>
-              <Link href="/tools/request">
-                <a className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline">Request a tool</a>
-              </Link>
+              <Link href="/tools/request" className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline">Request a tool</Link>
             </div>
           </Card>
         </div>
@@ -130,9 +156,7 @@ export default function ProfilePage() {
                     {bookmarkedTools.map((t) => (
                       <div key={t.id} className="flex items-center justify-between border rounded p-3">
                         <div>
-                          <Link href={`/tools/${t.id}`}>
-                            <a className="font-semibold text-slate-800">{t.name}</a>
-                          </Link>
+                          <Link href={`/tools/${t.id}`} className="font-semibold text-slate-800">{t.name}</Link>
                           <div className="text-xs text-slate-500">{(t.tags || []).slice(0,2).join(", ")}</div>
                         </div>
                         <div>
@@ -144,6 +168,25 @@ export default function ProfilePage() {
                     ))}
                   </div>
                 )}
+
+                <div className="mt-6">
+                  <h4 className="font-semibold mb-2">My requests</h4>
+                  {loadingRequests ? (
+                    <div>Loading…</div>
+                  ) : requests.length === 0 ? (
+                    <div className="text-sm text-slate-500">You have not submitted any requests.</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {requests.map((r) => (
+                        <div key={r.id} className="border rounded p-3">
+                          <div className="font-semibold">{r.toolName || r.id}</div>
+                          <div className="text-xs text-slate-500">Submitted: {r.createdAt}</div>
+                          <div className="mt-2">Status: <span className="font-medium">{r.status}</span></div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div>
