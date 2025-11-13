@@ -19,7 +19,6 @@ export default function SearchBar({ value, onChange, onSearch }) {
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Use a form so submit/Enter reliably triggers onSearch via onSubmit */}
       <form
         onSubmit={(e) => {
           e.preventDefault();

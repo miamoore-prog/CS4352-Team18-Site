@@ -25,7 +25,10 @@ export default function LoginPage() {
         return;
       }
       // store mock auth token and user in localStorage
-      localStorage.setItem("mock_auth", JSON.stringify({ token: data.token, user: data.user }));
+      localStorage.setItem(
+        "mock_auth",
+        JSON.stringify({ token: data.token, user: data.user })
+      );
       router.push("/");
     } catch (err) {
       setError(String(err));
@@ -35,17 +38,27 @@ export default function LoginPage() {
   return (
     <div className="max-w-xl mx-auto">
       <h2 className="text-2xl font-semibold mb-4">Mock Login</h2>
-      <p className="text-sm text-slate-600 mb-4">Use any of the test users (username/password = alice/test, bob/test, charlie/test)</p>
+      <p className="text-sm text-slate-600 mb-4">
+        Use any of the test users (username/password = alice/test, bob/test,
+        charlie/test, admin/adminpass)
+      </p>
 
       <form onSubmit={submit} className="space-y-4">
         <div>
           <label className="block text-sm mb-1">Username</label>
-          <Input value={username} onChange={(e) => setUsername(e.target.value)} />
+          <Input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
 
         <div>
           <label className="block text-sm mb-1">Password</label>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
         {error && <div className="text-sm text-red-600">{error}</div>}

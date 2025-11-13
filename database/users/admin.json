@@ -1,0 +1,8 @@
+{
+  "id": "admin-1",
+  "username": "admin",
+  "password": "adminpass",
+  "displayName": "Site Admin",
+  "email": "admin@example.com",
+  "role": "admin"
+}

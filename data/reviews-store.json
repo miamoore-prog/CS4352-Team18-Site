@@ -62,29 +62,9 @@
       ]
     },
     {
-      "id": "chatgpt-r20251102b",
-      "title": "Powerful coding helper",
-      "author": "Evan",
-      "rating": 5,
-      "text": "As an AI coding assistant, it caught bugs I missed and even optimized my functions.",
-      "keywords": ["coding", "debugging"],
-      "date": "2025-11-02T11:35:00.000Z",
-      "likes": 6
-    },
-    {
-      "id": "chatgpt-r20251022c",
-      "title": "Brainstorm machine",
-      "author": "Nia",
-      "rating": 5,
-      "text": "Love using this conversational AI model for idea generation. Helps spark creative concepts I wouldn't think of.",
-      "keywords": ["brainstorming", "ideas"],
-      "date": "2025-10-22T08:20:00.000Z",
-      "likes": 4
-    },
-    {
-      "id": "chatgpt-r20251003d",
-      "title": "Occasional over-confidence",
-      "author": "Ben",
+      "id": "chatgpt-r20251020b",
+      "title": null,
+      "author": "Sam",
       "rating": 4,
       "text": "Very capable, but sometimes the output needs editing for tone and factuality checks.",
       "keywords": ["editing", "accuracy"],
@@ -190,11 +170,11 @@
       ]
     }
   ],
-  "midjourney": [
+  "runway": [
     {
-      "id": "midjourney-r20251101a",
-      "title": "Insane creativity",
-      "author": "Aria",
+      "id": "runway-r20250730a",
+      "title": "Great for quick edits",
+      "author": "Taylor",
       "rating": 5,
       "text": "The video-editing tools are surprisingly capable for quick cuts and style transfer.",
       "keywords": ["video", "editing"],
@@ -209,63 +189,11 @@
       ]
     }
   ],
-  "dalle": [
-    {
-      "id": "dalle-r20251104a",
-      "title": "Sharp realism",
-      "author": "Ali",
-      "rating": 5,
-      "text": "DALL·E (OpenAI image model) nails photorealistic concepts for product ideas.",
-      "keywords": ["realism", "product"],
-      "date": "2025-11-04T10:22:00.000Z",
-      "likes": 6
-    },
-    {
-      "id": "dalle-r20251001b",
-      "title": "Easy and fast",
-      "author": "Kayla",
-      "rating": 5,
-      "text": "Great quick generator for design mockups. Fastest prompt to output so far.",
-      "keywords": ["speed", "mockups"],
-      "date": "2025-10-01T10:00:00.000Z",
-      "likes": 5
-    },
-    {
-      "id": "dalle-r20250918c",
-      "title": "Great for social posts",
-      "author": "Ravi",
-      "rating": 4,
-      "text": "Image quality is great but sometimes faces get weird like most generative models.",
-      "keywords": ["social", "faces"],
-      "date": "2025-09-18T09:40:00.000Z",
-      "likes": 2
-    },
-    {
-      "id": "dalle-r20250901d",
-      "title": "Good stylized work",
-      "author": "June",
-      "rating": 5,
-      "text": "Love using it for cartoon and illustration styles for my site.",
-      "keywords": ["cartoon", "illustration"],
-      "date": "2025-09-01T13:00:00.000Z",
-      "likes": 3
-    },
-    {
-      "id": "dalle-r20250810e",
-      "title": "Smooth workflow",
-      "author": "Miles",
-      "rating": 4,
-      "text": "Integrates well with my design process and prompt tuning is simple.",
-      "keywords": ["workflow", "design"],
-      "date": "2025-08-10T15:30:00.000Z",
-      "likes": 4
-    }
-  ],
   "zapier": [
     {
-      "id": "zapier-r20251102a",
-      "title": "Automation superpower",
-      "author": "Dana",
+      "id": "zapier-r20250612a",
+      "title": "Automated workflows saved us time",
+      "author": "Morgan",
       "rating": 5,
       "text": "Integration was straightforward and reduced manual tasks across apps.",
       "keywords": ["automation", "integrations"],
@@ -280,83 +208,11 @@
       ]
     }
   ],
-  "runway": [
-    {
-      "id": "runway-r20251105a",
-      "title": "AI video wizard",
-      "author": "Nico",
-      "rating": 5,
-      "text": "Runway (AI video creator/editor) makes transitions and background removal super easy.",
-      "keywords": ["video", "editing"],
-      "date": "2025-11-05T09:40:00.000Z",
-      "likes": 8
-    },
-    {
-      "id": "runway-r20251002b",
-      "title": "Fast content edits",
-      "author": "Lara",
-      "rating": 4,
-      "text": "My go-to for quick reels and shorts edits using AI tools.",
-      "keywords": ["reels", "shorts"],
-      "date": "2025-10-02T11:15:00.000Z",
-      "likes": 4
-    },
-    {
-      "id": "runway-r20250922c",
-      "title": "Wild effects",
-      "author": "Omar",
-      "rating": 5,
-      "text": "Love the AI-powered effects for creative content.",
-      "keywords": ["effects", "creative"],
-      "date": "2025-09-22T16:30:00.000Z",
-      "likes": 5
-    },
-    {
-      "id": "runway-r20250905d",
-      "title": "Learning curve",
-      "author": "Kim",
-      "rating": 4,
-      "text": "Takes some learning but powerful once you get it.",
-      "keywords": ["learning", "video"],
-      "date": "2025-09-05T12:00:00.000Z",
-      "likes": 2
-    },
-    {
-      "id": "runway-r20250818e",
-      "title": "Great for prototyping",
-      "author": "Reese",
-      "rating": 5,
-      "text": "Used it to prototype video ads. Generative video models are getting crazy good.",
-      "keywords": ["ads", "prototyping"],
-      "date": "2025-08-18T10:50:00.000Z",
-      "likes": 6
-    }
-  ],
   "magicschool": [
     {
-      "id": "magicschool-r20251104a",
-      "title": "Lesson planning boost",
-      "author": "Ana",
-      "rating": 5,
-      "text": "MagicSchool AI (education tutoring model) helps build structured lesson plans in minutes.",
-      "keywords": ["lesson plans", "education"],
-      "date": "2025-11-04T08:00:00.000Z",
-      "likes": 5
-    },
-    {
-      "id": "magicschool-r20251020b",
-      "title": "Homework helper",
-      "author": "Cory",
-      "rating": 5,
-      "text": "Use it to tutor kids in math and reading. Friendly and clear AI teacher.",
-      "keywords": ["tutoring", "learning"],
-      "date": "2025-10-20T13:33:00.000Z",
-      "likes": 4
-    },
-    {
-      "id": "magicschool-r20251002c",
-      "title": "Custom practice sets",
-      "author": "Jules",
+      "id": "magicschool-r20251101a",
+      "title": "Great tutoring features",
+      "author": "Jordan",
       "rating": 4,
       "text": "Helps structure lessons well; I'd like more interactive widgets though.",
       "keywords": ["education", "tutoring"],

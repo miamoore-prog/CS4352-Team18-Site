@@ -42,23 +42,22 @@
         },
         {
           "author": "user1",
-          "text": "Testing new comments",
-          "date": "2025-11-09T18:25:29.958Z"
+          "text": "",
+          "date": "2025-11-09T18:25:29.958Z",
+          "deletedByAdmin": true,
+          "deletedAt": "2025-11-11T19:10:29.333Z",
+          "deletedBy": "admin-1",
+          "deletedText": "Testing new comments"
         },
         {
           "author": "user1",
           "text": "spamming comments",
           "date": "2025-11-09T18:25:43.747Z"
-        },
-        {
-          "author": "user1",
-          "text": "hello",
-          "date": "2025-11-11T03:57:30.745Z"
         }
       ],
       "likes": [
-        "user7",
-        "user1"
+        "user1",
+        "user7"
       ]
     }
   ]

@@ -1,23 +1,17 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
 import SearchBar from "../../components/SearchBar";
 import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
 
 export default function ToolsPage() {
-  const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("query") || "";
-  const [query, setQuery] = useState(initialQuery);
+  const [query, setQuery] = useState("");
   const [activeTool, setActiveTool] = useState(null);
   const [recommendedIds, setRecommendedIds] = useState(null);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [recommendationError, setRecommendationError] = useState(null);
-
-  // Explicit displayed tools state to avoid any render-order timing issues
   const [displayedTools, setDisplayedTools] = useState([]);
-  // keep a full catalog so we can reset and filter deterministically
   const [allTools, setAllTools] = useState([]);
 
   useEffect(() => {
@@ -36,26 +30,21 @@ export default function ToolsPage() {
     };
   }, []);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8; // Number of tool cards per page
+  const pageSize = 8;
 
-  // Automatically reset to first page when new tools are displayed
   useEffect(() => {
     setCurrentPage(1);
   }, [displayedTools]);
 
-  // Compute total pages
   const totalPages = Math.ceil(displayedTools.length / pageSize);
 
-  // Compute which tools to show on current page
   const paginatedTools = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     const end = start + pageSize;
     return displayedTools.slice(start, end);
   }, [displayedTools, currentPage, pageSize]);
 
-  // Fetch recommendations from the server (Gemini). Called manually via the Search button.
   async function fetchRecommendations(q, { signal } = {}) {
     if (!q || q.trim() === "") {
       setRecommendedIds(null);
@@ -69,7 +58,6 @@ export default function ToolsPage() {
     setLoadingRecommendations(true);
 
     try {
-      // clear displayed tools while fetching to show loading state
       setDisplayedTools([]);
       const res = await fetch("/api/gemini", {
         method: "POST",
@@ -82,9 +70,7 @@ export default function ToolsPage() {
 
       if (Array.isArray(data) && data.length > 0) {
         const ids = data.map((d) => d.id).filter(Boolean);
-
         setRecommendedIds(ids);
-        // set displayed tools immediately
         setDisplayedTools(allTools.filter((t) => ids.includes(t.id)));
       } else {
         setRecommendedIds([]);
@@ -124,11 +110,16 @@ export default function ToolsPage() {
   // If the page was opened with a query param (navigated from home), run
   // a search automatically on mount so users see results immediately.
   useEffect(() => {
-    if (initialQuery && initialQuery.trim() !== "") {
-      // ensure the displayed query matches the initialQuery
-      if (initialQuery !== query) setQuery(initialQuery);
-      // kick off the fetch once
-      fetchRecommendations(initialQuery);
+    // read any ?query=... from the URL on client mount
+    try {
+      const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const initialQuery = params ? params.get('query') || '' : '';
+      if (initialQuery && initialQuery.trim() !== '') {
+        if (initialQuery !== query) setQuery(initialQuery);
+        fetchRecommendations(initialQuery);
+      }
+    } catch (e) {
+      // ignore
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

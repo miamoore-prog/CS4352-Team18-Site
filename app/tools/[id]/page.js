@@ -9,9 +9,9 @@ export default function ToolReviewPage() {
   const id = params?.id;
   const [tool, setTool] = useState(null);
   const [reviews, setReviews] = useState([]);
-  const [filterStar, setFilterStar] = useState(null); // null = all, 5..1 filter
+  const [filterStar, setFilterStar] = useState(null);
 
-  // helper: get the most recent history entry (by date)
+  // get the most recent history entry (by date)
   const getLatestHistory = (r) => {
     if (!Array.isArray(r.history) || r.history.length === 0) return null;
     return r.history.reduce((best, h) => {
@@ -20,7 +20,7 @@ export default function ToolReviewPage() {
     }, null);
   };
 
-  // helper: determine the rating for a review, preferring explicit review.rating,
+  // determine the rating for a review, preferring explicit review.rating,
   // otherwise using the most recent history entry's rating when available.
   const getRating = (r) => {
     if (typeof r.rating !== "undefined" && r.rating !== null) return r.rating;
@@ -34,7 +34,7 @@ export default function ToolReviewPage() {
     return null;
   };
 
-  // helper: format ISO date strings to the user's local date/time
+  // format ISO date strings to the user's local date/time
   const formatDate = (iso) => {
     try {
       if (!iso) return "";

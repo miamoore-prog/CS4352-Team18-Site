@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Card, Button } from "./ui";
 
 export default function ToolCard({ tool, onOpen }) {
-  // open modal when the card is clicked (or activated via keyboard)
   const handleKeyDown = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -18,7 +17,6 @@ export default function ToolCard({ tool, onOpen }) {
   const [count, setCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
 
-  // derive current user id from mock_auth
   const getUserId = () => {
     try {
       const raw = localStorage.getItem("mock_auth");
@@ -97,15 +95,12 @@ export default function ToolCard({ tool, onOpen }) {
       />
 
       <div className="flex-1 flex flex-col justify-between min-w-0">
-        {/*info*/}
         <div className="flex items-start justify-between">
           <div>
-            {/*name*/}
             <h4 className="font-semibold">{tool.name}</h4>
             <div className="text-sm text-slate-500">{tool.about}</div>
           </div>
           <div className="text-xs text-slate-400 text-right">
-            {/* Bookmark icon replaces top-right tags */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -165,10 +160,8 @@ export default function ToolCard({ tool, onOpen }) {
         </div>
 
         <p className="mt-3 text-sm text-slate-600">{tool.summary}</p>
-        {/*summmary*/}
 
         <div className="mt-3 flex items-center justify-between">
-          {/*Bottom tags + rating*/}
           <div className="flex items-center gap-2">
             {tool.tags.slice(0, 3).map((tag) => (
               <span key={tag} className="tag">
@@ -192,8 +185,6 @@ export default function ToolCard({ tool, onOpen }) {
                   View more
                 </Button>
               </Link>
-
-              {/* bookmark button moved to top-right */}
             </div>
           </div>
         </div>

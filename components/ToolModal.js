@@ -296,9 +296,6 @@ export default function ToolModal({ tool, onClose }) {
             <Button onClick={() => setShowHowTo(!showHowTo)} className="mr-2">
               How to guide
             </Button>
-            {/* <Button variant="ghost" onClick={onClose}>
-              Done
-            </Button>*/}
           </div>
         </div>
 
