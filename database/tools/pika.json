@@ -1,7 +1,7 @@
 {
   "id": "pika",
   "name": "Pika Labs",
-  "logo": "/logos/pika.webp",
+  "logo": "/logos/pikalabs_icon.webp",
   "about": "An AI-powered video generator that transforms text prompts into short, cinematic video clips.",
   "tags": ["video", "animation", "creative"],
   "intents": ["video generation", "storytelling", "creative"],

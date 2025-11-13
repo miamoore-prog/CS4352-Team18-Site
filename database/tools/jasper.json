@@ -1,7 +1,7 @@
 {
   "id": "jasper",
   "name": "Jasper AI",
-  "logo": "/logos/jasper.webp",
+  "logo": "/logos/jasper_ai.webp",
   "about": "A marketing-focused writing assistant that helps generate ads, blogs, and social media content.",
   "tags": ["writing", "marketing", "content creation"],
   "intents": ["writing", "marketing", "automation"],

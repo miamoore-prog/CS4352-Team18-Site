@@ -1,7 +1,7 @@
 {
   "id": "notion-ai",
   "name": "Notion AI",
-  "logo": "/logos/notion.webp",
+  "logo": "/logos/notion_logo.webp",
   "about": "An AI-powered writing assistant built into Notion to help you brainstorm, summarize, and edit ideas quickly.",
   "tags": ["writing", "productivity", "organization"],
   "intents": ["writing", "planning", "summarizing"],
