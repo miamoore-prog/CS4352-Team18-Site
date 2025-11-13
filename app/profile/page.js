@@ -11,7 +11,8 @@ export default function ProfilePage() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [tab, setTab] = useState("bookmarks");
   const [loadingTools, setLoadingTools] = useState(false);
-  const router = useRouter();
+  const [requests, setRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(false);
 
   useEffect(() => {
     try {
@@ -67,6 +68,32 @@ export default function ProfilePage() {
     }
     loadTools();
   }, [bookmarks]);
+
+  useEffect(() => {
+    async function loadRequests() {
+      if (!user) return setRequests([]);
+      setLoadingRequests(true);
+      try {
+        const headers = {};
+        const raw = localStorage.getItem("mock_auth");
+        if (raw) {
+          try {
+            const p = JSON.parse(raw);
+            if (p.token) headers["x-user-id"] = p.token;
+          } catch (e) {}
+        }
+        const res = await fetch("/api/tool-requests", { headers });
+        if (!res.ok) return setRequests([]);
+        const data = await res.json();
+        setRequests(Array.isArray(data) ? data : []);
+      } catch (e) {
+        setRequests([]);
+      } finally {
+        setLoadingRequests(false);
+      }
+    }
+    loadRequests();
+  }, [user]);
 
   if (!user)
     return (
@@ -175,6 +202,34 @@ export default function ProfilePage() {
                     ))}
                   </div>
                 )}
+
+                <div className="mt-6">
+                  <h4 className="font-semibold mb-2">My requests</h4>
+                  {loadingRequests ? (
+                    <div>Loading…</div>
+                  ) : requests.length === 0 ? (
+                    <div className="text-sm text-slate-500">
+                      You have not submitted any requests.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {requests.map((r) => (
+                        <div key={r.id} className="border rounded p-3">
+                          <div className="font-semibold">
+                            {r.toolName || r.id}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            Submitted: {r.createdAt}
+                          </div>
+                          <div className="mt-2">
+                            Status:{" "}
+                            <span className="font-medium">{r.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div>
