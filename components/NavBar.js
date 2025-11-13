@@ -255,12 +255,6 @@ export default function NavBar() {
                     ) : (
                       <>
                         <Link
-                          href="/tools/request"
-                          className="px-3 py-2 text-sm hover:bg-slate-50"
-                        >
-                          Request tool
-                        </Link>
-                        <Link
                           href="/tools/requests"
                           className="px-3 py-2 text-sm hover:bg-slate-50"
                         >
@@ -289,10 +283,16 @@ export default function NavBar() {
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50">
                   <Link
-                    href="/settings"
+                    href="/tools/request"
                     className="block px-3 py-2 hover:bg-slate-50"
                   >
-                    Settings
+                    Request tool
+                  </Link>
+                  <Link
+                    href="/manage-profile"
+                    className="block px-3 py-2 hover:bg-slate-50"
+                  >
+                    Manage Profile
                   </Link>
                   <button
                     onClick={logout}
