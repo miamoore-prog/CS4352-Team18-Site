@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, Button } from "../../components/ui";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ManageProfilePage() {
   const [user, setUser] = useState(null);
@@ -10,6 +11,7 @@ export default function ManageProfilePage() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [tab, setTab] = useState("bookmarks");
   const [loadingTools, setLoadingTools] = useState(false);
+  const router = useRouter();
   const [requests, setRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
   const [msg, setMsg] = useState(null);

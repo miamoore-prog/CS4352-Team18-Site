@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [tab, setTab] = useState("bookmarks");
   const [loadingTools, setLoadingTools] = useState(false);
+  const router = useRouter();
   const [requests, setRequests] = useState([]);
   const [loadingRequests, setLoadingRequests] = useState(false);
 
