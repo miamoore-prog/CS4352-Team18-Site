@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "./ui";
 import LanguageIcon from "./LanguageIcon";
 import GoogleTranslate from "./GoogleTranslate";
-import { BookOpen, Bookmark, ChevronDown } from "lucide-react"; // Import icons
+import { ChevronDown } from "lucide-react"; // Import icons
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
@@ -15,9 +15,11 @@ export default function NavBar() {
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showRequests, setShowRequests] = useState(false);
   const [showTranslate, setShowTranslate] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const pathname = usePathname();
   const translateRef = useRef(null);
   const requestsRef = useRef(null);
+  const profileRef = useRef(null);
 
   useEffect(() => {
     function read() {
@@ -128,6 +130,18 @@ export default function NavBar() {
     };
   }, [showTranslate]);
 
+  // close profile dropdown when clicking outside
+  useEffect(() => {
+    function onDoc(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    if (showProfileMenu) document.addEventListener("mousedown", onDoc);
+    else document.removeEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [showProfileMenu]);
+
   // close requests dropdown when clicking outside
   useEffect(() => {
     function onDoc(e) {
@@ -195,130 +209,33 @@ export default function NavBar() {
           className="flex items-center space-x-4 relative"
           ref={translateRef}
         >
-          {/* Bookmarks dropdown (hidden when logged out) */}
+          {/* profile dropdown on hover */}
           {user && (
-            <div className="relative">
-            <button
-              onClick={() => setShowBookmarks((v) => !v)}
-              className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center"
-              aria-expanded={showBookmarks}
+            <div
+              className="relative"
+              ref={profileRef}
+              onMouseEnter={() => setShowProfileMenu(true)}
+              onMouseLeave={() => setShowProfileMenu(false)}
             >
-              <Bookmark size={16} className="mr-2" />
-              <span>
-                Bookmarks{bookmarks.length ? ` (${bookmarks.length})` : ""}
-              </span>
-            </button>
-            {showBookmarks && (
-              <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg border rounded p-3 z-50">
-                <div className="font-semibold text-sm mb-2">
-                  Bookmarked tools
+              <button className="flex items-center gap-3 px-3 py-1 rounded text-sm hover:bg-slate-50">
+                <span className="text-sm text-slate-600">{user.displayName}</span>
+              </button>
+
+              {showProfileMenu && (
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50">
+                  <Link href="/profile" className="block px-3 py-2 hover:bg-slate-50">My Profile</Link>
+                  <Link href="/settings" className="block px-3 py-2 hover:bg-slate-50">Settings</Link>
+                  <button onClick={logout} className="w-full text-left px-3 py-2 hover:bg-slate-50">Logout</button>
                 </div>
-                {bookmarkedTools.length === 0 ? (
-                  <div className="text-sm text-slate-500">
-                    No bookmarks yet.
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {bookmarkedTools.map((t) => (
-                      <div
-                        key={t.id}
-                        className="flex items-center justify-between"
-                      >
-                        <Link
-                          href={`/tools/${t.id}`}
-                          onClick={() => setShowBookmarks(false)}
-                        >
-                          <div className="text-sm text-slate-700">{t.name}</div>
-                        </Link>
-                        <div className="text-xs text-slate-400">
-                          {t.tags?.slice(0, 2).join(", ")}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              )}
             </div>
           )}
 
-          {/* Requests / Admin dropdown (click to open) placed next to bookmarks; hidden when logged out */}
-          {user && (
-            <div className="relative ml-2" ref={requestsRef}>
-            <button
-              onClick={() => setShowRequests((v) => !v)}
-              className="px-2 py-1 rounded text-sm bg-slate-100 flex items-center gap-2"
-              aria-expanded={showRequests}
-              aria-haspopup="menu"
-            >
-              <span>
-                {user && user.role === "admin" ? "Admin" : "Requests"}
-              </span>
-              <ChevronDown
-                size={14}
-                className={showRequests ? "transform rotate-180" : ""}
-              />
-            </button>
-            {showRequests && (
-              <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-md z-50">
-                <div className="flex flex-col">
-                  {user && user.role === "admin" ? (
-                    <>
-                      <Link
-                        href="/tools/admin"
-                        className="px-3 py-2 text-sm hover:bg-slate-50"
-                      >
-                        Manage tools
-                      </Link>
-                      <Link
-                        href="/community"
-                        className="px-3 py-2 text-sm hover:bg-slate-50"
-                      >
-                        Manage community
-                      </Link>
-                      <Link
-                        href="/tools/requests/admin"
-                        className="px-3 py-2 text-sm hover:bg-slate-50"
-                      >
-                        View requests
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/tools/request"
-                        className="px-3 py-2 text-sm hover:bg-slate-50"
-                      >
-                        Request tool
-                      </Link>
-                      <Link
-                        href="/tools/requests"
-                        className="px-3 py-2 text-sm hover:bg-slate-50"
-                      >
-                        My requests
-                      </Link>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-            </div>
+          {!user && (
+            <Link href="/login">
+              <Button className="text-sm">Login</Button>
+            </Link>
           )}
-
-          <div>
-            {user ? (
-              <div className="flex items-center space-x-3">
-                <div className="text-sm text-slate-600">{user.displayName}</div>
-                <Button variant="ghost" onClick={logout} className="text-sm">
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <Link href="/login">
-                <Button className="text-sm">Login</Button>
-              </Link>
-            )}
-          </div>
 
           {/* Globe icon for translator */}
           <div
