@@ -77,7 +77,9 @@ export default function ProfilePage() {
             Sign in to view your profile, bookmarks, and requests.
           </p>
           <div className="flex justify-center">
-            <Button onClick={() => (window.location.href = "/login")}>Sign in</Button>
+            <Button onClick={() => (window.location.href = "/login")}>
+              Sign in
+            </Button>
           </div>
         </Card>
       </div>
@@ -87,11 +89,18 @@ export default function ProfilePage() {
     <div className="max-w-5xl mx-auto py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">{user.displayName || user.username}</h1>
+          <h1 className="text-2xl font-semibold">
+            {user.displayName || user.username}
+          </h1>
           <div className="text-sm text-slate-500">{user.email || ""}</div>
         </div>
         <div>
-          <Button variant="ghost" onClick={() => (window.location.href = "/login")}>Edit profile</Button>
+          <Button
+            variant="ghost"
+            onClick={() => (window.location.href = "/login")}
+          >
+            Edit profile
+          </Button>
         </div>
       </div>
 
@@ -100,18 +109,27 @@ export default function ProfilePage() {
           <Card>
             <div className="flex flex-col">
               <button
-                className={`text-left px-3 py-2 rounded ${tab === "bookmarks" ? "bg-slate-50" : "hover:bg-slate-50"}`}
+                className={`text-left px-3 py-2 rounded ${
+                  tab === "bookmarks" ? "bg-slate-50" : "hover:bg-slate-50"
+                }`}
                 onClick={() => setTab("bookmarks")}
               >
                 Bookmarks
               </button>
               <button
-                className={`text-left px-3 py-2 rounded ${tab === "private" ? "bg-slate-50" : "hover:bg-slate-50"}`}
+                className={`text-left px-3 py-2 rounded ${
+                  tab === "private" ? "bg-slate-50" : "hover:bg-slate-50"
+                }`}
                 onClick={() => setTab("private")}
               >
                 Private Profile
               </button>
-              <Link href="/tools/request" className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline">Request a tool</Link>
+              <Link
+                href="/tools/request"
+                className="text-left px-3 py-2 mt-4 text-sm text-sky-600 hover:underline"
+              >
+                Request a tool
+              </Link>
             </div>
           </Card>
         </div>
@@ -124,14 +142,26 @@ export default function ProfilePage() {
                 {loadingTools ? (
                   <div>Loading…</div>
                 ) : bookmarkedTools.length === 0 ? (
-                  <div className="text-sm text-slate-500">You have no bookmarks yet.</div>
+                  <div className="text-sm text-slate-500">
+                    You have no bookmarks yet.
+                  </div>
                 ) : (
                   <div className="space-y-3">
                     {bookmarkedTools.map((t) => (
-                      <div key={t.id} className="flex items-center justify-between border rounded p-3">
+                      <div
+                        key={t.id}
+                        className="flex items-center justify-between border rounded p-3"
+                      >
                         <div>
-                          <Link href={`/tools/${t.id}`} className="font-semibold text-slate-800">{t.name}</Link>
-                          <div className="text-xs text-slate-500">{(t.tags || []).slice(0,2).join(", ")}</div>
+                          <Link
+                            href={`/tools/${t.id}`}
+                            className="font-semibold text-slate-800"
+                          >
+                            {t.name}
+                          </Link>
+                          <div className="text-xs text-slate-500">
+                            {(t.tags || []).slice(0, 2).join(", ")}
+                          </div>
                         </div>
                         <div>
                           <Button
@@ -152,7 +182,9 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <div className="text-xs text-slate-500">Full name</div>
-                    <div className="font-medium">{user.displayName || user.username}</div>
+                    <div className="font-medium">
+                      {user.displayName || user.username}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-slate-500">Email</div>
