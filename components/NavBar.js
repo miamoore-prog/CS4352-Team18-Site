@@ -4,7 +4,6 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui";
-import LanguageIcon from "./LanguageIcon";
 import GoogleTranslate from "./GoogleTranslate";
 // no external icons required here
 
@@ -193,10 +192,7 @@ export default function NavBar() {
         </div>
 
         {/* RIGHT SECTION */}
-        <div
-          className="flex items-center space-x-4 relative"
-          ref={translateRef}
-        >
+        <div className="flex items-center space-x-4">
           {/* profile dropdown on click */}
 
           {/* Requests dropdown removed from navbar */}
@@ -225,9 +221,7 @@ export default function NavBar() {
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <span className="font-medium">
-                  {user.displayName}
-                </span>
+                <span className="font-medium">{user.displayName}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className={`h-4 w-4 transition-transform ${
@@ -245,22 +239,48 @@ export default function NavBar() {
               </button>
 
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50">
-                  <Link
-                    href="/tools/request"
-                    className="block px-3 py-2 hover:bg-slate-50"
-                  >
-                    Request tool
-                  </Link>
-                  <Link
-                    href="/manage-profile"
-                    className="block px-3 py-2 hover:bg-slate-50"
-                  >
-                    Manage Profile
-                  </Link>
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 py-1">
+                  {user.role === "admin" ? (
+                    <>
+                      <Link
+                        href="/tools/admin"
+                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        Manage tools
+                      </Link>
+                      <Link
+                        href="/community"
+                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        Manage community
+                      </Link>
+                      <Link
+                        href="/tools/requests/admin"
+                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        Manage tool requests
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/tools/request"
+                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        Request tool
+                      </Link>
+                      <Link
+                        href="/manage-profile"
+                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        Manage Profile
+                      </Link>
+                    </>
+                  )}
+                  <div className="border-t border-slate-200 my-1"></div>
                   <button
                     onClick={logout}
-                    className="w-full text-left px-3 py-2 hover:bg-slate-50"
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-red-600 transition-colors"
                   >
                     Logout
                   </button>
@@ -273,16 +293,50 @@ export default function NavBar() {
             </Link>
           )}
 
-          {/* Globe icon for translator */}
-          <div
-            onClick={() => setShowTranslate(!showTranslate)}
-            className="p-1 hover:scale-105 transition-transform"
-          >
-            <LanguageIcon />
-          </div>
+          {/* Language selector */}
+          <div className="relative" ref={translateRef}>
+            <button
+              onClick={() => setShowTranslate(!showTranslate)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                showTranslate
+                  ? "bg-sky-100 text-sky-700"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span className="font-medium">Language</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-4 w-4 transition-transform ${
+                  showTranslate ? "rotate-180" : ""
+                }`}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
 
-          {/* Conditional Google Translate dropdown */}
-          <GoogleTranslate visible={showTranslate} />
+            {/* Conditional Google Translate dropdown */}
+            <GoogleTranslate visible={showTranslate} />
+          </div>
         </div>
       </div>
     </nav>
