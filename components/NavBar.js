@@ -209,20 +209,23 @@ export default function NavBar() {
           className="flex items-center space-x-4 relative"
           ref={translateRef}
         >
-          {/* profile dropdown on hover */}
+          {/* profile dropdown on click */}
           {user && (
             <div
               className="relative"
               ref={profileRef}
-              onMouseEnter={() => setShowProfileMenu(true)}
-              onMouseLeave={() => setShowProfileMenu(false)}
             >
-              <button className="flex items-center gap-3 px-3 py-1 rounded text-sm hover:bg-slate-50">
+              <button 
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                className="flex items-center gap-3 px-3 py-1 rounded text-sm hover:bg-slate-50"
+              >
                 <span className="text-sm text-slate-600">{user.displayName}</span>
               </button>
 
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50">
+                <div 
+                  className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50"
+                >
                   <Link href="/profile" className="block px-3 py-2 hover:bg-slate-50">My Profile</Link>
                   <Link href="/settings" className="block px-3 py-2 hover:bg-slate-50">Settings</Link>
                   <button onClick={logout} className="w-full text-left px-3 py-2 hover:bg-slate-50">Logout</button>
