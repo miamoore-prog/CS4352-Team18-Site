@@ -17,13 +17,25 @@ export default function ManageProfilePage() {
   const [msg, setMsg] = useState(null);
   const [commentText, setCommentText] = useState({});
   const [userMap, setUserMap] = useState({});
+  const [editForm, setEditForm] = useState({
+    displayName: "",
+    email: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem("mock_auth");
       if (raw) {
         const p = JSON.parse(raw);
-        setUser(p.user || null);
+        const u = p.user || null;
+        setUser(u);
+        if (u) {
+          setEditForm({
+            displayName: u.displayName || "",
+            email: u.email || "",
+          });
+        }
       }
     } catch (e) {}
   }, []);
@@ -182,14 +194,16 @@ export default function ManageProfilePage() {
           </h1>
           <div className="text-sm text-slate-500">{user.email || ""}</div>
         </div>
-        <div>
-          <Button
-            variant="ghost"
-            onClick={() => (window.location.href = "/login")}
-          >
-            Edit profile
-          </Button>
-        </div>
+        {tab === "private" && (
+          <div>
+            <Button
+              variant="ghost"
+              onClick={() => setTab("edit")}
+            >
+              Edit profile
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -353,6 +367,83 @@ export default function ManageProfilePage() {
                     ))}
                   </div>
                 )}
+              </div>
+            ) : tab === "edit" ? (
+              <div>
+                <h3 className="font-semibold mb-2">Edit profile</h3>
+                {msg && (
+                  <div className={`mb-3 p-2 rounded ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                    {msg.text}
+                  </div>
+                )}
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-slate-600 block mb-1">Display name</label>
+                    <input
+                      type="text"
+                      className="w-full border rounded px-3 py-2"
+                      value={editForm.displayName}
+                      onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-600 block mb-1">Email</label>
+                    <input
+                      type="email"
+                      className="w-full border rounded px-3 py-2"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-500 block mb-1">Username</label>
+                    <div className="text-slate-400">{user.username} (cannot be changed)</div>
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-500 block mb-1">Role</label>
+                    <div className="text-slate-400">{user.role || "user"} (cannot be changed)</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={async () => {
+                        setIsSaving(true);
+                        try {
+                          const raw = localStorage.getItem("mock_auth");
+                          if (!raw) throw new Error("Not logged in");
+                          const p = JSON.parse(raw);
+                          const updatedUser = {
+                            ...p.user,
+                            displayName: editForm.displayName,
+                            email: editForm.email,
+                          };
+                          localStorage.setItem("mock_auth", JSON.stringify({ ...p, user: updatedUser }));
+                          setUser(updatedUser);
+                          setMsg({ ok: true, text: "Profile updated successfully!" });
+                          setTimeout(() => setMsg(null), 3000);
+                        } catch (e) {
+                          setMsg({ ok: false, text: String(e) });
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }}
+                      disabled={isSaving}
+                    >
+                      {isSaving ? "Saving..." : "Save changes"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setEditForm({
+                          displayName: user.displayName || "",
+                          email: user.email || "",
+                        });
+                        setTab("private");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
               </div>
             ) : (
               <div>
