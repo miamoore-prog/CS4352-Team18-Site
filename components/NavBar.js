@@ -226,7 +226,7 @@ export default function NavBar() {
                 <div 
                   className="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50"
                 >
-                  <Link href="/profile" className="block px-3 py-2 hover:bg-slate-50">My Profile</Link>
+                  <Link href="/manage-profile" className="block px-3 py-2 hover:bg-slate-50">My Profile</Link>
                   <button onClick={logout} className="w-full text-left px-3 py-2 hover:bg-slate-50">Logout</button>
                 </div>
               )}
