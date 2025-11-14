@@ -100,11 +100,6 @@ export default function ArticlesPage() {
           </p>
         )}
       </div>
-
-      <p className="text-sm text-gray-500 text-center mt-8">
-        Built by Team 18 for CS/CGS 4352 – Introduction to Human-Computer
-        Interaction. <br />
-      </p>
     </div>
   );
 }
