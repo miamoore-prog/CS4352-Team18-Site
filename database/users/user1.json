@@ -80,9 +80,20 @@
           "author": "alice",
           "text": "testing",
           "date": "2025-11-14T18:26:37.463Z"
+        },
+        {
+          "author": "admin",
+          "text": "",
+          "date": "2025-11-14T21:53:04.205Z",
+          "deletedByAdmin": true,
+          "deletedAt": "2025-11-14T21:53:09.828Z",
+          "deletedBy": "admin-1",
+          "deletedText": "testing"
         }
       ],
-      "likes": [],
+      "likes": [
+        "admin-1"
+      ],
       "flagged": false
     }
   ]

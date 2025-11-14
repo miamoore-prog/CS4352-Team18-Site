@@ -24,5 +24,21 @@
         "createdAt": "2025-11-11T18:24:03.057Z"
       }
     ]
+  },
+  {
+    "id": "req-1763155870756",
+    "toolName": "Nano banana",
+    "usage": "I saw it being newly released and the video created was so cool",
+    "contact": "alice@dummy.com",
+    "createdAt": "2025-11-14T21:31:10.756Z",
+    "authorId": "user1",
+    "status": "open",
+    "comments": [
+      {
+        "authorId": "admin-1",
+        "text": "ok sounds good ill take a quick look",
+        "createdAt": "2025-11-14T21:32:08.331Z"
+      }
+    ]
   }
 ]

@@ -150,9 +150,14 @@ export default function ToolsPage() {
 
       <section ref={sectionRef}>
         <div className="mb-4 text-sm text-slate-600">
-          {loadingRecommendations
-            ? "Searching..."
-            : `Showing ${displayedTools.length} tool(s)`}
+          {loadingRecommendations ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+              <span>Searching with AI...</span>
+            </div>
+          ) : (
+            `Showing ${displayedTools.length} tool(s)`
+          )}
           {recommendationError && (
             <div className="text-red-500 text-sm">
               Error: {recommendationError}
