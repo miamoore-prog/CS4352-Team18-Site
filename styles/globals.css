@@ -61,7 +61,7 @@ body {
   } 
 }
 
-/*animation for carousel */
+/* animation for carousel */
 @keyframes carousel {
   0% { transform: translateX(0) }
   100% { transform: translateX(-50%) }
@@ -69,4 +69,183 @@ body {
 .animate-carousel {
   animation: carousel 60s infinite linear;
   display: flex;
+}
+
+/* Google Translate widget styling */
+#google_translate_element {
+  min-height: 40px;
+}
+
+#google_translate_element .skiptranslate {
+  display: block !important;
+}
+
+/* Style the select dropdown */
+#google_translate_element select,
+#google_translate_element .goog-te-combo {
+  width: 100%;
+  min-width: 180px;
+  padding: 10px 36px 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #334155 !important;
+  background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23334155' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.2s ease;
+}
+
+#google_translate_element select option,
+#google_translate_element .goog-te-combo option {
+  color: #334155;
+  background-color: #ffffff;
+  padding: 8px 12px;
+}
+
+#google_translate_element select:hover,
+#google_translate_element .goog-te-combo:hover {
+  border-color: #94a3b8 !important;
+  background-color: #f8fafc !important;
+}
+
+#google_translate_element select:focus,
+#google_translate_element .goog-te-combo:focus {
+  border-color: #0ea5e9 !important;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1) !important;
+  background-color: #ffffff !important;
+}
+
+/* Style the gadget container */
+#google_translate_element .goog-te-gadget {
+  font-size: 14px;
+  font-family: inherit !important;
+  color: #334155 !important;
+  line-height: 1.5;
+}
+
+#google_translate_element .goog-te-gadget-simple {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  font-family: inherit !important;
+  padding: 10px 12px !important;
+  display: inline-block !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  min-width: 180px !important;
+}
+
+#google_translate_element .goog-te-gadget-simple:hover {
+  border-color: #94a3b8 !important;
+  background-color: #f8fafc !important;
+}
+
+/* Style the link inside */
+#google_translate_element .goog-te-gadget-simple a {
+  text-decoration: none !important;
+  color: #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+
+#google_translate_element .goog-te-gadget-simple a:hover {
+  color: #334155 !important;
+}
+
+/* Style the "Select Language" text */
+#google_translate_element .goog-te-gadget-simple span {
+  color: #334155 !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  vertical-align: middle !important;
+}
+
+
+/* Hide the border separator */
+#google_translate_element .goog-te-gadget-simple span[style*="border-left"] {
+  display: none !important;
+}
+
+/* Style the dropdown arrow */
+#google_translate_element .goog-te-gadget-simple span[aria-hidden="true"] {
+  color: #64748b !important;
+  font-size: 12px !important;
+  margin-left: auto !important;
+}
+
+/* Hide the clear.gif images */
+#google_translate_element .goog-te-gadget-simple img {
+  display: none !important;
+}
+
+#google_translate_element .goog-te-menu-value {
+  color: #334155 !important;
+  margin: 0 !important;
+}
+
+#google_translate_element .goog-te-menu-value span {
+  color: #334155 !important;
+  font-family: inherit !important;
+  display: inline !important;
+}
+
+#google_translate_element .goog-te-menu-value > span {
+  color: #334155 !important;
+}
+
+/* Hide the Google Translate icon */
+#google_translate_element .goog-te-gadget-icon {
+  display: none !important;
+}
+
+/* Hide "Powered by" text and links */
+#google_translate_element .goog-logo-link {
+  display: none !important;
+}
+
+#google_translate_element a.goog-logo-link {
+  display: none !important;
+}
+
+#google_translate_element .goog-te-gadget > span > a {
+  display: none !important;
+}
+
+#google_translate_element .goog-te-gadget > span:first-child {
+  display: none !important;
+}
+
+/* Make sure the combo text is visible */
+#google_translate_element .goog-te-combo {
+  margin: 0 !important;
+  display: inline-block !important;
+}
+
+/* Hide Google Translate banner at top of page */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+/* Additional cleanup for Google Translate UI elements */
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+#goog-gt-tt {
+  display: none !important;
 }
