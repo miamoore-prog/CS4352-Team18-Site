@@ -1,7 +1,7 @@
 {
   "id": "perplexity",
   "name": "Perplexity AI",
-  "logo": "/logos/perplexity.webp",
+  "logo": "/logos/perplexity_ai.webp",
   "about": "An AI-powered research assistant that answers complex questions with concise, cited information.",
   "tags": ["search", "research", "assistant"],
   "intents": ["research", "learning", "assistant"],

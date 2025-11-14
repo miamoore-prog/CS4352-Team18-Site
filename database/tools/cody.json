@@ -1,7 +1,7 @@
 {
   "id": "cody",
   "name": "Cody AI",
-  "logo": "/logos/cody.webp",
+  "logo": "/logos/Cody_logo.webp",
   "about": "An AI code assistant built by Sourcegraph that answers questions about your codebase and automates development tasks.",
   "tags": ["coding", "AI assistant", "developer tools"],
   "intents": ["code understanding", "automation", "productivity"],

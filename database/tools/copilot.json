@@ -1,7 +1,7 @@
 {
   "id": "copilot",
   "name": "GitHub Copilot",
-  "logo": "/logos/copilot.webp",
+  "logo": "/logos/Github_Copilot.webp",
   "about": "An AI pair programmer that suggests code completions, functions, and documentation as you type.",
   "tags": ["coding", "developer", "productivity"],
   "intents": ["development", "automation", "assistant"],

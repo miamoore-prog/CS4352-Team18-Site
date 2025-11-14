@@ -1,7 +1,7 @@
 {
   "id": "suno",
   "name": "Suno AI",
-  "logo": "/logos/suno.webp",
+  "logo": "/logos/suno_icon.webp",
   "about": "An AI platform that turns text prompts into full-length songs with vocals, lyrics, and instrumentation.",
   "tags": [
     "music",

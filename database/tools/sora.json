@@ -1,7 +1,7 @@
 {
   "id": "sora",
   "name": "OpenAI Sora",
-  "logo": "/logos/sora.webp",
+  "logo": "/logos/sora_logo.webp",
   "about": "A cutting-edge AI model by OpenAI that generates realistic videos from text prompts.",
   "tags": ["video", "creative", "AI"],
   "intents": ["video creation", "storytelling", "cinematics"],

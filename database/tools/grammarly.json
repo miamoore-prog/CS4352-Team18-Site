@@ -1,7 +1,7 @@
 {
   "id": "grammarly",
   "name": "Grammarly AI",
-  "logo": "/logos/grammarly.webp",
+  "logo": "/logos/Grammarly_Ai.webp",
   "about": "An intelligent writing assistant that improves grammar, tone, and clarity using AI feedback.",
   "tags": ["writing", "editing", "grammar"],
   "intents": ["editing", "communication", "productivity"],

@@ -1,7 +1,7 @@
 {
   "id": "mubert",
   "name": "Mubert",
-  "logo": "/logos/mubert.webp",
+  "logo": "/logos/mubert_logo.webp",
   "about": "An AI music generator that creates royalty-free soundtracks for videos, podcasts, and creative projects.",
   "tags": ["music", "soundtrack", "creator"],
   "intents": ["music generation", "sound design", "production"],
