@@ -259,6 +259,7 @@ export default function CommunityPage() {
     if (!form.text) return;
     try {
       const payload = {
+        action: "create",
         toolId: toolToUse,
         title: form.title || null,
         text: form.text,
