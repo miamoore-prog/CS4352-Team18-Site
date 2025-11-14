@@ -4,7 +4,7 @@
   "logo": "/logos/claude.webp",
   "about": "A calm, helpful AI assistant focused on safety and high-quality reasoning.",
   "tags": ["chat", "research", "summaries"],
-  "intents": ["writing", "research", "assistant"],
+  "intents": ["writing", "research", "assistant", "general"],
   "primary_intent": "writing",
   "keywords": ["summarize", "notes", "explain", "email", "draft"],
   "summary": "Good for research, note-taking and clarifying complex topics.",

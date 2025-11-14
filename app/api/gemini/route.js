@@ -15,13 +15,7 @@ export async function POST(req) {
 
     const tools = loadTools();
 
-    // simple keyword matching first
-    const keywordMatches = matchByKeywords(query, tools);
-    if (keywordMatches.length > 0) {
-      return new Response(JSON.stringify(keywordMatches), { status: 200 });
-    }
-
-    // fall back to Gemini if keyword search didn't work
+    // Use Gemini AI for all searches to get semantic, contextual results
     const geminiMatches = await searchWithGemini(query, tools);
     return new Response(JSON.stringify(geminiMatches), { status: 200 });
   } catch (err) {
@@ -47,43 +41,6 @@ function loadTools() {
     // tools directory doesn't exist
   }
   return tools;
-}
-
-function matchByKeywords(query, tools) {
-  const words = query.toLowerCase().split(/\s+/);
-
-  const scored = tools.map((tool) => {
-    const searchText = [
-      tool.name,
-      tool.about,
-      tool.summary,
-      ...(tool.tags || []),
-      ...(tool.keywords || []),
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    let score = 0;
-    for (const word of words) {
-      if (searchText.includes(word)) {
-        score++;
-      }
-    }
-
-    return { ...tool, score };
-  });
-
-  return scored
-    .filter((t) => t.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 6)
-    .map((t) => ({
-      id: t.id,
-      name: t.name,
-      score: t.score,
-      tags: t.tags,
-      summary: t.summary,
-    }));
 }
 
 async function searchWithGemini(query, tools) {
@@ -121,7 +78,11 @@ Return only the JSON array, nothing else.`;
       contents: prompt,
     });
 
-    const text = response?.text ?? "";
+    let text = response?.text ?? "";
+
+    // Strip markdown code fences if present
+    text = text.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
+
     const parsed = JSON.parse(text);
 
     if (!Array.isArray(parsed)) {
