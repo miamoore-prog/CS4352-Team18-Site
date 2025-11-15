@@ -12,6 +12,15 @@ export default function ToolModal({ tool, onClose }) {
   const [editingRating, setEditingRating] = useState(null);
   const [editingEnabled, setEditingEnabled] = useState(false);
 
+    useEffect(() => {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }, []);
+  
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -73,7 +82,7 @@ export default function ToolModal({ tool, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/75" onClick={onClose} />
 
-      <Card className="max-w-2xl w-full p-6 z-10">
+      <Card className="max-w-2xl w-full p-6 z-10 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-lg font-semibold">{tool.name}</h3>
@@ -93,7 +102,7 @@ export default function ToolModal({ tool, onClose }) {
         <div className="mt-4 text-sm text-slate-700">{tool.details}</div>
 
         {/* Reviews / ratings section — show only aggregated stats (avg & count)
-            and a "View more" link that navigates to the tool-specific review page. */}
+            and a "View Reviews" link that navigates to the tool-specific review page. */}
         <div className="mt-6">
           <h4 className="font-semibold">Customer reviews</h4>
           <div className="mt-3">
@@ -120,7 +129,7 @@ export default function ToolModal({ tool, onClose }) {
                       href={`/tools/${tool.id}`}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Button variant="ghost">View more</Button>
+                      <Button variant="ghost">View Reviews</Button>
                     </a>
                   </div>
                 </div>
@@ -139,38 +148,37 @@ export default function ToolModal({ tool, onClose }) {
           )}
           {currentUser && (
             <div className="mt-2 space-y-2">
-              <div>
-                <div className="text-xs text-slate-500">Rating (optional)</div>
-                <div className="flex items-center gap-1 mt-1">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => editingEnabled && setEditingRating(n)}
-                      className={`text-xl ${
-                        n <= (editingRating || 0)
-                          ? "text-amber-400"
-                          : "text-slate-300"
-                      }`}
-                      aria-label={`Set rating ${n}`}
-                      disabled={!editingEnabled}
-                    >
-                      {n <= (editingRating || 0) ? "★" : "☆"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <textarea
-                rows={4}
-                className={`w-full border p-2 rounded ${
-                  !editingEnabled ? "opacity-60 cursor-not-allowed" : ""
-                }`}
-                placeholder="Write your review"
-                value={editingText}
-                onChange={(e) => setEditingText(e.target.value)}
-                disabled={!editingEnabled}
-              />
+              {editingEnabled && (
+                <>
+                  <div>
+                    <div className="text-xs text-slate-500">Rating (optional)</div>
+                    <div className="flex items-center gap-1 mt-1">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => setEditingRating(n)}
+                          className={`text-xl ${
+                            n <= (editingRating || 0)
+                              ? "text-amber-400"
+                              : "text-slate-300"
+                          }`}
+                          aria-label={`Set rating ${n}`}
+                        >
+                          {n <= (editingRating || 0) ? "★" : "☆"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <textarea
+                    rows={4}
+                    className="w-full h-auto border p-2 rounded"
+                    placeholder="Write your review"
+                    value={editingText}
+                    onChange={(e) => setEditingText(e.target.value)}
+                  />
+                </>
+              )}
 
               <div className="flex items-center gap-2">
                 <Button
@@ -269,7 +277,7 @@ export default function ToolModal({ tool, onClose }) {
                       }
                     }}
                   >
-                    Delete
+                    Delete Review
                   </Button>
                 )}
               </div>
