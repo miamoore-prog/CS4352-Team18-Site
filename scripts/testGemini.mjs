@@ -1,4 +1,3 @@
-// Minimal test script to validate GEMINI_API_KEY using @google/genai
 import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 

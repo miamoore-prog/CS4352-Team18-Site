@@ -81,7 +81,10 @@ Return only the JSON array, nothing else.`;
     let text = response?.text ?? "";
 
     // Strip markdown code fences if present
-    text = text.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
+    text = text
+      .replace(/^```json\s*/, "")
+      .replace(/\s*```$/, "")
+      .trim();
 
     const parsed = JSON.parse(text);
 
