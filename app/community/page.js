@@ -48,7 +48,6 @@ export default function CommunityPage() {
     [tools]
   );
 
-  useEffect(() => {}, [toolIds, storeKeys]);
 
   useEffect(() => {
     const auth =
@@ -105,7 +104,7 @@ export default function CommunityPage() {
       );
       setStoreKeys(ids);
     } catch (err) {
-      console.error(err);
+      setStoreKeys([]);
     }
   }
 
@@ -125,7 +124,7 @@ export default function CommunityPage() {
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error(err);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -152,7 +151,6 @@ export default function CommunityPage() {
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
     } catch (e) {
-      console.error(e);
       fetchPosts();
     } finally {
       setSearching(false);
@@ -167,7 +165,7 @@ export default function CommunityPage() {
     try {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
-      if (!token) return; // must be signed in
+      if (!token) return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -176,15 +174,13 @@ export default function CommunityPage() {
         body: JSON.stringify({ action: "like", threadId: reviewId }),
       });
       if (res.ok) {
-        // refresh posts; could update optimistically
         fetchPosts();
       }
     } catch (err) {
-      console.error(err);
+      return;
     }
   }
 
-  // admin: flag or unflag a thread
   async function toggleFlag(threadId, currentFlag) {
     try {
       const auth = localStorage.getItem("mock_auth");
@@ -199,11 +195,10 @@ export default function CommunityPage() {
       });
       if (res.ok) fetchPosts();
     } catch (e) {
-      console.error(e);
+      return;
     }
   }
 
-  // admin: delete (hide) a comment by index in t.posts
   async function adminDeleteComment(threadId, commentIndex) {
     try {
       const auth = localStorage.getItem("mock_auth");
@@ -223,11 +218,10 @@ export default function CommunityPage() {
       });
       if (res.ok) fetchPosts();
     } catch (e) {
-      console.error(e);
+      return;
     }
   }
 
-  // admin: delete a thread entirely
   async function adminDeleteThread(threadId) {
     try {
       const auth = localStorage.getItem("mock_auth");
@@ -248,13 +242,12 @@ export default function CommunityPage() {
       });
       if (res.ok) fetchPosts();
     } catch (e) {
-      console.error(e);
+      return;
     }
   }
 
   async function submitReview(e) {
     e.preventDefault();
-    // allow composer to specify a tool (composeTool) or fall back to selectedTool
     const toolToUse = composeTool || selectedTool || null;
     if (!form.text) return;
     try {
@@ -263,7 +256,6 @@ export default function CommunityPage() {
         toolId: toolToUse,
         title: form.title || null,
         text: form.text,
-        // keywords intentionally removed from post payload
         keywords: [],
       };
       const auth = localStorage.getItem("mock_auth");
@@ -281,14 +273,13 @@ export default function CommunityPage() {
         fetchPosts();
       }
     } catch (err) {
-      console.error(err);
+      return;
     }
   }
 
   const [showCompose, setShowCompose] = useState(false);
   const [composeTool, setComposeTool] = useState(null);
 
-  // small comment box component (defined inside CommunityPage)
   function CommentBox({ threadId, onPosted }) {
     const [text, setText] = useState("");
     const [sending, setSending] = useState(false);
@@ -310,7 +301,7 @@ export default function CommunityPage() {
           onPosted && onPosted();
         }
       } catch (e) {
-        console.error(e);
+        return;
       } finally {
         setSending(false);
       }
@@ -335,16 +326,12 @@ export default function CommunityPage() {
     );
   }
 
-  // split flagged posts for admins vs visible posts for general feed
   const flaggedPosts = Array.isArray(posts)
     ? posts.filter((p) => p.flagged)
     : [];
-  // visiblePosts: include non-flagged posts, plus flagged posts when the
-  // viewer is the owner or an admin
   const visiblePosts = Array.isArray(posts)
     ? posts.filter((p) => {
         if (!p.flagged) return true;
-        // show flagged to owner or admin
         const isOwner = currentUser && p.ownerId === currentUser;
         const isAdmin = currentUserObj && currentUserObj.role === "admin";
         return isOwner || isAdmin;

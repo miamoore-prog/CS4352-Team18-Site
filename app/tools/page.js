@@ -24,8 +24,6 @@ export default function ToolsPage() {
         const arr = Array.isArray(data) ? data : data.tools || [];
         setAllTools(arr);
 
-        // Only set displayedTools if there's no search query in URL
-        // If there's a query, let the search effect handle displayedTools
         const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
         const hasQuery = params && params.get('query') && params.get('query').trim() !== '';
         if (!hasQuery) {
@@ -97,32 +95,22 @@ export default function ToolsPage() {
     }
   }
 
-  // No live/debounced search: only search when the user presses the Search button.
-
   function handleQueryChange(value) {
     setQuery(value);
     setRecommendationError(null);
   }
 
-  // provide a manual search trigger (Search button) that calls the same API
   function handleSearch(value) {
     const q = typeof value === "string" && value.trim() !== "" ? value : query;
 
-    // update parent query state to reflect what is being searched
     if (q !== query) setQuery(q);
-    // clear previous recommendations while fetching
     setRecommendedIds(null);
     fetchRecommendations(q);
   }
 
-  // If the page was opened with a query param (navigated from home), run
-  // a search automatically on mount so users see results immediately.
-  // This effect waits for allTools to be loaded first to avoid race condition.
   useEffect(() => {
-    // Only proceed if allTools has been loaded and we haven't searched yet
     if (allTools.length === 0 || hasSearchedRef.current) return;
 
-    // read any ?query=... from the URL on client mount
     try {
       const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
       const initialQuery = params ? params.get('query') || '' : '';
@@ -132,11 +120,11 @@ export default function ToolsPage() {
         hasSearchedRef.current = true;
       }
     } catch (e) {
-      // ignore
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allTools]);
-  const sectionRef = useRef(null); //ref to the tools section
+
+  const sectionRef = useRef(null);
 
   return (
     <div className="flex flex-col gap-6">
@@ -170,14 +158,12 @@ export default function ToolsPage() {
           )}
         </div>
 
-        {/* Display tool cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {paginatedTools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => setActiveTool(t)} />
           ))}
         </div>
 
-        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-6">
             <button

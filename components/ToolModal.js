@@ -12,14 +12,13 @@ export default function ToolModal({ tool, onClose }) {
   const [editingRating, setEditingRating] = useState(null);
   const [editingEnabled, setEditingEnabled] = useState(false);
 
-    useEffect(() => {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }, []);
-  
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -34,7 +33,7 @@ export default function ToolModal({ tool, onClose }) {
         if (Array.isArray(data)) setReviews(data);
         else if (data && Array.isArray(data.reviews)) setReviews(data.reviews);
       } catch (e) {
-        // ignore
+        setReviews([]);
       }
     }
     load();
@@ -44,7 +43,6 @@ export default function ToolModal({ tool, onClose }) {
   }, [tool.id]);
 
   useEffect(() => {
-    // detect mock auth in client
     if (typeof window !== "undefined") {
       const a = localStorage.getItem("mock_auth");
       if (a) {
@@ -56,7 +54,6 @@ export default function ToolModal({ tool, onClose }) {
     }
   }, []);
 
-  // derive myReview when reviews or currentUser change
   useEffect(() => {
     if (!currentUser) {
       setMyReview(null);
@@ -151,7 +148,9 @@ export default function ToolModal({ tool, onClose }) {
               {editingEnabled && (
                 <>
                   <div>
-                    <div className="text-xs text-slate-500">Rating (optional)</div>
+                    <div className="text-xs text-slate-500">
+                      Rating (optional)
+                    </div>
                     <div className="flex items-center gap-1 mt-1">
                       {[1, 2, 3, 4, 5].map((n) => (
                         <button
@@ -184,12 +183,10 @@ export default function ToolModal({ tool, onClose }) {
                 <Button
                   onClick={async () => {
                     if (!editingEnabled) {
-                      // enable editing mode
                       setEditingEnabled(true);
                       return;
                     }
 
-                    // submit upsert when editingEnabled
                     try {
                       const headers = { "Content-Type": "application/json" };
                       if (currentUser) headers["x-user-id"] = currentUser;
@@ -204,19 +201,15 @@ export default function ToolModal({ tool, onClose }) {
                       });
                       if (res.ok) {
                         const updated = await res.json();
-                        // reload reviews
                         const rres = await fetch(
                           `/api/reviews?tool=${encodeURIComponent(tool.id)}`
                         );
                         const data = await rres.json();
                         setReviews(Array.isArray(data) ? data : []);
-                        // exit editing mode
                         setEditingEnabled(false);
-                      } else {
-                        console.error("failed to save review");
                       }
                     } catch (e) {
-                      console.error(e);
+                      return;
                     }
                   }}
                 >
@@ -233,7 +226,6 @@ export default function ToolModal({ tool, onClose }) {
                   <Button
                     variant="ghost"
                     onClick={() => {
-                      // cancel editing and revert
                       setEditingEnabled(false);
                       setEditingText(myReview ? myReview.text : "");
                       setEditingRating(
@@ -251,11 +243,9 @@ export default function ToolModal({ tool, onClose }) {
                   <Button
                     variant="ghost"
                     onClick={async () => {
-                      // simple delete: remove the user's review from the store
                       try {
                         const headers = { "Content-Type": "application/json" };
                         if (currentUser) headers["x-user-id"] = currentUser;
-                        // perform remove by writing an empty text update? for now implement client-side delete via a POST with special action
                         const res = await fetch("/api/reviews", {
                           method: "POST",
                           headers,
@@ -273,7 +263,7 @@ export default function ToolModal({ tool, onClose }) {
                           setEditingEnabled(false);
                         }
                       } catch (e) {
-                        console.error(e);
+                        return;
                       }
                     }}
                   >
