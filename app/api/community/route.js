@@ -204,6 +204,7 @@ export async function POST(req) {
             date: now,
           },
         ],
+        likes: [],
         flagged: false,
       };
       user.threads = user.threads || [];
@@ -217,11 +218,23 @@ export async function POST(req) {
     if (action === "comment") {
       const threadId = body.threadId;
       const text = body.text || "";
-      const commenter = body.author || (userId ? userId : "anonymous");
       if (!threadId)
         return new Response(JSON.stringify({ error: "missing threadId" }), {
           status: 400,
         });
+
+      // Resolve commenter username from userId
+      let commenter = "anonymous";
+      if (userId) {
+        const commenterUser = findUserById(userId);
+        if (commenterUser) {
+          commenter = commenterUser.username || commenterUser.displayName || userId;
+        } else {
+          commenter = userId;
+        }
+      } else if (body.author) {
+        commenter = body.author;
+      }
 
       const users = await readUsers();
       for (const u of users) {

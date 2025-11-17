@@ -4,7 +4,7 @@
   "logo": "/logos/chatgpt.webp",
   "about": "A conversational AI assistant that helps with writing, brainstorming, coding, and answering questions.",
   "tags": ["chat", "writing", "coding", "assistant"],
-  "intents": ["writing", "coding", "assistant"],
+  "intents": ["writing", "coding", "assistant", "general"],
   "primary_intent": "writing",
   "keywords": ["email", "draft", "summarize", "write", "brainstorm"],
   "summary": "Ask questions, get drafts, and debug code quickly.",

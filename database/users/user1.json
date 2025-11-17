@@ -58,11 +58,43 @@
           "author": "user1",
           "text": "i tried it and i do not like it",
           "date": "2025-11-11T18:55:42.838Z"
+        },
+        {
+          "author": "alice",
+          "text": "test",
+          "date": "2025-11-14T18:26:45.296Z"
         }
       ],
       "flagged": true,
       "flaggedBy": "admin-1",
       "flaggedAt": "2025-11-11T18:42:11.086Z"
+    },
+    {
+      "id": "thread-1763144797462-165",
+      "title": "Test post",
+      "toolId": "chatgpt",
+      "keywords": [],
+      "createdAt": "2025-11-14T18:26:37.463Z",
+      "posts": [
+        {
+          "author": "alice",
+          "text": "testing",
+          "date": "2025-11-14T18:26:37.463Z"
+        },
+        {
+          "author": "admin",
+          "text": "",
+          "date": "2025-11-14T21:53:04.205Z",
+          "deletedByAdmin": true,
+          "deletedAt": "2025-11-14T21:53:09.828Z",
+          "deletedBy": "admin-1",
+          "deletedText": "testing"
+        }
+      ],
+      "likes": [
+        "admin-1"
+      ],
+      "flagged": false
     }
   ]
 }

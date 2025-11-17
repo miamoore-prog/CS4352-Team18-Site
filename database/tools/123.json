@@ -1,0 +1,23 @@
+{
+  "id": "123",
+  "name": "Nano Banana",
+  "logo": "/uploads/1763155989378-1_RTa407bR91UjBWldy7uPQA.png",
+  "about": "This is for image editing",
+  "summary": "Paste in your image and edit it with prompts",
+  "details": "Testing",
+  "tags": [
+    "image"
+  ],
+  "intents": [
+    "image-editing",
+    "generative-ai"
+  ],
+  "primary_intent": "image",
+  "keywords": [
+    "image"
+  ],
+  "howTo": [
+    "Testing"
+  ],
+  "hidden": false
+}

@@ -15,13 +15,7 @@ export async function POST(req) {
 
     const tools = loadTools();
 
-    // simple keyword matching first
-    const keywordMatches = matchByKeywords(query, tools);
-    if (keywordMatches.length > 0) {
-      return new Response(JSON.stringify(keywordMatches), { status: 200 });
-    }
-
-    // fall back to Gemini if keyword search didn't work
+    // Use Gemini AI for all searches to get semantic, contextual results
     const geminiMatches = await searchWithGemini(query, tools);
     return new Response(JSON.stringify(geminiMatches), { status: 200 });
   } catch (err) {
@@ -49,43 +43,6 @@ function loadTools() {
   return tools;
 }
 
-function matchByKeywords(query, tools) {
-  const words = query.toLowerCase().split(/\s+/);
-
-  const scored = tools.map((tool) => {
-    const searchText = [
-      tool.name,
-      tool.about,
-      tool.summary,
-      ...(tool.tags || []),
-      ...(tool.keywords || []),
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    let score = 0;
-    for (const word of words) {
-      if (searchText.includes(word)) {
-        score++;
-      }
-    }
-
-    return { ...tool, score };
-  });
-
-  return scored
-    .filter((t) => t.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 6)
-    .map((t) => ({
-      id: t.id,
-      name: t.name,
-      score: t.score,
-      tags: t.tags,
-      summary: t.summary,
-    }));
-}
-
 async function searchWithGemini(query, tools) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -101,27 +58,52 @@ async function searchWithGemini(query, tools) {
     keywords: t.keywords || [],
   }));
 
-  const prompt = `Given this user query: "${query}"
+  const prompt = `You are a tool recommendation system. Analyze the user's query and match it semantically to relevant tools.
 
-And this catalog of tools:
+User Query: "${query}"
+
+Tool Catalog:
 ${JSON.stringify(catalog, null, 2)}
 
-Return the top 6 most relevant tools as a JSON array. Each item should have:
-- id: the tool's id
-- name: the tool's name
-- score: relevance from 0 to 1
-- reason: brief explanation of why it matches
+Instructions:
+- Match tools based on their CAPABILITIES, not just exact keyword matches
+- Consider synonyms and related concepts (e.g., "create image" → image generation tools)
+- Use the tool's intents, keywords, tags, and summary for matching
+- Prioritize tools that directly fulfill the user's goal
+- Return up to 6 most relevant tools, ordered by relevance
 
-Return only the JSON array, nothing else.`;
+Examples:
+- "create an image" should match tools with intent: "image" or tags: ["image", "ai"]
+- "write email" should match tools for email composition or writing assistants
+- "automate workflow" should match automation and integration tools
+
+Return ONLY a JSON array with this structure:
+[
+  {
+    "id": "tool-id",
+    "name": "Tool Name",
+    "score": 0.95,
+    "reason": "brief explanation"
+  }
+]`;
 
   try {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      // model: "gemini-2.0-flash", // rate 15
+      model: "gemini-2.5-flash-lite", // rate 1k
+      // model: "gemini-2.0-flash-lite", // rate 30
       contents: prompt,
     });
 
-    const text = response?.text ?? "";
+    let text = response?.text ?? "";
+
+    // Strip markdown code fences if present
+    text = text
+      .replace(/^```json\s*/, "")
+      .replace(/\s*```$/, "")
+      .trim();
+
     const parsed = JSON.parse(text);
 
     if (!Array.isArray(parsed)) {

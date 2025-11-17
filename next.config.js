@@ -7,9 +7,10 @@ const nextConfig = {
       "storage.googleapis.com",
       "pbs.twimg.com",
       "cdn.pixabay.com",
-      "raw.githubusercontent.com"
-    ]
-  }
-}
+      "raw.githubusercontent.com",
+    ],
+  },
+  devIndicators: false,
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

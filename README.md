@@ -103,40 +103,8 @@ To log in:
   - From the Community page you will see flagged posts and admin controls to Flag/Unflag, Delete comments or Delete threads.
   - Admins may add or edit tools via the admin UI which writes tool JSON under `database/tools/`.
 
-## Data layout (for maintainers)
-
-- `database/tools/` — canonical tool JSON files (one file per tool)
-- `database/users/` — user objects; community threads are stored in each user's JSON under a `threads` property
-- `data/reviews-store.json` and `data/tool-requests.json` — auxiliary stores for reviews and tool requests
-
-If you plan to modify the schema, update `app/api/gemini/route.js` and the UI components that consume the data (see `components/ToolCard.js`, `components/ToolModal.js`).
-
 ## Environment & external services
 
 - GEMINI_API_KEY — optional. If present the server routes that call Gemini/GenAI will use it to provide natural-language search and recommendations. Keep this secret.
 
 Important: do not commit `.env.local` or your keys to source control.
-
-## Developer notes & testing helpers
-
-- Deterministic-first model behavior: server endpoints attempt local deterministic classification/filtering before calling the external model for speed and predictable tests. See `app/api/gemini/route.js` for details.
-- Mock auth: server-side endpoints look for an `x-user-id` HTTP header to understand who is making a request (the client automatically sets this from the `mock_auth` token).
-- To run the small Gemini test script (if you configured the key):
-
-```fish
-node scripts/testGemini.mjs
-```
-
-## Troubleshooting
-
-- If the dev server fails to pick up environment changes, stop and restart `npm run dev`.
-- If the UI doesn't show admin controls after logging in, check that `localStorage.mock_auth` contains a `user` object with `role: "admin"` (the login page stores this for you when you sign in).
-
-## Contributing & extending
-
-- Follow the app's data-first UI conventions: if you change the tool schema, update `database/tools.json` and UI components (`ToolCard`, `ToolModal`) accordingly.
-- Server-side model code must preserve the deterministic-first + JSON-sanitization behavior used in `app/api/gemini/route.js`.
-
-## License & acknowledgements
-
-This repository is intended for educational and prototyping use. Replace third-party API keys and any proprietary data with your own when deploying or sharing.

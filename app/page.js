@@ -31,13 +31,11 @@ export default function Home() {
   }, []);
 
   function onSearch(q) {
-    // redirect to tools page with query
     router.push(`/tools?query=${encodeURIComponent(q)}`);
   }
 
   return (
     <div className="space-y-12">
-      {/* Hero Section */}
       <section className="text-center space-y-6 py-8">
         <h2 className="text-4xl font-bold text-slate-800">
           AI Doesn't Have to Be Complicated.
@@ -49,7 +47,6 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Search Bar Section */}
       <section className="card p-6">
         <Suspense fallback={<div>Loading tools...</div>}>
           <SearchBar
@@ -60,7 +57,6 @@ export default function Home() {
         </Suspense>
       </section>
 
-      {/* Carousel Section */}
       <section className="space-y-4">
         <h3 className="text-2xl font-semibold text-slate-800 text-center">
           Featured AI Tools

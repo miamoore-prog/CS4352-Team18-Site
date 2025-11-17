@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui";
 import GoogleTranslate from "./GoogleTranslate";
-// no external icons required here
 
 export default function NavBar() {
   const [user, setUser] = useState(null);
@@ -127,7 +126,6 @@ export default function NavBar() {
     };
   }, [showTranslate]);
 
-  // close profile dropdown when clicking outside
   useEffect(() => {
     function onDoc(e) {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -139,8 +137,6 @@ export default function NavBar() {
     return () => document.removeEventListener("mousedown", onDoc);
   }, [showProfileMenu]);
 
-  // requests dropdown removed — no outside-click handler needed
-
   function logout() {
     localStorage.removeItem("mock_auth");
     setUser(null);
@@ -150,7 +146,6 @@ export default function NavBar() {
   return (
     <nav className="mb-6 relative">
       <div className="flex items-center justify-between">
-        {/* LEFT SECTION */}
         <div className="flex items-center space-x-4">
           <Link href="/">
             <span className="text-lg font-semibold text-slate-800">
@@ -165,7 +160,6 @@ export default function NavBar() {
               </Button>
             </Link>
 
-            {/* Requests removed from left side — moved to right side near Bookmarks */}
             {user && user.role !== "admin" && (
               <Link href="/community">
                 <Button variant="ghost" className="text-sm">
@@ -191,13 +185,7 @@ export default function NavBar() {
           </div>
         </div>
 
-        {/* RIGHT SECTION */}
         <div className="flex items-center space-x-4">
-          {/* profile dropdown on click */}
-
-          {/* Requests dropdown removed from navbar */}
-
-          {/* profile dropdown on hover */}
           {user ? (
             <div className="relative" ref={profileRef}>
               <button
@@ -293,7 +281,6 @@ export default function NavBar() {
             </Link>
           )}
 
-          {/* Language selector */}
           <div className="relative" ref={translateRef}>
             <button
               onClick={() => setShowTranslate(!showTranslate)}
@@ -334,7 +321,6 @@ export default function NavBar() {
               </svg>
             </button>
 
-            {/* Conditional Google Translate dropdown */}
             <GoogleTranslate visible={showTranslate} />
           </div>
         </div>

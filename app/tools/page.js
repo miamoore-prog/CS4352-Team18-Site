@@ -13,6 +13,7 @@ export default function ToolsPage() {
   const [recommendationError, setRecommendationError] = useState(null);
   const [displayedTools, setDisplayedTools] = useState([]);
   const [allTools, setAllTools] = useState([]);
+  const hasSearchedRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -22,7 +23,12 @@ export default function ToolsPage() {
         if (!mounted) return;
         const arr = Array.isArray(data) ? data : data.tools || [];
         setAllTools(arr);
-        setDisplayedTools(arr);
+
+        const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+        const hasQuery = params && params.get('query') && params.get('query').trim() !== '';
+        if (!hasQuery) {
+          setDisplayedTools(arr);
+        }
       })
       .catch(() => {});
     return () => {
@@ -89,41 +95,36 @@ export default function ToolsPage() {
     }
   }
 
-  // No live/debounced search: only search when the user presses the Search button.
-
   function handleQueryChange(value) {
     setQuery(value);
     setRecommendationError(null);
   }
 
-  // provide a manual search trigger (Search button) that calls the same API
   function handleSearch(value) {
     const q = typeof value === "string" && value.trim() !== "" ? value : query;
 
-    // update parent query state to reflect what is being searched
     if (q !== query) setQuery(q);
-    // clear previous recommendations while fetching
     setRecommendedIds(null);
     fetchRecommendations(q);
   }
 
-  // If the page was opened with a query param (navigated from home), run
-  // a search automatically on mount so users see results immediately.
   useEffect(() => {
-    // read any ?query=... from the URL on client mount
+    if (allTools.length === 0 || hasSearchedRef.current) return;
+
     try {
       const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
       const initialQuery = params ? params.get('query') || '' : '';
       if (initialQuery && initialQuery.trim() !== '') {
         if (initialQuery !== query) setQuery(initialQuery);
         fetchRecommendations(initialQuery);
+        hasSearchedRef.current = true;
       }
     } catch (e) {
-      // ignore
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const sectionRef = useRef(null); //ref to the tools section
+  }, [allTools]);
+
+  const sectionRef = useRef(null);
 
   return (
     <div className="flex flex-col gap-6">
@@ -137,9 +138,14 @@ export default function ToolsPage() {
 
       <section ref={sectionRef}>
         <div className="mb-4 text-sm text-slate-600">
-          {loadingRecommendations
-            ? "Searching..."
-            : `Showing ${displayedTools.length} tool(s)`}
+          {loadingRecommendations ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+              <span>Searching with AI...</span>
+            </div>
+          ) : (
+            `Showing ${displayedTools.length} tool(s)`
+          )}
           {recommendationError && (
             <div className="text-red-500 text-sm">
               Error: {recommendationError}
@@ -152,14 +158,12 @@ export default function ToolsPage() {
           )}
         </div>
 
-        {/* Display tool cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {paginatedTools.map((t) => (
             <ToolCard key={t.id} tool={t} onOpen={() => setActiveTool(t)} />
           ))}
         </div>
 
-        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-6">
             <button
