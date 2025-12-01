@@ -217,7 +217,7 @@ export default function AdminToolsPage() {
             onClick={() => setShowCreateModal(true)}
             className="btn btn-primary"
           >
-            Create tools
+            Create Tool
           </button>
         </div>
         {loading ? (
@@ -562,6 +562,7 @@ export default function AdminToolsPage() {
                     value={form.id}
                     onChange={(e) => setForm({ ...form, id: e.target.value })}
                     className="w-full border p-2 rounded"
+                    placeholder="e.g., chatgpt, gemini-pro, claude-ai"
                     required
                   />
                 </div>
@@ -735,7 +736,7 @@ export default function AdminToolsPage() {
               </div>
               <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex items-center gap-2 mt-4 -mx-6">
                 <button className="btn btn-primary" type="submit">
-                  Add tool
+                  Create Tool
                 </button>
                 <button
                   type="button"

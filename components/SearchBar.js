@@ -32,7 +32,7 @@ export default function SearchBar({ value, onChange, onSearch }) {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onFocus={() => setFocused(true)}
-            placeholder="Try: 'write email', 'create an image', or 'automate a workflow'"
+            placeholder="Search tools by name, category, or feature"
           />
           <Button type="submit" className="text-sm">
             Search

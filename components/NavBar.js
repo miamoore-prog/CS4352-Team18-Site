@@ -156,7 +156,7 @@ export default function NavBar() {
           <div className="hidden sm:flex items-center space-x-2">
             <Link href="/tools">
               <Button variant="ghost" className="text-sm">
-                Explore
+                Tools
               </Button>
             </Link>
 

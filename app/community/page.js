@@ -368,7 +368,7 @@ export default function CommunityPage() {
             <div className="mt-2 flex items-center gap-2">
               <input
                 className="border rounded px-2 py-1 text-sm w-[20rem]"
-                placeholder="Describe your query in Natural Language"
+                placeholder="Search community posts"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -587,7 +587,7 @@ export default function CommunityPage() {
                                     adminDeleteComment(t.id, postIndex)
                                   }
                                 >
-                                  Delete (again)
+                                  Permanently Delete
                                 </button>
                               </div>
                             </div>

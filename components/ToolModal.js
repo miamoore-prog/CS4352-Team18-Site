@@ -85,16 +85,21 @@ export default function ToolModal({ tool, onClose }) {
             <h3 className="text-lg font-semibold">{tool.name}</h3>
             <p className="text-sm text-slate-600">{tool.about}</p>
           </div>
-          <div>
-            <Button
-              variant="ghost"
-              onClick={onClose}
-              className="text-slate-500"
-            >
-              Close
-            </Button>
-          </div>
+          <button
+            onClick={onClose}
+            className="text-red-600 hover:text-red-800 text-3xl leading-none font-light ml-4"
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
+
+        {tool.summary && (
+          <div className="mt-4 p-3 bg-slate-50 rounded-md border border-slate-200">
+            <h4 className="text-sm font-semibold text-slate-700">Quick Summary</h4>
+            <p className="text-sm text-slate-600 mt-1">{tool.summary}</p>
+          </div>
+        )}
 
         <div className="mt-4 text-sm text-slate-700">{tool.details}</div>
 
@@ -187,6 +192,12 @@ export default function ToolModal({ tool, onClose }) {
                       return;
                     }
 
+                    // Require text for submission
+                    if (!editingText || !editingText.trim()) {
+                      alert("Please write a review before submitting.");
+                      return;
+                    }
+
                     try {
                       const headers = { "Content-Type": "application/json" };
                       if (currentUser) headers["x-user-id"] = currentUser;
@@ -212,6 +223,7 @@ export default function ToolModal({ tool, onClose }) {
                       return;
                     }
                   }}
+                  disabled={editingEnabled && (!editingText || !editingText.trim())}
                 >
                   {editingEnabled
                     ? myReview
@@ -286,15 +298,10 @@ export default function ToolModal({ tool, onClose }) {
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-slate-500">
-            Quick summary: {tool.summary}
-          </div>
-          <div>
-            <Button onClick={() => setShowHowTo(!showHowTo)} className="mr-2">
-              How to guide
-            </Button>
-          </div>
+        <div className="mt-6 flex items-center justify-end">
+          <Button onClick={() => setShowHowTo(!showHowTo)}>
+            How to guide
+          </Button>
         </div>
 
         {showHowTo && (
