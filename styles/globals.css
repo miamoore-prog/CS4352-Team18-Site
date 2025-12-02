@@ -47,18 +47,36 @@ body {
 /* shadcn-like utility classes */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
+
   .btn-primary {
-    @apply bg-primary text-white px-3 py-2 shadow-sm;
+    @apply btn bg-sky-600 text-white px-3 py-2 shadow-sm hover:bg-sky-700 focus:ring-sky-500;
   }
+
   .btn-ghost {
-    @apply bg-transparent text-primary px-2 py-1;
+    @apply btn bg-transparent text-slate-700 px-2 py-1 hover:bg-slate-100 focus:ring-slate-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white px-3 py-2 shadow-sm hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-outline {
+    @apply btn border border-slate-300 bg-white text-slate-700 px-3 py-2 hover:bg-slate-50 focus:ring-slate-500;
+  }
+
+  .btn-sm {
+    @apply text-xs px-2 py-1;
+  }
+
+  .btn-lg {
+    @apply text-base px-4 py-2.5;
   }
 
   .input {
-    @apply w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-sm;
-  } 
+    @apply w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm transition-colors;
+  }
 }
 
 /* animation for carousel */

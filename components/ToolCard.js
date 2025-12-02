@@ -94,13 +94,13 @@ export default function ToolCard({ tool, onOpen }) {
         className="w-12 h-12 object-contain rounded flex-shrink-0"
       />
 
-      <div className="flex-1 flex flex-col justify-between min-w-0">
+      <div className="flex-1 flex flex-col min-w-0">
         <div className="flex items-start justify-between">
-          <div>
-            <h4 className="font-semibold">{tool.name}</h4>
-            <div className="text-sm text-slate-500">{tool.about}</div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-semibold text-slate-800">{tool.name}</h4>
+            <p className="text-sm text-slate-600 mt-1 line-clamp-2">{tool.about}</p>
           </div>
-          <div className="text-xs text-slate-400 text-right">
+          <div className="ml-3 flex-shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -127,7 +127,7 @@ export default function ToolCard({ tool, onOpen }) {
                 }
               }}
               aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
-              className="p-1 rounded hover:bg-slate-100"
+              className="p-1 rounded hover:bg-slate-100 transition-colors"
               title={bookmarked ? "Bookmarked" : "Bookmark"}
             >
               {bookmarked ? (
@@ -159,33 +159,39 @@ export default function ToolCard({ tool, onOpen }) {
           </div>
         </div>
 
-        <p className="mt-3 text-sm text-slate-600">{tool.summary}</p>
-
         <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {tool.tags.slice(0, 3).map((tag) => (
               <span key={tag} className="tag">
                 {tag}
               </span>
             ))}
+            {tool.tags.length > 3 && (
+              <span className="text-xs text-slate-500">
+                +{tool.tags.length - 3} more
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-700">
-              <span className="font-semibold">{avg === null ? "—" : avg}</span>
-              <span className="text-xs text-slate-500"> • {count} reviews</span>
-            </div>
+          <div className="flex items-center gap-3 ml-3 flex-shrink-0">
+            {avg !== null && avg > 0 && (
+              <div className="flex items-center gap-1 text-sm">
+                <span className="text-yellow-500">★</span>
+                <span className="font-semibold text-slate-700">{avg}</span>
+                <span className="text-xs text-slate-500">({count})</span>
+              </div>
+            )}
 
-            <div className="flex items-center gap-2">
-              <Link
-                href={`/tools/${tool.id}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Button variant="ghost" onClick={(e) => e.stopPropagation()}>
-                  View more
-                </Button>
-              </Link>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen?.();
+              }}
+            >
+              View Details
+            </Button>
           </div>
         </div>
       </div>

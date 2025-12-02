@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const useToolsLoader = () => {
   const [tools, setTools] = useState([]);
@@ -199,51 +200,92 @@ export default function CommunityPage() {
     }
   }
 
-  async function adminDeleteComment(threadId, commentIndex) {
+  async function handleLikeComment(threadId, commentIndex) {
     try {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (!confirm("Delete this comment (admin)?")) return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
         method: "POST",
         headers,
         body: JSON.stringify({
-          action: "deleteComment",
+          action: "likeComment",
           threadId,
           commentIndex,
         }),
       });
-      if (res.ok) fetchPosts();
-    } catch (e) {
+      if (res.ok) {
+        fetchPosts();
+      }
+    } catch (err) {
       return;
     }
   }
 
+  async function adminDeleteComment(threadId, commentIndex) {
+    setConfirmDialog({
+      title: "Delete Comment",
+      message:
+        "Are you sure you want to permanently delete this comment? This action cannot be undone.",
+      confirmText: "Delete",
+      danger: true,
+      onConfirm: async () => {
+        try {
+          const auth = localStorage.getItem("mock_auth");
+          const token = auth ? JSON.parse(auth).token : null;
+          if (!token) return;
+          const headers = { "Content-Type": "application/json" };
+          if (token) headers["x-user-id"] = token;
+          const res = await fetch("/api/community", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              action: "deleteComment",
+              threadId,
+              commentIndex,
+            }),
+          });
+          if (res.ok) fetchPosts();
+        } catch (e) {
+          return;
+        }
+        setConfirmDialog(null);
+      },
+      onCancel: () => setConfirmDialog(null),
+    });
+  }
+
   async function adminDeleteThread(threadId) {
-    try {
-      const auth = localStorage.getItem("mock_auth");
-      const token = auth ? JSON.parse(auth).token : null;
-      if (!token) return;
-      if (
-        !confirm(
-          "Delete this thread? This action will permanently remove the thread."
-        )
-      )
-        return;
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["x-user-id"] = token;
-      const res = await fetch("/api/community", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ action: "deleteThread", threadId }),
-      });
-      if (res.ok) fetchPosts();
-    } catch (e) {
-      return;
-    }
+    const thread = posts.find((p) => p.id === threadId);
+    const threadTitle = thread?.title || thread?.ownerName || "this thread";
+
+    setConfirmDialog({
+      title: "Delete Thread",
+      message: `Are you sure you want to permanently delete "${threadTitle}"? This action will remove the thread and all its comments. This cannot be undone.`,
+      confirmText: "Delete Thread",
+      danger: true,
+      onConfirm: async () => {
+        try {
+          const auth = localStorage.getItem("mock_auth");
+          const token = auth ? JSON.parse(auth).token : null;
+          if (!token) return;
+          const headers = { "Content-Type": "application/json" };
+          if (token) headers["x-user-id"] = token;
+          const res = await fetch("/api/community", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ action: "deleteThread", threadId }),
+          });
+          if (res.ok) fetchPosts();
+        } catch (e) {
+          return;
+        }
+        setConfirmDialog(null);
+      },
+      onCancel: () => setConfirmDialog(null),
+    });
   }
 
   async function submitReview(e) {
@@ -279,6 +321,7 @@ export default function CommunityPage() {
 
   const [showCompose, setShowCompose] = useState(false);
   const [composeTool, setComposeTool] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   function CommentBox({ threadId, onPosted }) {
     const [text, setText] = useState("");
@@ -558,7 +601,7 @@ export default function CommunityPage() {
                   {/* comments: show up to 3, then a view more link */}
                   <div className="mt-3 space-y-2">
                     {comments.slice(0, 3).map((c, idx) => {
-                      const postIndex = idx + 1; // index in t.posts
+                      const postIndex = c.dbIndex; // Use database index for mutations
                       if (c.deletedByAdmin) {
                         if (currentUserObj && currentUserObj.role === "admin") {
                           return (
@@ -604,18 +647,46 @@ export default function CommunityPage() {
                           </div>
                         );
                       }
+                      const commentLikes = Array.isArray(c.likes)
+                        ? c.likes
+                        : [];
+                      const isLikedByCurrentUser =
+                        currentUser && commentLikes.includes(currentUser);
+
                       return (
                         <div
                           key={idx}
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
-                          <div className="text-xs text-slate-500">
-                            {c.authorIsAdmin
-                              ? "admin"
-                              : c.authorName || c.author}{" "}
-                            • {c.date ? new Date(c.date).toLocaleString() : ""}
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="text-xs text-slate-500">
+                                {c.authorIsAdmin
+                                  ? "admin"
+                                  : c.authorName || c.author}{" "}
+                                • {c.date ? new Date(c.date).toLocaleString() : ""}
+                              </div>
+                              <div className="mt-1">{c.text}</div>
+                            </div>
+                            <button
+                              onClick={() => handleLikeComment(t.id, postIndex)}
+                              className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                                isLikedByCurrentUser
+                                  ? "text-pink-600 bg-pink-50 hover:bg-pink-100"
+                                  : "text-slate-500 hover:bg-slate-100"
+                              }`}
+                              title={
+                                isLikedByCurrentUser
+                                  ? "Unlike comment"
+                                  : "Like comment"
+                              }
+                            >
+                              <span>♥</span>
+                              {commentLikes.length > 0 && (
+                                <span>{commentLikes.length}</span>
+                              )}
+                            </button>
                           </div>
-                          <div className="mt-1">{c.text}</div>
                           {currentUserObj &&
                             currentUserObj.role === "admin" && (
                               <div className="mt-2">
@@ -732,6 +803,8 @@ export default function CommunityPage() {
           </Card>
         </div>
       )}
+
+      {confirmDialog && <ConfirmDialog {...confirmDialog} />}
     </div>
   );
 }

@@ -63,27 +63,41 @@ export async function GET(req) {
         Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
       const fallbackNow = new Date().toISOString();
       const date = t.createdAt || (firstPost && firstPost.date) || fallbackNow;
-      const posts = (t.posts || []).map((p) => {
-        const rawAuthor = p.author;
-        const byId = users.find(
-          (u) =>
-            u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor)
-        );
-        const authorName = resolveAuthorName(rawAuthor);
-        const authorIsAdmin = !!(
-          byId &&
-          byId.data &&
-          byId.data.role === "admin"
-        );
-        return {
-          ...p,
-          authorId: rawAuthor,
-          author: authorName,
-          authorName,
-          authorIsAdmin,
-          date: p.date || fallbackNow,
-        };
-      });
+      const posts = (t.posts || [])
+        .map((p, idx) => {
+          const rawAuthor = p.author;
+          const byId = users.find(
+            (u) =>
+              u.data && (u.data.id === rawAuthor || u.data.username === rawAuthor)
+          );
+          const authorName = resolveAuthorName(rawAuthor);
+          const authorIsAdmin = !!(
+            byId &&
+            byId.data &&
+            byId.data.role === "admin"
+          );
+          return {
+            ...p,
+            authorId: rawAuthor,
+            author: authorName,
+            authorName,
+            authorIsAdmin,
+            date: p.date || fallbackNow,
+            likes: Array.isArray(p.likes) ? p.likes : [],
+            _originalIndex: idx,
+            dbIndex: idx, // Keep database index for mutations
+          };
+        })
+        .sort((a, b) => {
+          // Keep the first post (original thread) at the top
+          if (a._originalIndex === 0) return -1;
+          if (b._originalIndex === 0) return 1;
+
+          // Otherwise sort comments by date descending (most recent first)
+          const dateA = new Date(a.date).getTime();
+          const dateB = new Date(b.date).getTime();
+          return dateB - dateA;
+        });
 
       threads.push({
         id: t.id,
@@ -202,6 +216,7 @@ export async function POST(req) {
             author: user.username || user.displayName || user.id,
             text: body.text || "",
             date: now,
+            likes: [], // Initialize likes array for first post
           },
         ],
         likes: [],
@@ -244,7 +259,12 @@ export async function POST(req) {
         if (t) {
           const now = new Date().toISOString();
           t.posts = t.posts || [];
-          t.posts.push({ author: commenter, text, date: now });
+          t.posts.push({
+            author: commenter,
+            text,
+            date: now,
+            likes: [], // Initialize likes array for new comments
+          });
           await writeUserFile(u.file, user);
           return new Response(JSON.stringify({ ok: true, threadId }), {
             status: 200,
@@ -403,6 +423,68 @@ export async function POST(req) {
           return new Response(JSON.stringify({ ok: true, threadId }), {
             status: 200,
           });
+        }
+      }
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
+    }
+
+    if (action === "likeComment") {
+      const threadId = body.threadId;
+      const commentIndex =
+        typeof body.commentIndex === "number" ? body.commentIndex : null;
+
+      if (!threadId)
+        return new Response(JSON.stringify({ error: "missing threadId" }), {
+          status: 400,
+        });
+      if (commentIndex === null || commentIndex < 0)
+        return new Response(
+          JSON.stringify({ error: "missing or invalid commentIndex" }),
+          { status: 400 }
+        );
+      if (!userId)
+        return new Response(JSON.stringify({ error: "missing user" }), {
+          status: 400,
+        });
+
+      const users = await readUsers();
+      for (const u of users) {
+        const user = u.data;
+        if (!user.threads) continue;
+        const t = user.threads.find((x) => x.id === threadId);
+        if (t) {
+          if (!Array.isArray(t.posts) || commentIndex >= t.posts.length)
+            return new Response(JSON.stringify({ error: "invalid index" }), {
+              status: 400,
+            });
+
+          const comment = t.posts[commentIndex];
+          comment.likes = Array.isArray(comment.likes) ? comment.likes : [];
+
+          const idx = comment.likes.indexOf(userId);
+          let liked = false;
+
+          if (idx === -1) {
+            comment.likes.push(userId);
+            liked = true;
+          } else {
+            comment.likes.splice(idx, 1);
+            liked = false;
+          }
+
+          await writeUserFile(u.file, user);
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              threadId,
+              commentIndex,
+              liked,
+              likes: comment.likes.length,
+            }),
+            { status: 200 }
+          );
         }
       }
       return new Response(JSON.stringify({ error: "thread not found" }), {

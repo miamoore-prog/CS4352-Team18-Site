@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../../../components/ConfirmDialog";
 
 export default function AdminToolsPage() {
   const [mounted, setMounted] = useState(false);
@@ -25,6 +26,7 @@ export default function AdminToolsPage() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -163,19 +165,31 @@ export default function AdminToolsPage() {
   }
 
   async function toggleHidden(t) {
-    setMsg(null);
-    try {
-      const res = await fetch("/api/admin/tools", {
-        method: "PATCH",
-        headers: getHeaders(),
-        body: JSON.stringify({ id: t.id, hidden: !t.hidden }),
-      });
-      if (!res.ok) throw new Error("failed");
-      setMsg({ ok: true, text: "Updated" });
-      await loadTools();
-    } catch (err) {
-      setMsg({ ok: false, text: String(err) });
-    }
+    setConfirmDialog({
+      title: t.hidden ? "Unhide Tool" : "Hide Tool",
+      message: t.hidden
+        ? `Are you sure you want to make "${t.name}" visible to users again?`
+        : `Are you sure you want to hide "${t.name}"? It will no longer be visible to users in the tool catalog.`,
+      confirmText: t.hidden ? "Unhide" : "Hide",
+      danger: !t.hidden,
+      onConfirm: async () => {
+        setMsg(null);
+        try {
+          const res = await fetch("/api/admin/tools", {
+            method: "PATCH",
+            headers: getHeaders(),
+            body: JSON.stringify({ id: t.id, hidden: !t.hidden }),
+          });
+          if (!res.ok) throw new Error("failed");
+          setMsg({ ok: true, text: "Updated" });
+          await loadTools();
+        } catch (err) {
+          setMsg({ ok: false, text: String(err) });
+        }
+        setConfirmDialog(null);
+      },
+      onCancel: () => setConfirmDialog(null),
+    });
   }
 
   // Prevent hydration mismatch by waiting for client-side mount
@@ -759,6 +773,8 @@ export default function AdminToolsPage() {
           </div>
         </div>
       )}
+
+      {confirmDialog && <ConfirmDialog {...confirmDialog} />}
     </div>
   );
 }

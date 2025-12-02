@@ -168,6 +168,12 @@ export default function NavBar() {
               </Link>
             )}
 
+            <Link href="/help">
+              <Button variant="ghost" className="text-sm">
+                Help
+              </Button>
+            </Link>
+
             <Link href="/about">
               <Button variant="ghost" className="text-sm">
                 About

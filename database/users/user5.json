@@ -16,12 +16,14 @@
         {
           "author": "ellen",
           "text": "I've been stress-testing both Claude and ChatGPT on multi-step logic puzzles. Claude handles long context better in my tests.",
-          "date": "2025-11-08T09:30:00.000Z"
+          "date": "2025-11-08T09:30:00.000Z",
+          "likes": []
         },
         {
           "author": "charlie",
           "text": "Interesting — can you share an example prompt?",
-          "date": "2025-11-08T10:02:00.000Z"
+          "date": "2025-11-08T10:02:00.000Z",
+          "likes": []
         }
       ],
       "likes": ["user3"]
