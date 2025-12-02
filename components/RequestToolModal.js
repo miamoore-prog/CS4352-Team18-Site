@@ -41,7 +41,7 @@ export default function RequestToolModal({ onClose }) {
         body: JSON.stringify({ toolName, usage, contact }),
       });
       if (!res.ok) throw new Error(`status ${res.status}`);
-      const data = await res.json();
+      await res.json();
       setStatus({ ok: true, msg: "Request submitted successfully!" });
       setToolName("");
       setUsage("");
