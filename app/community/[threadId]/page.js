@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button } from "../../../components/ui";
 
 export default function ThreadPage({ params }) {
-  const { threadId } = params || {};
+  const { threadId } = use(params);
   const [thread, setThread] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserObj, setCurrentUserObj] = useState(null);
 

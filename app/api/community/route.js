@@ -121,6 +121,23 @@ export async function GET(req) {
       return new Response(JSON.stringify({ error: "not found" }), {
         status: 404,
       });
+
+    // Check permissions for flagged threads
+    const reqUserId = req.headers.get("x-user-id") || null;
+    const requesterIsAdmin =
+      reqUserId &&
+      findUserById(reqUserId) &&
+      findUserById(reqUserId).role === "admin";
+
+    if (thread.flagged) {
+      const isOwner = reqUserId && thread.ownerId === reqUserId;
+      if (!requesterIsAdmin && !isOwner) {
+        return new Response(JSON.stringify({ error: "not found" }), {
+          status: 404,
+        });
+      }
+    }
+
     return new Response(JSON.stringify(thread), {
       headers: { "Content-Type": "application/json" },
     });
