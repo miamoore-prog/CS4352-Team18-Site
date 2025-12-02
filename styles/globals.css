@@ -11,9 +11,9 @@
   /* warm beige card */
   background: linear-gradient(
     180deg,
-      rgba(255, 250, 244, 0.9),
-      rgba(250, 245, 236, 0.9)
-      );
+    rgba(255, 250, 244, 0.9),
+    rgba(250, 245, 236, 0.9)
+  );
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
   padding: 1rem;
@@ -81,8 +81,12 @@ body {
 
 /* animation for carousel */
 @keyframes carousel {
-  0% { transform: translateX(0) }
-  100% { transform: translateX(-50%) }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 .animate-carousel {
   animation: carousel 60s infinite linear;
@@ -189,7 +193,6 @@ body {
   vertical-align: middle !important;
 }
 
-
 /* Hide the border separator */
 #google_translate_element .goog-te-gadget-simple span[style*="border-left"] {
   display: none !important;
@@ -259,11 +262,15 @@ body {
   top: 0 !important;
 }
 
-/* Additional cleanup for Google Translate UI elements */
-.goog-te-balloon-frame {
+/* Hide hover tooltip but not the dropdown menu */
+.goog-te-balloon-frame:not(.goog-te-menu-frame) {
   display: none !important;
 }
 
 #goog-gt-tt {
   display: none !important;
+}
+
+.skiptranslate iframe {
+  visibility: hidden !important;
 }
