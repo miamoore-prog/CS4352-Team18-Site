@@ -128,8 +128,8 @@ export default function ToolReviewPage() {
                 <button
                   className={`px-3 py-1 rounded ${
                     filterStar === null
-                      ? "bg-purple-600 text-white"
-                      : "bg-purple-100 text-purple-700"
+                      ? "bg-sky-600 text-white"
+                      : "bg-sky-100 text-sky-700"
                   }`}
                   onClick={() => setFilterStar(null)}
                 >

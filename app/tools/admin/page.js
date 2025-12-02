@@ -197,7 +197,7 @@ export default function AdminToolsPage() {
     return (
       <div className="card">
         <div className="flex items-center gap-2">
-          <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+          <div className="animate-spin h-4 w-4 border-2 border-sky-500 border-t-transparent rounded-full"></div>
           <span>Loading...</span>
         </div>
       </div>

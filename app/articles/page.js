@@ -87,7 +87,7 @@ export default function ArticlesPage() {
                 href={article.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xl font-semibold text-purple-700 hover:underline"
+                className="text-xl font-semibold text-sky-700 hover:underline"
               >
                 {article.title}
               </a>

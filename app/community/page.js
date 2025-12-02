@@ -731,7 +731,7 @@ export default function CommunityPage() {
           setComposeTool(selectedTool);
           setShowCompose(true);
         }}
-        className="fixed bottom-6 right-6 bg-violet-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-violet-700 transition"
+        className="fixed bottom-6 right-6 bg-sky-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-sky-700 transition"
       >
         +
       </button>

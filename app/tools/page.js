@@ -140,7 +140,7 @@ export default function ToolsPage() {
         <div className="mb-4 text-sm text-slate-600">
           {loadingRecommendations ? (
             <div className="flex items-center gap-2">
-              <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+              <div className="animate-spin h-4 w-4 border-2 border-sky-500 border-t-transparent rounded-full"></div>
               <span>Searching with AI...</span>
             </div>
           ) : (
@@ -178,7 +178,7 @@ export default function ToolsPage() {
                 }, 0);
               }}
               disabled={currentPage === 1}
-              className="px-3 py-1 rounded bg-purple-100 hover:bg-purple-200 disabled:opacity-50"
+              className="px-3 py-1 rounded bg-sky-100 hover:bg-sky-200 disabled:opacity-50"
             >
               Previous
             </button>
@@ -197,7 +197,7 @@ export default function ToolsPage() {
                 }, 0);
               }}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 rounded bg-purple-100 hover:bg-purple-200 disabled:opacity-50"
+              className="px-3 py-1 rounded bg-sky-100 hover:bg-sky-200 disabled:opacity-50"
             >
               Next
             </button>
