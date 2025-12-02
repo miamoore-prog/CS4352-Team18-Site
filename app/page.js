@@ -47,34 +47,25 @@ export default function Home() {
     router.push(`/tools?query=${encodeURIComponent(q)}`);
   }
 
-  return (
-    <div className="space-y-12">
-      <section className="text-center space-y-6 py-8">
-        <h2 className="text-4xl font-bold text-slate-800">
-          AI Doesn't Have to Be Complicated.
-        </h2>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          We simplify the AI world for working professionals. Find the right
-          tools, understand how they fit your job, and see how others like you
-          are using them every day.
-        </p>
-      </section>
-
-      {/* Admin Dashboard - Prominently displayed for admin users */}
-      {user && user.role === "admin" && (
+  // Admin users see only their dashboard
+  if (user && user.role === "admin") {
+    return (
+      <div className="space-y-8">
         <section className="card p-8 bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-sky-600 text-white px-3 py-1 rounded-lg font-semibold text-sm">
               ADMIN
             </div>
-            <h3 className="text-2xl font-bold text-slate-800">Admin Dashboard</h3>
+            <h3 className="text-2xl font-bold text-slate-800">
+              Admin Dashboard
+            </h3>
           </div>
 
           <p className="text-slate-600 mb-6">
-            Quick access to administrative functions
+            Quick access to administrative functions and platform management tools
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <a
               href="/tools/admin"
               className="group block p-6 bg-white rounded-lg border-2 border-slate-200 hover:border-sky-500 hover:shadow-lg transition-all"
@@ -103,9 +94,14 @@ export default function Home() {
                   Manage Tools
                 </h4>
               </div>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 mb-3">
                 Add, edit, or remove AI tools from the database
               </p>
+              <ul className="text-xs text-slate-500 space-y-1">
+                <li>• Add new AI tools with complete details</li>
+                <li>• Edit existing tool information</li>
+                <li>• Hide/show tools from public view</li>
+              </ul>
             </a>
 
             <a
@@ -131,9 +127,14 @@ export default function Home() {
                   Manage Community
                 </h4>
               </div>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 mb-3">
                 Moderate community posts and manage discussions
               </p>
+              <ul className="text-xs text-slate-500 space-y-1">
+                <li>• Flag inappropriate content for review</li>
+                <li>• Delete posts and comments</li>
+                <li>• Maintain community standards</li>
+              </ul>
             </a>
 
             <a
@@ -159,13 +160,90 @@ export default function Home() {
                   Tool Requests
                 </h4>
               </div>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-slate-600 mb-3">
                 Review and manage user tool requests
               </p>
+              <ul className="text-xs text-slate-500 space-y-1">
+                <li>• View pending user requests</li>
+                <li>• Approve and add requested tools</li>
+                <li>• Dismiss irrelevant requests</li>
+              </ul>
             </a>
           </div>
+
+          <div className="border-t border-sky-200 pt-6">
+            <h4 className="font-semibold text-slate-800 mb-3">What You Can Do as Admin:</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Add, edit, and manage all AI tools in the database</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Hide or restore tools without deleting data</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Moderate community posts and comments</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Flag inappropriate content for review</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Review and process user tool requests</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-sky-600 font-bold mt-0.5">✓</span>
+                <span className="text-sm text-slate-700">Maintain platform quality and user experience</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-sky-100">
+              <a
+                href="/help"
+                className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-700 font-medium text-sm transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+                View Complete Admin Documentation
+              </a>
+              <span className="text-slate-400">|</span>
+              <span className="text-sm text-slate-600">
+                Detailed guides and FAQs available in the Help section
+              </span>
+            </div>
+          </div>
         </section>
-      )}
+      </div>
+    );
+  }
+
+  // Regular users see the landing page
+  return (
+    <div className="space-y-12">
+      <section className="text-center space-y-6 py-8">
+        <h2 className="text-4xl font-bold text-slate-800">
+          AI Doesn't Have to Be Complicated.
+        </h2>
+        <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          We simplify the AI world for working professionals. Find the right
+          tools, understand how they fit your job, and see how others like you
+          are using them every day.
+        </p>
+      </section>
 
       <section className="card p-6">
         <Suspense fallback={<div>Loading tools...</div>}>

@@ -1,10 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../components/ui";
 
 export default function HelpPage() {
   const [openSection, setOpenSection] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mock_auth");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setUser(parsed.user || null);
+      }
+    } catch (e) {
+      setUser(null);
+    }
+  }, []);
 
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
@@ -73,6 +86,51 @@ export default function HelpPage() {
     },
   ];
 
+  const adminFaqs = [
+    {
+      id: "admin-access",
+      question: "How do I access admin features?",
+      answer:
+        "Log in with admin credentials (admin/adminpass). The homepage will automatically display the Admin Dashboard with quick access to Manage Tools, Manage Community, and Tool Requests. You can also access these features from the profile dropdown menu.",
+    },
+    {
+      id: "admin-hide-vs-delete",
+      question: "Should I hide or delete a tool?",
+      answer:
+        "Always prefer hiding tools over deletion. Hiding preserves the tool's data (reviews, ratings, bookmarks) while removing it from public view. This allows you to restore the tool later if needed. Only delete if the tool was added by mistake or contains harmful content.",
+    },
+    {
+      id: "admin-tool-fields",
+      question: "Which fields are required when adding a tool?",
+      answer:
+        "Required fields include: Tool Name, Description, URL, Category, Tags, Pricing Type, Quick Summary, How-to Guide, and Use Cases. Ensure all fields are filled accurately to provide users with complete information.",
+    },
+    {
+      id: "admin-moderate-content",
+      question: "When should I flag vs. delete community content?",
+      answer:
+        "Use flagging to mark questionable content for review - it remains visible but is marked. Use deletion for content that clearly violates community guidelines: spam, harassment, explicit content, or misinformation. Deleted posts and comments are permanently removed.",
+    },
+    {
+      id: "admin-tool-requests",
+      question: "How should I handle tool requests?",
+      answer:
+        "Review each request for completeness and relevance. If approved, add the tool through 'Manage Tools' using the provided information. Dismiss requests that are duplicates, incomplete, or not relevant to the platform. Consider contacting users if clarification is needed.",
+    },
+    {
+      id: "admin-user-reviews",
+      question: "Can I edit or delete user reviews?",
+      answer:
+        "Currently, admin controls focus on tool and community management. User reviews are tied to tools and cannot be individually edited. If a review violates guidelines, you can hide the entire tool temporarily while addressing the issue.",
+    },
+    {
+      id: "admin-dashboard-navigation",
+      question: "How do I view the regular user experience?",
+      answer:
+        "As an admin, your homepage shows the Admin Dashboard. To see the regular user view, navigate directly to /tools or /community pages. You can also log in with a regular user account (e.g., alice/test) to experience the platform as a standard user.",
+    },
+  ];
+
   const guides = [
     {
       id: "getting-started",
@@ -109,10 +167,79 @@ export default function HelpPage() {
     },
   ];
 
+  const adminGuides = [
+    {
+      id: "admin-dashboard",
+      title: "Accessing the Admin Dashboard",
+      steps: [
+        "Log in with admin credentials (admin/adminpass)",
+        "Navigate to the homepage - you'll see the Admin Dashboard instead of the landing page",
+        "The dashboard provides three main sections: Manage Tools, Manage Community, and Tool Requests",
+        "Click on any card to access the respective admin function",
+      ],
+    },
+    {
+      id: "managing-tools",
+      title: "Managing AI Tools",
+      steps: [
+        "From the Admin Dashboard, click 'Manage Tools' or navigate to /tools/admin",
+        "View the complete list of all tools in the database with their status (visible/hidden)",
+        "To ADD a new tool: Click 'Add New Tool' button at the top",
+        "Fill in all required fields: name, description, URL, category, tags, pricing, and detailed information",
+        "To EDIT a tool: Click the 'Edit' button next to any tool in the list",
+        "Update the desired fields and click 'Save changes'",
+        "To HIDE/SHOW a tool: Click the 'Hide' or 'Show' button to toggle visibility for regular users",
+        "Hidden tools won't appear in search results or browse pages for non-admin users",
+      ],
+    },
+    {
+      id: "managing-community",
+      title: "Moderating Community Content",
+      steps: [
+        "Navigate to the Community page from the Admin Dashboard",
+        "Browse posts and comments as normal",
+        "To FLAG inappropriate content: Click the flag icon (⚑) on any post or comment",
+        "Flagged items are marked for review but remain visible",
+        "To DELETE content: Click the delete/trash icon on any post or comment",
+        "Deleted posts remove the entire thread and all associated comments",
+        "Deleted comments are removed immediately",
+        "Monitor community discussions regularly to maintain a respectful environment",
+      ],
+    },
+    {
+      id: "tool-requests",
+      title: "Reviewing Tool Requests",
+      steps: [
+        "From the Admin Dashboard, click 'Tool Requests' or navigate to /tools/requests/admin",
+        "View all pending requests submitted by users",
+        "Each request shows: tool name, description, and user contact information",
+        "Review the request details to determine if the tool should be added",
+        "To APPROVE: Use the information to add the tool via 'Manage Tools'",
+        "To DISMISS: Click the 'Dismiss' button to remove the request from the list",
+        "You can contact users via the provided email for clarification if needed",
+      ],
+    },
+    {
+      id: "admin-best-practices",
+      title: "Admin Best Practices",
+      steps: [
+        "Regularly check tool requests to keep users engaged",
+        "Hide tools rather than delete them to preserve data",
+        "Review flagged content promptly to maintain community standards",
+        "When adding tools, ensure all fields are complete and accurate",
+        "Keep tool information up-to-date, especially pricing and availability",
+        "Monitor community for spam and inappropriate behavior",
+        "Use the homepage dashboard for quick access to frequently used functions",
+      ],
+    },
+  ];
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Help & Documentation</h1>
+        <h1 className="text-3xl font-bold text-slate-800">
+          Help & Documentation
+        </h1>
         <p className="mt-2 text-slate-600">
           Everything you need to know about using AI Compass
         </p>
@@ -123,8 +250,13 @@ export default function HelpPage() {
         <h2 className="text-xl font-semibold mb-4">Quick Start Guides</h2>
         <div className="space-y-4">
           {guides.map((guide) => (
-            <div key={guide.id} className="border-b border-slate-200 last:border-0 pb-4 last:pb-0">
-              <h3 className="font-semibold text-slate-800 mb-2">{guide.title}</h3>
+            <div
+              key={guide.id}
+              className="border-b border-slate-200 last:border-0 pb-4 last:pb-0"
+            >
+              <h3 className="font-semibold text-slate-800 mb-2">
+                {guide.title}
+              </h3>
               <ol className="list-decimal pl-5 space-y-2 text-sm text-slate-600">
                 {guide.steps.map((step, idx) => (
                   <li key={idx}>{step}</li>
@@ -135,17 +267,57 @@ export default function HelpPage() {
         </div>
       </Card>
 
+      {/* Admin Guides - Only visible to admins */}
+      {user && user.role === "admin" && (
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-sky-600 text-white px-3 py-1 rounded-lg font-semibold text-xs">
+              ADMIN
+            </div>
+            <h2 className="text-xl font-semibold">Administrator Guides</h2>
+          </div>
+          <p className="text-sm text-slate-600 mb-6">
+            Comprehensive guides for admin functionality and platform
+            management.
+          </p>
+          <div className="space-y-4">
+            {adminGuides.map((guide) => (
+              <div
+                key={guide.id}
+                className="border-b border-slate-200 last:border-0 pb-4 last:pb-0"
+              >
+                <h3 className="font-semibold text-slate-800 mb-2">
+                  {guide.title}
+                </h3>
+                <ol className="list-decimal pl-5 space-y-2 text-sm text-slate-600">
+                  {guide.steps.map((step, idx) => (
+                    <li key={idx}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* FAQs */}
       <Card>
-        <h2 className="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Frequently Asked Questions
+        </h2>
         <div className="space-y-2">
           {faqs.map((faq) => (
-            <div key={faq.id} className="border border-slate-200 rounded-lg overflow-hidden">
+            <div
+              key={faq.id}
+              className="border border-slate-200 rounded-lg overflow-hidden"
+            >
               <button
                 onClick={() => toggleSection(faq.id)}
                 className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
               >
-                <span className="font-medium text-slate-800">{faq.question}</span>
+                <span className="font-medium text-slate-800">
+                  {faq.question}
+                </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className={`w-5 h-5 text-slate-500 transition-transform ${
@@ -169,21 +341,70 @@ export default function HelpPage() {
         </div>
       </Card>
 
+      {/* Admin FAQs - Only visible to admins */}
+      {user && user.role === "admin" && (
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-sky-600 text-white px-3 py-1 rounded-lg font-semibold text-xs">
+              ADMIN
+            </div>
+            <h2 className="text-xl font-semibold">Admin FAQs</h2>
+          </div>
+          <div className="space-y-2">
+            {adminFaqs.map((faq) => (
+              <div
+                key={faq.id}
+                className="border border-sky-200 rounded-lg overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleSection(faq.id)}
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-sky-50 transition-colors"
+                >
+                  <span className="font-medium text-slate-800">
+                    {faq.question}
+                  </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`w-5 h-5 text-slate-500 transition-transform ${
+                      openSection === faq.id ? "rotate-180" : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                {openSection === faq.id && (
+                  <div className="px-4 pb-4 text-sm text-slate-600 border-t border-sky-100 pt-4">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Contact & Support */}
       <Card>
         <h2 className="text-xl font-semibold mb-4">Need More Help?</h2>
         <div className="space-y-3 text-sm text-slate-600">
           <p>
-            <strong className="text-slate-800">Still have questions?</strong> Browse our community
-            discussions or create a post asking for help from other users.
+            <strong className="text-slate-800">Still have questions?</strong>{" "}
+            Browse our community discussions or create a post asking for help
+            from other users.
           </p>
           <p>
-            <strong className="text-slate-800">Found a bug?</strong> Please report it through the
-            community with details about what happened and how to reproduce it.
+            <strong className="text-slate-800">Found a bug?</strong> Please
+            report it through the community with details about what happened and
+            how to reproduce it.
           </p>
           <p>
-            <strong className="text-slate-800">Feature request?</strong> We'd love to hear your ideas!
-            Share them in the community and discuss with other users.
+            <strong className="text-slate-800">Feature request?</strong> We'd
+            love to hear your ideas! Share them in the community and discuss
+            with other users.
           </p>
         </div>
       </Card>
@@ -195,36 +416,45 @@ export default function HelpPage() {
           <li className="flex items-start gap-2">
             <span className="text-sky-600 mt-1">•</span>
             <span>
-              <strong className="text-slate-800">Write detailed reviews:</strong> Help others by
-              sharing specific use cases, pros, and cons of the tools you've tried.
+              <strong className="text-slate-800">
+                Write detailed reviews:
+              </strong>{" "}
+              Help others by sharing specific use cases, pros, and cons of the
+              tools you've tried.
             </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-sky-600 mt-1">•</span>
             <span>
-              <strong className="text-slate-800">Use descriptive search terms:</strong> Instead of
-              just tool names, try describing what you want to accomplish.
+              <strong className="text-slate-800">
+                Use descriptive search terms:
+              </strong>{" "}
+              Instead of just tool names, try describing what you want to
+              accomplish.
             </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-sky-600 mt-1">•</span>
             <span>
-              <strong className="text-slate-800">Engage respectfully:</strong> Keep community
-              discussions constructive and helpful for everyone.
+              <strong className="text-slate-800">Engage respectfully:</strong>{" "}
+              Keep community discussions constructive and helpful for everyone.
             </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-sky-600 mt-1">•</span>
             <span>
-              <strong className="text-slate-800">Check tool details:</strong> Before using a tool,
-              review its summary, pricing, and how-to guide to ensure it meets your needs.
+              <strong className="text-slate-800">Check tool details:</strong>{" "}
+              Before using a tool, review its summary, pricing, and how-to guide
+              to ensure it meets your needs.
             </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-sky-600 mt-1">•</span>
             <span>
-              <strong className="text-slate-800">Bookmark strategically:</strong> Save tools you use
-              frequently for quick access from your profile.
+              <strong className="text-slate-800">
+                Bookmark strategically:
+              </strong>{" "}
+              Save tools you use frequently for quick access from your profile.
             </span>
           </li>
         </ul>
