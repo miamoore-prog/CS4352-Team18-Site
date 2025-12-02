@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 
-import CarouselCard from "../components/CarouselCard";
+import EnhancedCarousel from "../components/EnhancedCarousel";
 
 import SearchBar from "../components/SearchBar";
 
@@ -62,14 +62,7 @@ export default function Home() {
           Featured AI Tools
         </h3>
         <div className="card p-6 overflow-hidden">
-          <div className="flex gap-5 animate-carousel w-max">
-            {tools.map((tool) => (
-              <CarouselCard key={`first-${tool.id}`} tool={tool} />
-            ))}
-            {tools.map((tool) => (
-              <CarouselCard key={`second-${tool.id}`} tool={tool} />
-            ))}
-          </div>
+          <EnhancedCarousel tools={tools} />
         </div>
       </section>
     </div>
