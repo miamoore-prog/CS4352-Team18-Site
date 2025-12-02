@@ -48,6 +48,11 @@ export default function RequestToolPage() {
       <p className="text-sm text-slate-600 mb-4">
         Tell us the tool name, what it is used for, and how we can contact you.
       </p>
+      {status && (
+        <div className={status.ok ? "text-green-600" : "text-red-600"}>
+          {status.msg}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
@@ -84,11 +89,6 @@ export default function RequestToolPage() {
           <button className="btn btn-primary" type="submit">
             Submit request
           </button>
-          {status && (
-            <div className={status.ok ? "text-green-600" : "text-red-600"}>
-              {status.msg}
-            </div>
-          )}
         </div>
       </form>
     </div>

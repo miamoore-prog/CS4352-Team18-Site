@@ -12,10 +12,12 @@ export default function NavBar() {
   const [bookmarkedTools, setBookmarkedTools] = useState([]);
   const [showBookmarks, setShowBookmarks] = useState(false);
   const [showTranslate, setShowTranslate] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const pathname = usePathname();
   const translateRef = useRef(null);
-  const profileRef = useRef(null);
+  const adminRef = useRef(null);
+  const userRef = useRef(null);
 
   useEffect(() => {
     function read() {
@@ -128,14 +130,25 @@ export default function NavBar() {
 
   useEffect(() => {
     function onDoc(e) {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setShowProfileMenu(false);
+      if (adminRef.current && !adminRef.current.contains(e.target)) {
+        setShowAdminMenu(false);
       }
     }
-    if (showProfileMenu) document.addEventListener("mousedown", onDoc);
+    if (showAdminMenu) document.addEventListener("mousedown", onDoc);
     else document.removeEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
-  }, [showProfileMenu]);
+  }, [showAdminMenu]);
+
+  useEffect(() => {
+    function onDoc(e) {
+      if (userRef.current && !userRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    }
+    if (showUserMenu) document.addEventListener("mousedown", onDoc);
+    else document.removeEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [showUserMenu]);
 
   function logout() {
     localStorage.removeItem("mock_auth");
@@ -160,13 +173,82 @@ export default function NavBar() {
               </Button>
             </Link>
 
-            {user && user.role !== "admin" && (
+            {user && user.role === "admin" ? (
+              <div className="relative" ref={adminRef}>
+                <button
+                  onClick={() => setShowAdminMenu(!showAdminMenu)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                    showAdminMenu
+                      ? "bg-sky-100 text-sky-700"
+                      : "bg-transparent text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <span className="font-medium">Admin</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-4 w-4 transition-transform ${
+                      showAdminMenu ? "rotate-180" : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+
+                {showAdminMenu && (
+                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 z-50 py-1">
+                    <Link
+                      href="/tools/admin"
+                      className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                    >
+                      Manage Tools
+                    </Link>
+                    <Link
+                      href="/community"
+                      className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                    >
+                      Manage Community
+                    </Link>
+                    <Link
+                      href="/tools/requests/admin"
+                      className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
+                    >
+                      Tool Requests
+                    </Link>
+                  </div>
+                )}
+              </div>
+            ) : user && user.role !== "admin" ? (
               <Link href="/community">
                 <Button variant="ghost" className="text-sm">
                   Community
                 </Button>
               </Link>
-            )}
+            ) : null}
 
             <Link href="/help">
               <Button variant="ghost" className="text-sm">
@@ -193,94 +275,71 @@ export default function NavBar() {
 
         <div className="flex items-center space-x-4">
           {user ? (
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  showProfileMenu
-                    ? "bg-sky-100 text-sky-700"
-                    : "bg-slate-100 hover:bg-slate-200 text-slate-700"
-                }`}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <span className="font-medium">{user.displayName}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 transition-transform ${
-                    showProfileMenu ? "rotate-180" : ""
-                  }`}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </button>
+            <>
+              {user.role === "admin" ? (
+                // Admin: Simple welcome text + logout
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-700">Welcome,</span>
+                    <span className="text-sm font-medium text-slate-800">
+                      {user.displayName}
+                    </span>
+                  </div>
 
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 py-1">
-                  {user.role === "admin" ? (
-                    <>
-                      <Link
-                        href="/tools/admin"
-                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
-                      >
-                        Manage tools
-                      </Link>
-                      <Link
-                        href="/community"
-                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
-                      >
-                        Manage community
-                      </Link>
-                      <Link
-                        href="/tools/requests/admin"
-                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
-                      >
-                        Manage tool requests
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        href="/tools/request"
-                        className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
-                      >
-                        Request tool
-                      </Link>
+                  <button
+                    onClick={logout}
+                    className="text-sm text-red-600 hover:text-red-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                // Normal user: Dropdown menu
+                <div className="relative" ref={userRef}>
+                  <div
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 cursor-pointer group"
+                  >
+                    <span className="text-sm text-slate-700">Welcome,</span>
+                    <span className="text-sm font-medium text-slate-800 group-hover:text-sky-600 transition-colors">
+                      {user.displayName}
+                    </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`h-4 w-4 text-slate-600 transition-transform ${
+                        showUserMenu ? "rotate-180" : ""
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 z-50 py-1">
                       <Link
                         href="/manage-profile"
                         className="block px-4 py-2 text-sm hover:bg-slate-50 transition-colors"
                       >
                         Manage Profile
                       </Link>
-                    </>
+                      <div className="border-t border-slate-200 my-1"></div>
+                      <button
+                        onClick={logout}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-red-600 transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   )}
-                  <div className="border-t border-slate-200 my-1"></div>
-                  <button
-                    onClick={logout}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-red-600 transition-colors"
-                  >
-                    Logout
-                  </button>
                 </div>
               )}
-            </div>
+            </>
           ) : (
             <Link href="/login">
               <Button className="text-sm">Login</Button>

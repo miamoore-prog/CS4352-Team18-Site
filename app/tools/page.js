@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import SearchBar from "../../components/SearchBar";
 import ToolCard from "../../components/ToolCard";
 import ToolModal from "../../components/ToolModal";
+import RequestToolModal from "../../components/RequestToolModal";
 
 export default function ToolsPage() {
   const [query, setQuery] = useState("");
@@ -13,7 +14,21 @@ export default function ToolsPage() {
   const [recommendationError, setRecommendationError] = useState(null);
   const [displayedTools, setDisplayedTools] = useState([]);
   const [allTools, setAllTools] = useState([]);
+  const [user, setUser] = useState(null);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const hasSearchedRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("mock_auth");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setUser(parsed.user || null);
+      }
+    } catch (e) {
+      setUser(null);
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -128,6 +143,28 @@ export default function ToolsPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Request Tool Banner - Prominent for non-admin users */}
+      {user && user.role !== "admin" && (
+        <div className="card p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">
+                Can't find the tool you're looking for?
+              </h3>
+              <p className="text-sm text-slate-600">
+                Request a new AI tool to be added to our database. We review all requests and add the most requested tools.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowRequestModal(true)}
+              className="flex-shrink-0 px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all hover:shadow-lg"
+            >
+              Request a Tool
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="card">
         <SearchBar
           value={query}
@@ -207,6 +244,10 @@ export default function ToolsPage() {
 
       {activeTool && (
         <ToolModal tool={activeTool} onClose={() => setActiveTool(null)} />
+      )}
+
+      {showRequestModal && (
+        <RequestToolModal onClose={() => setShowRequestModal(false)} />
       )}
     </div>
   );
