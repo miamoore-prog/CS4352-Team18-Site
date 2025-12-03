@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
 
@@ -108,7 +108,8 @@ export default function CommunityPage() {
     }
   }
 
-  async function fetchPosts() {
+  async function fetchPosts(signal) {
+    console.log("fetchPosts called");
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -120,12 +121,19 @@ export default function CommunityPage() {
       if (token) headers["x-user-id"] = token;
       const res = await fetch(`/api/community?${params.toString()}`, {
         headers,
+        signal,
       });
       const data = await res.json();
+      console.log("Fetched posts:", data?.length || 0, "posts");
       setPosts(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
+      if (err.name === "AbortError") {
+        console.log("Fetch aborted");
+        return;
+      }
+      console.error("Error fetching posts:", err);
       setPosts([]);
-    } finally {
       setLoading(false);
     }
   }
@@ -133,7 +141,8 @@ export default function CommunityPage() {
   async function performSearch(q) {
     if (!q || !q.trim()) {
       // empty search -> reload regular posts
-      fetchPosts();
+      const controller = new AbortController();
+      fetchPosts(controller.signal);
       return;
     }
     setSearching(true);
@@ -145,20 +154,30 @@ export default function CommunityPage() {
       });
       if (!res.ok) {
         // fallback to regular posts
-        fetchPosts();
+        setSearching(false);
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
         return;
       }
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
-    } catch (e) {
-      fetchPosts();
-    } finally {
       setSearching(false);
+    } catch (e) {
+      console.error("Error searching:", e);
+      setSearching(false);
+      const controller = new AbortController();
+      fetchPosts(controller.signal);
     }
   }
 
   useEffect(() => {
-    fetchPosts();
+    console.log("useEffect triggered, calling fetchPosts. selectedTool:", selectedTool, "sort:", sort);
+    const controller = new AbortController();
+    fetchPosts(controller.signal);
+    return () => {
+      console.log("Aborting fetchPosts");
+      controller.abort();
+    };
   }, [selectedTool, sort]);
 
   async function handleLike(reviewId) {
@@ -412,6 +431,28 @@ export default function CommunityPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Create Post Card */}
+      <Card className="p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-slate-800">Share with the Community</h3>
+            <p className="text-sm text-slate-600 mt-1">Start a discussion or share your experience with AI tools</p>
+          </div>
+          <button
+            onClick={() => {
+              setComposeTool(selectedTool);
+              setShowCompose(true);
+            }}
+            className="px-6 py-3 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-all hover:shadow-lg flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Post
+          </button>
+        </div>
+      </Card>
+
       {/* Top filter bar */}
       <Card className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1 flex items-center gap-4">
@@ -738,18 +779,6 @@ export default function CommunityPage() {
           </div>
         </Card>
       </div>
-
-      {/* Floating compose button */}
-      <button
-        aria-label="Create post"
-        onClick={() => {
-          setComposeTool(selectedTool);
-          setShowCompose(true);
-        }}
-        className="fixed bottom-6 right-6 bg-sky-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-sky-700 transition"
-      >
-        +
-      </button>
 
       {/* Compose modal */}
       {showCompose && (
