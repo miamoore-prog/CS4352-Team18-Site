@@ -45,13 +45,10 @@
         },
         {
           "author": "user1",
-          "text": "",
+          "text": "Testing new comments",
           "date": "2025-11-09T18:25:29.958Z",
           "likes": [],
-          "deletedByAdmin": true,
-          "deletedAt": "2025-11-11T19:10:29.333Z",
-          "deletedBy": "admin-1",
-          "deletedText": "Testing new comments"
+          "deletedByAdmin": false
         },
         {
           "author": "user1",

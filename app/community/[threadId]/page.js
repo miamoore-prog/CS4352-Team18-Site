@@ -73,11 +73,11 @@ export default function ThreadPage({ params }) {
 
   // admin: delete (hide) a comment by index in t.posts
   async function adminDeleteComment(threadId, commentIndex) {
+    if (!confirm("Delete this comment?")) return;
     try {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (!confirm("Delete this comment (admin)?")) return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -90,6 +90,7 @@ export default function ThreadPage({ params }) {
         }),
       });
       if (res.ok) {
+        alert("Comment deleted");
         // refresh
         const r2 = await fetch(
           `/api/community?threadId=${encodeURIComponent(threadId)}`,
@@ -99,7 +100,40 @@ export default function ThreadPage({ params }) {
         setThread(d2);
       }
     } catch (e) {
-      console.error(e);
+      alert("Error deleting comment");
+    }
+  }
+
+  // admin: recover a deleted comment
+  async function adminRecoverComment(threadId, commentIndex) {
+    if (!confirm("Recover this comment?")) return;
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          action: "recoverComment",
+          threadId,
+          commentIndex,
+        }),
+      });
+      if (res.ok) {
+        alert("Comment recovered");
+        // refresh
+        const r2 = await fetch(
+          `/api/community?threadId=${encodeURIComponent(threadId)}`,
+          { headers }
+        );
+        const d2 = await r2.json();
+        setThread(d2);
+      }
+    } catch (e) {
+      alert("Error recovering comment");
     }
   }
 
@@ -206,36 +240,53 @@ export default function ThreadPage({ params }) {
         <div className="mt-6 space-y-3">
           {comments.map((c, idx) => (
             <div key={idx} className="border p-3 rounded bg-slate-50">
-              <div className="text-xs text-slate-500">
-                {c.authorIsAdmin ? "admin" : c.authorName || c.author} •{" "}
-                {c.date ? new Date(c.date).toLocaleString() : ""}
-              </div>
-              <div className="mt-1 text-sm">
-                {c.deletedByAdmin ? (
-                  currentUserObj && currentUserObj.role === "admin" ? (
-                    <div>
-                      <div className="italic text-red-600">
-                        deleted by admin
-                      </div>
-                      <div className="mt-1">{c.deletedText || ""}</div>
-                      <div className="mt-2">
-                        <button
-                          className="text-xs text-red-600"
-                          onClick={() => adminDeleteComment(threadId, idx + 1)}
-                        >
-                          Delete (again)
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-sm border rounded p-2 bg-slate-50">
-                      <div className="text-xs text-slate-500">
-                        Comment deleted by admin
-                      </div>
-                    </div>
-                  )
-                ) : (
-                  <div>{c.text}</div>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-xs text-slate-500">
+                    {c.authorIsAdmin ? "admin" : c.authorName || c.author} •{" "}
+                    {c.date ? new Date(c.date).toLocaleString() : ""}
+                    {c.deletedByAdmin && currentUserObj && currentUserObj.role === "admin" && (
+                      <span className="italic text-red-600"> • deleted by admin</span>
+                    )}
+                  </div>
+                  <div className="mt-1 text-sm">
+                    {c.deletedByAdmin ? (
+                      currentUserObj && currentUserObj.role === "admin" ? (
+                        <div className="italic text-slate-500">{c.deletedText || ""}</div>
+                      ) : (
+                        <div className="text-xs text-slate-500">
+                          Comment deleted by admin
+                        </div>
+                      )
+                    ) : (
+                      <div>{c.text}</div>
+                    )}
+                  </div>
+                </div>
+                {currentUserObj && currentUserObj.role === "admin" && (
+                  <div className="flex items-center gap-2">
+                    {c.deletedByAdmin ? (
+                      <button
+                        className="text-xs text-green-600 hover:text-green-700 ml-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          adminRecoverComment(threadId, c.dbIndex || idx + 1);
+                        }}
+                      >
+                        Recover
+                      </button>
+                    ) : (
+                      <button
+                        className="text-xs text-red-600 hover:text-red-700 ml-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          adminDeleteComment(threadId, c.dbIndex || idx + 1);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

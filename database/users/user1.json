@@ -84,11 +84,15 @@
         },
         {
           "author": "alice",
-          "text": "Hello",
+          "text": "",
           "date": "2025-12-01T22:10:33.225Z",
           "likes": [
             "user1"
-          ]
+          ],
+          "deletedByAdmin": true,
+          "deletedAt": "2025-12-03T02:30:17.180Z",
+          "deletedBy": "admin-1",
+          "deletedText": "Hello"
         }
       ],
       "flagged": true,

@@ -417,6 +417,54 @@ export async function POST(req) {
       });
     }
 
+    if (action === "recoverComment") {
+      const threadId = body.threadId;
+      const idx =
+        typeof body.commentIndex === "number" ? body.commentIndex : null;
+      if (!threadId)
+        return new Response(JSON.stringify({ error: "missing threadId" }), {
+          status: 400,
+        });
+      const user = findUserById(userId);
+      if (!user || user.role !== "admin")
+        return new Response(JSON.stringify({ error: "unauthorized" }), {
+          status: 403,
+        });
+
+      const users = await readUsers();
+      for (const u of users) {
+        const obj = u.data;
+        if (!obj.threads) continue;
+        const t = obj.threads.find((x) => x.id === threadId);
+        if (t) {
+          if (!Array.isArray(t.posts))
+            return new Response(JSON.stringify({ error: "no posts" }), {
+              status: 400,
+            });
+          if (idx === null || idx < 0 || idx >= t.posts.length)
+            return new Response(JSON.stringify({ error: "invalid index" }), {
+              status: 400,
+            });
+          const c = t.posts[idx];
+          if (c.deletedByAdmin && c.deletedText) {
+            c.text = c.deletedText;
+            c.deletedByAdmin = false;
+            c.deletedAt = undefined;
+            c.deletedBy = undefined;
+            c.deletedText = undefined;
+          }
+          await writeUserFile(u.file, obj);
+          return new Response(
+            JSON.stringify({ ok: true, threadId, commentIndex: idx }),
+            { status: 200 }
+          );
+        }
+      }
+      return new Response(JSON.stringify({ error: "thread not found" }), {
+        status: 404,
+      });
+    }
+
     if (action === "deleteThread") {
       const threadId = body.threadId;
       if (!threadId)

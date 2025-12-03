@@ -166,6 +166,7 @@ export default function AdminToolsPage() {
 
   async function toggleHidden(t) {
     setConfirmDialog({
+      open: true,
       title: t.hidden ? "Unhide Tool" : "Hide Tool",
       message: t.hidden
         ? `Are you sure you want to make "${t.name}" visible to users again?`
