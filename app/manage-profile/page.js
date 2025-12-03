@@ -242,12 +242,30 @@ export default function ManageProfilePage() {
           <Card>
             {tab === "bookmarks" ? (
               <div>
-                <h3 className="font-semibold mb-2">Your List</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold">Your List</h3>
+                  <Link href="/tools" className="text-sm text-sky-600 hover:underline">
+                    View on Tools page
+                  </Link>
+                </div>
+                <div className="mb-3 p-3 bg-blue-50 rounded border border-blue-200">
+                  <p className="text-sm text-slate-600">
+                    <span className="font-semibold">Quick Access:</span> Your bookmarked tools also appear at the top of the{" "}
+                    <Link href="/tools" className="text-sky-600 hover:underline">
+                      Tools page
+                    </Link>{" "}
+                    for easy access.
+                  </p>
+                </div>
                 {loadingTools ? (
                   <div>Loading…</div>
                 ) : bookmarkedTools.length === 0 ? (
                   <div className="text-sm text-slate-500">
-                    You have no bookmarks yet.
+                    You have no bookmarks yet. Visit the{" "}
+                    <Link href="/tools" className="text-sky-600 hover:underline">
+                      Tools page
+                    </Link>{" "}
+                    to start bookmarking.
                   </div>
                 ) : (
                   <div className="space-y-3">

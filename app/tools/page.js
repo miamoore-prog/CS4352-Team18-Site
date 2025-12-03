@@ -17,6 +17,8 @@ export default function ToolsPage() {
   const [user, setUser] = useState(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const hasSearchedRef = useRef(false);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [bookmarkedTools, setBookmarkedTools] = useState([]);
 
   useEffect(() => {
     try {
@@ -29,6 +31,31 @@ export default function ToolsPage() {
       setUser(null);
     }
   }, []);
+
+  // Load bookmarks from localStorage
+  useEffect(() => {
+    if (!user?.id) {
+      setBookmarks([]);
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(`bookmarks:${user.id}`);
+      const arr = raw ? JSON.parse(raw) : [];
+      setBookmarks(Array.isArray(arr) ? arr : []);
+    } catch (e) {
+      setBookmarks([]);
+    }
+  }, [user]);
+
+  // Load bookmarked tools
+  useEffect(() => {
+    if (!bookmarks || bookmarks.length === 0 || allTools.length === 0) {
+      setBookmarkedTools([]);
+      return;
+    }
+    const picked = allTools.filter((t) => bookmarks.includes(t.id));
+    setBookmarkedTools(picked);
+  }, [bookmarks, allTools]);
 
   useEffect(() => {
     let mounted = true;
@@ -143,6 +170,33 @@ export default function ToolsPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Compact Bookmarks Banner */}
+      {user && bookmarkedTools.length > 0 && (
+        <div className="card p-4 bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/>
+              </svg>
+              <div>
+                <span className="font-semibold text-slate-800">
+                  You have {bookmarkedTools.length} bookmarked tool{bookmarkedTools.length !== 1 ? 's' : ''}
+                </span>
+                <span className="text-sm text-slate-600 ml-2">
+                  ({bookmarkedTools.slice(0, 3).map(t => t.name).join(', ')}{bookmarkedTools.length > 3 ? ', ...' : ''})
+                </span>
+              </div>
+            </div>
+            <a
+              href="/manage-profile"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+            >
+              View Bookmarks
+            </a>
+          </div>
+        </div>
+      )}
+
       {/* Request Tool Banner - Prominent for non-admin users */}
       {user && user.role !== "admin" && (
         <div className="card p-6 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200">
@@ -174,6 +228,9 @@ export default function ToolsPage() {
       </div>
 
       <section ref={sectionRef}>
+        <h3 className="text-lg font-semibold text-slate-800 mb-3">
+          {query && displayedTools.length > 0 ? "Search Results" : "All Tools"}
+        </h3>
         <div className="mb-4 text-sm text-slate-600">
           {loadingRecommendations ? (
             <div className="flex items-center gap-2">
