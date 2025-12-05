@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, Button } from "../../../components/ui";
 
@@ -10,9 +10,19 @@ export default function ThreadPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserObj, setCurrentUserObj] = useState(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!threadId) return;
+    const abortController = new AbortController();
+
     setLoading(true);
     try {
       const auth =
@@ -22,14 +32,25 @@ export default function ThreadPage({ params }) {
       if (token) headers["x-user-id"] = token;
       fetch(`/api/community?threadId=${encodeURIComponent(threadId)}`, {
         headers,
+        signal: abortController.signal,
       })
         .then((r) => r.json())
-        .then((data) => setThread(data))
-        .catch(() => {})
-        .finally(() => setLoading(false));
+        .then((data) => {
+          if (mountedRef.current) setThread(data);
+        })
+        .catch((err) => {
+          if (err.name === 'AbortError') return;
+        })
+        .finally(() => {
+          if (mountedRef.current) setLoading(false);
+        });
     } catch (e) {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
+
+    return () => {
+      abortController.abort();
+    };
   }, [threadId]);
 
   useEffect(() => {
@@ -57,14 +78,14 @@ export default function ThreadPage({ params }) {
         headers,
         body: JSON.stringify({ action: "comment", threadId, text }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         // refresh
         const r2 = await fetch(
           `/api/community?threadId=${encodeURIComponent(threadId)}`,
           { headers }
         );
         const d2 = await r2.json();
-        setThread(d2);
+        if (mountedRef.current) setThread(d2);
       }
     } catch (e) {
       console.error(e);
@@ -89,7 +110,7 @@ export default function ThreadPage({ params }) {
           commentIndex,
         }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         alert("Comment deleted");
         // refresh
         const r2 = await fetch(
@@ -97,10 +118,10 @@ export default function ThreadPage({ params }) {
           { headers }
         );
         const d2 = await r2.json();
-        setThread(d2);
+        if (mountedRef.current) setThread(d2);
       }
     } catch (e) {
-      alert("Error deleting comment");
+      if (mountedRef.current) alert("Error deleting comment");
     }
   }
 
@@ -122,7 +143,7 @@ export default function ThreadPage({ params }) {
           commentIndex,
         }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         alert("Comment recovered");
         // refresh
         const r2 = await fetch(
@@ -130,10 +151,10 @@ export default function ThreadPage({ params }) {
           { headers }
         );
         const d2 = await r2.json();
-        setThread(d2);
+        if (mountedRef.current) setThread(d2);
       }
     } catch (e) {
-      alert("Error recovering comment");
+      if (mountedRef.current) alert("Error recovering comment");
     }
   }
 
@@ -215,11 +236,13 @@ export default function ThreadPage({ params }) {
                   headers,
                   body: JSON.stringify({ action: "like", threadId }),
                 });
-                const r2 = await fetch(
-                  `/api/community?threadId=${encodeURIComponent(threadId)}`
-                );
-                const d2 = await r2.json();
-                setThread(d2);
+                if (mountedRef.current) {
+                  const r2 = await fetch(
+                    `/api/community?threadId=${encodeURIComponent(threadId)}`
+                  );
+                  const d2 = await r2.json();
+                  if (mountedRef.current) setThread(d2);
+                }
               } catch (e) {
                 console.error(e);
               }
