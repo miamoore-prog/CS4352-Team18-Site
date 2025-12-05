@@ -24,6 +24,7 @@ const useToolsLoader = () => {
 
 export default function CommunityPage() {
   const router = useRouter();
+  const mountedRef = useRef(true);
 
   const [storeKeys, setStoreKeys] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
@@ -48,6 +49,12 @@ export default function CommunityPage() {
     [tools]
   );
 
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const auth =
@@ -102,15 +109,18 @@ export default function CommunityPage() {
       const ids = Array.from(
         new Set((data || []).map((r) => r.toolId).filter(Boolean))
       );
-      setStoreKeys(ids);
+      if (mountedRef.current) setStoreKeys(ids);
     } catch (err) {
-      setStoreKeys([]);
+      if (mountedRef.current) setStoreKeys([]);
     }
   }
 
   async function fetchPosts(signal) {
-    console.log("fetchPosts called");
-    setLoading(true);
+    console.log("fetchPosts called, mountedRef.current:", mountedRef.current);
+    if (mountedRef.current) {
+      console.log("Setting loading to true");
+      setLoading(true);
+    }
     try {
       const params = new URLSearchParams();
       if (selectedTool) params.set("tool", selectedTool);
@@ -119,22 +129,31 @@ export default function CommunityPage() {
       const token = auth ? JSON.parse(auth).token : null;
       const headers = {};
       if (token) headers["x-user-id"] = token;
+      console.log("Fetching from API with params:", params.toString());
       const res = await fetch(`/api/community?${params.toString()}`, {
         headers,
         signal,
       });
+      console.log("API response status:", res.status);
       const data = await res.json();
-      console.log("Fetched posts:", data?.length || 0, "posts");
-      setPosts(Array.isArray(data) ? data : []);
-      setLoading(false);
+      console.log("Fetched posts:", data?.length || 0, "posts", "mounted:", mountedRef.current);
+      if (mountedRef.current) {
+        console.log("Setting posts and loading to false");
+        setPosts(Array.isArray(data) ? data : []);
+        setLoading(false);
+      }
     } catch (err) {
+      console.log("Error in fetchPosts:", err.name, err.message);
       if (err.name === "AbortError") {
-        console.log("Fetch aborted");
+        console.log("Fetch aborted, mounted:", mountedRef.current);
+        if (mountedRef.current) setLoading(false);
         return;
       }
       console.error("Error fetching posts:", err);
-      setPosts([]);
-      setLoading(false);
+      if (mountedRef.current) {
+        setPosts([]);
+        setLoading(false);
+      }
     }
   }
 
@@ -145,7 +164,7 @@ export default function CommunityPage() {
       fetchPosts(controller.signal);
       return;
     }
-    setSearching(true);
+    if (mountedRef.current) setSearching(true);
     try {
       const res = await fetch("/api/gemini-search", {
         method: "POST",
@@ -154,17 +173,19 @@ export default function CommunityPage() {
       });
       if (!res.ok) {
         // fallback to regular posts
-        setSearching(false);
+        if (mountedRef.current) setSearching(false);
         const controller = new AbortController();
         fetchPosts(controller.signal);
         return;
       }
       const data = await res.json();
-      setPosts(Array.isArray(data) ? data : []);
-      setSearching(false);
+      if (mountedRef.current) {
+        setPosts(Array.isArray(data) ? data : []);
+        setSearching(false);
+      }
     } catch (e) {
       console.error("Error searching:", e);
-      setSearching(false);
+      if (mountedRef.current) setSearching(false);
       const controller = new AbortController();
       fetchPosts(controller.signal);
     }
@@ -192,8 +213,9 @@ export default function CommunityPage() {
         headers,
         body: JSON.stringify({ action: "like", threadId: reviewId }),
       });
-      if (res.ok) {
-        fetchPosts();
+      if (res.ok && mountedRef.current) {
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (err) {
       return;
@@ -212,7 +234,10 @@ export default function CommunityPage() {
         headers,
         body: JSON.stringify({ action: "flag", threadId, flag: !currentFlag }),
       });
-      if (res.ok) fetchPosts();
+      if (res.ok && mountedRef.current) {
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
+      }
     } catch (e) {
       return;
     }
@@ -234,8 +259,9 @@ export default function CommunityPage() {
           commentIndex,
         }),
       });
-      if (res.ok) {
-        fetchPosts();
+      if (res.ok && mountedRef.current) {
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (err) {
       return;
@@ -259,12 +285,13 @@ export default function CommunityPage() {
           commentIndex,
         }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         alert("Comment deleted");
-        fetchPosts();
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (e) {
-      alert("Error deleting comment");
+      if (mountedRef.current) alert("Error deleting comment");
     }
   }
 
@@ -285,12 +312,13 @@ export default function CommunityPage() {
           commentIndex,
         }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         alert("Comment recovered");
-        fetchPosts();
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (e) {
-      alert("Error recovering comment");
+      if (mountedRef.current) alert("Error recovering comment");
     }
   }
 
@@ -310,12 +338,13 @@ export default function CommunityPage() {
         headers,
         body: JSON.stringify({ action: "deleteThread", threadId }),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         alert("Thread deleted");
-        fetchPosts();
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (e) {
-      alert("Error deleting thread");
+      if (mountedRef.current) alert("Error deleting thread");
     }
   }
 
@@ -340,10 +369,11 @@ export default function CommunityPage() {
         headers,
         body: JSON.stringify(payload),
       });
-      if (res.ok) {
+      if (res.ok && mountedRef.current) {
         setForm({ title: "", author: "", text: "" });
         setComposeTool(null);
-        fetchPosts();
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
       }
     } catch (err) {
       return;
@@ -486,7 +516,10 @@ export default function CommunityPage() {
                 className="px-2 py-1 bg-slate-100 rounded text-sm"
                 onClick={() => {
                   setSearchQuery("");
-                  fetchPosts();
+                  if (mountedRef.current) {
+                    const controller = new AbortController();
+                    fetchPosts(controller.signal);
+                  }
                 }}
               >
                 Clear
@@ -771,7 +804,12 @@ export default function CommunityPage() {
                       </div>
                     )}
 
-                    <CommentBox threadId={t.id} onPosted={() => fetchPosts()} />
+                    <CommentBox threadId={t.id} onPosted={() => {
+                      if (mountedRef.current) {
+                        const controller = new AbortController();
+                        fetchPosts(controller.signal);
+                      }
+                    }} />
                   </div>
                 </div>
               );
