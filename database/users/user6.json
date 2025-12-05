@@ -16,12 +16,14 @@
         {
           "author": "frank",
           "text": "I connected Gmail -> Zapier -> ChatGPT to auto-draft replies for routine emails. Saved me hours each week.",
-          "date": "2025-11-07T14:20:00.000Z"
+          "date": "2025-11-07T14:20:00.000Z",
+          "likes": []
         },
         {
           "author": "dana",
           "text": "Do you sanitize sensitive content before sending to the model?",
-          "date": "2025-11-07T15:05:00.000Z"
+          "date": "2025-11-07T15:05:00.000Z",
+          "likes": []
         }
       ],
       "likes": ["user4", "user7"]

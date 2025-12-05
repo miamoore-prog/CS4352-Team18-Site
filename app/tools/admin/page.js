@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../../../components/ConfirmDialog";
 
 export default function AdminToolsPage() {
   const [mounted, setMounted] = useState(false);
@@ -25,6 +26,7 @@ export default function AdminToolsPage() {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -163,19 +165,32 @@ export default function AdminToolsPage() {
   }
 
   async function toggleHidden(t) {
-    setMsg(null);
-    try {
-      const res = await fetch("/api/admin/tools", {
-        method: "PATCH",
-        headers: getHeaders(),
-        body: JSON.stringify({ id: t.id, hidden: !t.hidden }),
-      });
-      if (!res.ok) throw new Error("failed");
-      setMsg({ ok: true, text: "Updated" });
-      await loadTools();
-    } catch (err) {
-      setMsg({ ok: false, text: String(err) });
-    }
+    setConfirmDialog({
+      open: true,
+      title: t.hidden ? "Unhide Tool" : "Hide Tool",
+      message: t.hidden
+        ? `Are you sure you want to make "${t.name}" visible to users again?`
+        : `Are you sure you want to hide "${t.name}"? It will no longer be visible to users in the tool catalog.`,
+      confirmText: t.hidden ? "Unhide" : "Hide",
+      danger: !t.hidden,
+      onConfirm: async () => {
+        setMsg(null);
+        try {
+          const res = await fetch("/api/admin/tools", {
+            method: "PATCH",
+            headers: getHeaders(),
+            body: JSON.stringify({ id: t.id, hidden: !t.hidden }),
+          });
+          if (!res.ok) throw new Error("failed");
+          setMsg({ ok: true, text: "Updated" });
+          await loadTools();
+        } catch (err) {
+          setMsg({ ok: false, text: String(err) });
+        }
+        setConfirmDialog(null);
+      },
+      onCancel: () => setConfirmDialog(null),
+    });
   }
 
   // Prevent hydration mismatch by waiting for client-side mount
@@ -183,7 +198,7 @@ export default function AdminToolsPage() {
     return (
       <div className="card">
         <div className="flex items-center gap-2">
-          <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+          <div className="animate-spin h-4 w-4 border-2 border-sky-500 border-t-transparent rounded-full"></div>
           <span>Loading...</span>
         </div>
       </div>
@@ -217,7 +232,7 @@ export default function AdminToolsPage() {
             onClick={() => setShowCreateModal(true)}
             className="btn btn-primary"
           >
-            Create tools
+            Create Tool
           </button>
         </div>
         {loading ? (
@@ -562,6 +577,7 @@ export default function AdminToolsPage() {
                     value={form.id}
                     onChange={(e) => setForm({ ...form, id: e.target.value })}
                     className="w-full border p-2 rounded"
+                    placeholder="e.g., chatgpt, gemini-pro, claude-ai"
                     required
                   />
                 </div>
@@ -735,7 +751,7 @@ export default function AdminToolsPage() {
               </div>
               <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex items-center gap-2 mt-4 -mx-6">
                 <button className="btn btn-primary" type="submit">
-                  Add tool
+                  Create Tool
                 </button>
                 <button
                   type="button"
@@ -758,6 +774,8 @@ export default function AdminToolsPage() {
           </div>
         </div>
       )}
+
+      {confirmDialog && <ConfirmDialog {...confirmDialog} />}
     </div>
   );
 }

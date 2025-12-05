@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, Button, Input } from "../../components/ui";
 
@@ -108,7 +108,8 @@ export default function CommunityPage() {
     }
   }
 
-  async function fetchPosts() {
+  async function fetchPosts(signal) {
+    console.log("fetchPosts called");
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -120,12 +121,19 @@ export default function CommunityPage() {
       if (token) headers["x-user-id"] = token;
       const res = await fetch(`/api/community?${params.toString()}`, {
         headers,
+        signal,
       });
       const data = await res.json();
+      console.log("Fetched posts:", data?.length || 0, "posts");
       setPosts(Array.isArray(data) ? data : []);
+      setLoading(false);
     } catch (err) {
+      if (err.name === "AbortError") {
+        console.log("Fetch aborted");
+        return;
+      }
+      console.error("Error fetching posts:", err);
       setPosts([]);
-    } finally {
       setLoading(false);
     }
   }
@@ -133,7 +141,8 @@ export default function CommunityPage() {
   async function performSearch(q) {
     if (!q || !q.trim()) {
       // empty search -> reload regular posts
-      fetchPosts();
+      const controller = new AbortController();
+      fetchPosts(controller.signal);
       return;
     }
     setSearching(true);
@@ -145,20 +154,30 @@ export default function CommunityPage() {
       });
       if (!res.ok) {
         // fallback to regular posts
-        fetchPosts();
+        setSearching(false);
+        const controller = new AbortController();
+        fetchPosts(controller.signal);
         return;
       }
       const data = await res.json();
       setPosts(Array.isArray(data) ? data : []);
-    } catch (e) {
-      fetchPosts();
-    } finally {
       setSearching(false);
+    } catch (e) {
+      console.error("Error searching:", e);
+      setSearching(false);
+      const controller = new AbortController();
+      fetchPosts(controller.signal);
     }
   }
 
   useEffect(() => {
-    fetchPosts();
+    console.log("useEffect triggered, calling fetchPosts. selectedTool:", selectedTool, "sort:", sort);
+    const controller = new AbortController();
+    fetchPosts(controller.signal);
+    return () => {
+      console.log("Aborting fetchPosts");
+      controller.abort();
+    };
   }, [selectedTool, sort]);
 
   async function handleLike(reviewId) {
@@ -199,12 +218,36 @@ export default function CommunityPage() {
     }
   }
 
-  async function adminDeleteComment(threadId, commentIndex) {
+  async function handleLikeComment(threadId, commentIndex) {
     try {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (!confirm("Delete this comment (admin)?")) return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          action: "likeComment",
+          threadId,
+          commentIndex,
+        }),
+      });
+      if (res.ok) {
+        fetchPosts();
+      }
+    } catch (err) {
+      return;
+    }
+  }
+
+  async function adminDeleteComment(threadId, commentIndex) {
+    if (!confirm("Delete this comment?")) return;
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -216,23 +259,50 @@ export default function CommunityPage() {
           commentIndex,
         }),
       });
-      if (res.ok) fetchPosts();
+      if (res.ok) {
+        alert("Comment deleted");
+        fetchPosts();
+      }
     } catch (e) {
-      return;
+      alert("Error deleting comment");
     }
   }
 
-  async function adminDeleteThread(threadId) {
+  async function adminRecoverComment(threadId, commentIndex) {
+    if (!confirm("Recover this comment?")) return;
     try {
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
       if (!token) return;
-      if (
-        !confirm(
-          "Delete this thread? This action will permanently remove the thread."
-        )
-      )
-        return;
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["x-user-id"] = token;
+      const res = await fetch("/api/community", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          action: "recoverComment",
+          threadId,
+          commentIndex,
+        }),
+      });
+      if (res.ok) {
+        alert("Comment recovered");
+        fetchPosts();
+      }
+    } catch (e) {
+      alert("Error recovering comment");
+    }
+  }
+
+  async function adminDeleteThread(threadId) {
+    const thread = posts.find((p) => p.id === threadId);
+    const threadTitle = thread?.title || thread?.ownerName || "this thread";
+
+    if (!confirm(`Delete thread "${threadTitle}" and all its comments?`)) return;
+    try {
+      const auth = localStorage.getItem("mock_auth");
+      const token = auth ? JSON.parse(auth).token : null;
+      if (!token) return;
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -240,9 +310,12 @@ export default function CommunityPage() {
         headers,
         body: JSON.stringify({ action: "deleteThread", threadId }),
       });
-      if (res.ok) fetchPosts();
+      if (res.ok) {
+        alert("Thread deleted");
+        fetchPosts();
+      }
     } catch (e) {
-      return;
+      alert("Error deleting thread");
     }
   }
 
@@ -358,6 +431,28 @@ export default function CommunityPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Create Post Card */}
+      <Card className="p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-slate-800">Share with the Community</h3>
+            <p className="text-sm text-slate-600 mt-1">Start a discussion or share your experience with AI tools</p>
+          </div>
+          <button
+            onClick={() => {
+              setComposeTool(selectedTool);
+              setShowCompose(true);
+            }}
+            className="px-6 py-3 bg-sky-600 text-white rounded-lg font-semibold hover:bg-sky-700 transition-all hover:shadow-lg flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Post
+          </button>
+        </div>
+      </Card>
+
       {/* Top filter bar */}
       <Card className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex-1 flex items-center gap-4">
@@ -368,7 +463,7 @@ export default function CommunityPage() {
             <div className="mt-2 flex items-center gap-2">
               <input
                 className="border rounded px-2 py-1 text-sm w-[20rem]"
-                placeholder="Describe your query in Natural Language"
+                placeholder="Search community posts"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -558,7 +653,7 @@ export default function CommunityPage() {
                   {/* comments: show up to 3, then a view more link */}
                   <div className="mt-3 space-y-2">
                     {comments.slice(0, 3).map((c, idx) => {
-                      const postIndex = idx + 1; // index in t.posts
+                      const postIndex = c.dbIndex; // Use database index for mutations
                       if (c.deletedByAdmin) {
                         if (currentUserObj && currentUserObj.role === "admin") {
                           return (
@@ -566,28 +661,31 @@ export default function CommunityPage() {
                               key={idx}
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
-                              <div className="text-xs text-slate-500">
-                                {c.authorIsAdmin
-                                  ? "admin"
-                                  : c.authorName || c.author}{" "}
-                                •{" "}
-                                {c.date
-                                  ? new Date(c.date).toLocaleString()
-                                  : ""}{" "}
-                                •{" "}
-                                <span className="italic text-red-600">
-                                  deleted by admin
-                                </span>
-                              </div>
-                              <div className="mt-1">{c.deletedText || ""}</div>
-                              <div className="mt-2">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="text-xs text-slate-500">
+                                    {c.authorIsAdmin
+                                      ? "admin"
+                                      : c.authorName || c.author}{" "}
+                                    •{" "}
+                                    {c.date
+                                      ? new Date(c.date).toLocaleString()
+                                      : ""}{" "}
+                                    •{" "}
+                                    <span className="italic text-red-600">
+                                      deleted by admin
+                                    </span>
+                                  </div>
+                                  <div className="mt-1 italic text-slate-500">{c.deletedText || ""}</div>
+                                </div>
                                 <button
-                                  className="text-xs text-red-600"
-                                  onClick={() =>
-                                    adminDeleteComment(t.id, postIndex)
-                                  }
+                                  className="text-xs text-green-600 hover:text-green-700 px-2 py-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    adminRecoverComment(t.id, postIndex);
+                                  }}
                                 >
-                                  Delete (again)
+                                  Recover
                                 </button>
                               </div>
                             </div>
@@ -604,31 +702,60 @@ export default function CommunityPage() {
                           </div>
                         );
                       }
+                      const commentLikes = Array.isArray(c.likes)
+                        ? c.likes
+                        : [];
+                      const isLikedByCurrentUser =
+                        currentUser && commentLikes.includes(currentUser);
+
                       return (
                         <div
                           key={idx}
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
-                          <div className="text-xs text-slate-500">
-                            {c.authorIsAdmin
-                              ? "admin"
-                              : c.authorName || c.author}{" "}
-                            • {c.date ? new Date(c.date).toLocaleString() : ""}
-                          </div>
-                          <div className="mt-1">{c.text}</div>
-                          {currentUserObj &&
-                            currentUserObj.role === "admin" && (
-                              <div className="mt-2">
-                                <button
-                                  className="text-xs text-red-600"
-                                  onClick={() =>
-                                    adminDeleteComment(t.id, postIndex)
-                                  }
-                                >
-                                  Delete
-                                </button>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="text-xs text-slate-500">
+                                {c.authorIsAdmin
+                                  ? "admin"
+                                  : c.authorName || c.author}{" "}
+                                • {c.date ? new Date(c.date).toLocaleString() : ""}
                               </div>
-                            )}
+                              <div className="mt-1">{c.text}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleLikeComment(t.id, postIndex)}
+                                className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
+                                  isLikedByCurrentUser
+                                    ? "text-pink-600 bg-pink-50 hover:bg-pink-100"
+                                    : "text-slate-500 hover:bg-slate-100"
+                                }`}
+                                title={
+                                  isLikedByCurrentUser
+                                    ? "Unlike comment"
+                                    : "Like comment"
+                                }
+                              >
+                                <span>♥</span>
+                                {commentLikes.length > 0 && (
+                                  <span>{commentLikes.length}</span>
+                                )}
+                              </button>
+                              {currentUserObj &&
+                                currentUserObj.role === "admin" && (
+                                  <button
+                                    className="text-xs text-red-600 hover:text-red-700 px-2 py-1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      adminDeleteComment(t.id, postIndex);
+                                    }}
+                                  >
+                                    Delete
+                                  </button>
+                                )}
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
@@ -652,18 +779,6 @@ export default function CommunityPage() {
           </div>
         </Card>
       </div>
-
-      {/* Floating compose button */}
-      <button
-        aria-label="Create post"
-        onClick={() => {
-          setComposeTool(selectedTool);
-          setShowCompose(true);
-        }}
-        className="fixed bottom-6 right-6 bg-violet-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-2xl hover:bg-violet-700 transition"
-      >
-        +
-      </button>
 
       {/* Compose modal */}
       {showCompose && (

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, Button } from "./ui";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function ToolModal({ tool, onClose }) {
   const [showHowTo, setShowHowTo] = useState(false);
@@ -11,6 +12,21 @@ export default function ToolModal({ tool, onClose }) {
   const [editingText, setEditingText] = useState("");
   const [editingRating, setEditingRating] = useState(null);
   const [editingEnabled, setEditingEnabled] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState(null);
+
+  const getUserId = () => {
+    try {
+      const raw = localStorage.getItem("mock_auth");
+      if (!raw) return "anon";
+      const parsed = JSON.parse(raw);
+      return parsed.user?.id || "anon";
+    } catch (e) {
+      return "anon";
+    }
+  };
+
+  const storageKey = () => `bookmarks:${getUserId()}`;
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
@@ -19,6 +35,16 @@ export default function ToolModal({ tool, onClose }) {
       document.body.style.overflow = originalOverflow;
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey());
+      const arr = raw ? JSON.parse(raw) : [];
+      setBookmarked(arr.includes(tool.id));
+    } catch (e) {
+      setBookmarked(false);
+    }
+  }, [tool.id]);
 
   useEffect(() => {
     let mounted = true;
@@ -81,20 +107,82 @@ export default function ToolModal({ tool, onClose }) {
 
       <Card className="max-w-2xl w-full p-6 z-10 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex-1">
             <h3 className="text-lg font-semibold">{tool.name}</h3>
             <p className="text-sm text-slate-600">{tool.about}</p>
           </div>
-          <div>
-            <Button
-              variant="ghost"
-              onClick={onClose}
-              className="text-slate-500"
+          <div className="flex items-center gap-2 ml-4">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                try {
+                  const key = storageKey();
+                  const raw = localStorage.getItem(key);
+                  const arr = raw ? JSON.parse(raw) : [];
+                  let next;
+                  if (arr.includes(tool.id)) {
+                    next = arr.filter((id) => id !== tool.id);
+                  } else {
+                    next = [...arr, tool.id];
+                  }
+                  localStorage.setItem(key, JSON.stringify(next));
+                  setBookmarked(next.includes(tool.id));
+                  window.dispatchEvent(
+                    new StorageEvent("storage", {
+                      key,
+                      newValue: JSON.stringify(next),
+                    })
+                  );
+                } catch (err) {
+                  // ignore
+                }
+              }}
+              aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              title={bookmarked ? "Remove bookmark" : "Bookmark this tool"}
             >
-              Close
-            </Button>
+              {bookmarked ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-6 h-6 text-emerald-600"
+                  fill="currentColor"
+                >
+                  <path d="M6 2a1 1 0 0 0-1 1v18l7-4 7 4V3a1 1 0 0 0-1-1H6z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-6 h-6 text-slate-400 hover:text-slate-600"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"
+                  />
+                </svg>
+              )}
+            </button>
+            <button
+              onClick={onClose}
+              className="text-red-600 hover:text-red-800 text-3xl leading-none font-light"
+              aria-label="Close"
+            >
+              ×
+            </button>
           </div>
         </div>
+
+        {tool.summary && (
+          <div className="mt-4 p-3 bg-slate-50 rounded-md border border-slate-200">
+            <h4 className="text-sm font-semibold text-slate-700">Quick Summary</h4>
+            <p className="text-sm text-slate-600 mt-1">{tool.summary}</p>
+          </div>
+        )}
 
         <div className="mt-4 text-sm text-slate-700">{tool.details}</div>
 
@@ -187,6 +275,12 @@ export default function ToolModal({ tool, onClose }) {
                       return;
                     }
 
+                    // Require text for submission
+                    if (!editingText || !editingText.trim()) {
+                      alert("Please write a review before submitting.");
+                      return;
+                    }
+
                     try {
                       const headers = { "Content-Type": "application/json" };
                       if (currentUser) headers["x-user-id"] = currentUser;
@@ -212,6 +306,7 @@ export default function ToolModal({ tool, onClose }) {
                       return;
                     }
                   }}
+                  disabled={editingEnabled && (!editingText || !editingText.trim())}
                 >
                   {editingEnabled
                     ? myReview
@@ -242,29 +337,44 @@ export default function ToolModal({ tool, onClose }) {
                 {myReview && (
                   <Button
                     variant="ghost"
-                    onClick={async () => {
-                      try {
-                        const headers = { "Content-Type": "application/json" };
-                        if (currentUser) headers["x-user-id"] = currentUser;
-                        const res = await fetch("/api/reviews", {
-                          method: "POST",
-                          headers,
-                          body: JSON.stringify({
-                            toolId: tool.id,
-                            action: "delete-my-review",
-                          }),
-                        });
-                        if (res.ok) {
-                          const rres = await fetch(
-                            `/api/reviews?tool=${encodeURIComponent(tool.id)}`
-                          );
-                          const data = await rres.json();
-                          setReviews(Array.isArray(data) ? data : []);
-                          setEditingEnabled(false);
-                        }
-                      } catch (e) {
-                        return;
-                      }
+                    onClick={() => {
+                      setConfirmDialog({
+                        title: "Delete Review",
+                        message:
+                          "Are you sure you want to delete your review? This action cannot be undone.",
+                        confirmText: "Delete",
+                        danger: true,
+                        onConfirm: async () => {
+                          try {
+                            const headers = {
+                              "Content-Type": "application/json",
+                            };
+                            if (currentUser) headers["x-user-id"] = currentUser;
+                            const res = await fetch("/api/reviews", {
+                              method: "POST",
+                              headers,
+                              body: JSON.stringify({
+                                toolId: tool.id,
+                                action: "delete-my-review",
+                              }),
+                            });
+                            if (res.ok) {
+                              const rres = await fetch(
+                                `/api/reviews?tool=${encodeURIComponent(
+                                  tool.id
+                                )}`
+                              );
+                              const data = await rres.json();
+                              setReviews(Array.isArray(data) ? data : []);
+                              setEditingEnabled(false);
+                            }
+                          } catch (e) {
+                            return;
+                          }
+                          setConfirmDialog(null);
+                        },
+                        onCancel: () => setConfirmDialog(null),
+                      });
                     }}
                   >
                     Delete Review
@@ -286,15 +396,10 @@ export default function ToolModal({ tool, onClose }) {
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-slate-500">
-            Quick summary: {tool.summary}
-          </div>
-          <div>
-            <Button onClick={() => setShowHowTo(!showHowTo)} className="mr-2">
-              How to guide
-            </Button>
-          </div>
+        <div className="mt-6 flex items-center justify-end">
+          <Button onClick={() => setShowHowTo(!showHowTo)}>
+            How to guide
+          </Button>
         </div>
 
         {showHowTo && (
@@ -310,6 +415,8 @@ export default function ToolModal({ tool, onClose }) {
           </div>
         )}
       </Card>
+
+      {confirmDialog && <ConfirmDialog {...confirmDialog} />}
     </div>
   );
 }

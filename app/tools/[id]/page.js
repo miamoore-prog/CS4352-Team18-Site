@@ -10,6 +10,7 @@ export default function ToolReviewPage() {
   const [tool, setTool] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [filterStar, setFilterStar] = useState(null);
+  const [bookmarked, setBookmarked] = useState(false);
 
   // get the most recent history entry (by date)
   const getLatestHistory = (r) => {
@@ -46,6 +47,65 @@ export default function ToolReviewPage() {
     }
   };
 
+  const getUserId = () => {
+    try {
+      const raw = localStorage.getItem("mock_auth");
+      if (!raw) return "anon";
+      const parsed = JSON.parse(raw);
+      return parsed.user?.id || "anon";
+    } catch (e) {
+      return "anon";
+    }
+  };
+
+  const storageKey = () => `bookmarks:${getUserId()}`;
+
+  const toggleBookmark = () => {
+    try {
+      const key = storageKey();
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      let next;
+      if (arr.includes(id)) {
+        next = arr.filter((toolId) => toolId !== id);
+      } else {
+        next = [...arr, id];
+      }
+      localStorage.setItem(key, JSON.stringify(next));
+      setBookmarked(next.includes(id));
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key,
+          newValue: JSON.stringify(next),
+        })
+      );
+    } catch (err) {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey());
+      const arr = raw ? JSON.parse(raw) : [];
+      setBookmarked(arr.includes(id));
+    } catch (e) {
+      setBookmarked(false);
+    }
+    function onStorage(e) {
+      if (e.key === storageKey()) {
+        try {
+          const arr = e.newValue ? JSON.parse(e.newValue) : [];
+          setBookmarked(arr.includes(id));
+        } catch (err) {
+          setBookmarked(false);
+        }
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [id]);
+
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -81,8 +141,49 @@ export default function ToolReviewPage() {
     <div className="p-6">
       <div className="max-w-3xl mx-auto">
         <Card className="p-6">
-          <h2 className="text-xl font-semibold">{tool?.name || id}</h2>
-          <p className="text-sm text-slate-600 mt-2">{tool?.about}</p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold">{tool?.name || id}</h2>
+              <p className="text-sm text-slate-600 mt-2">{tool?.about}</p>
+            </div>
+
+            {/* Prominent Bookmark Button */}
+            <button
+              onClick={toggleBookmark}
+              aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+              className="flex-shrink-0 flex flex-col items-center gap-1 p-3 rounded-lg hover:bg-slate-100 transition-colors group"
+              title={bookmarked ? "Remove from bookmarks" : "Bookmark this tool"}
+            >
+              {bookmarked ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-8 h-8 text-emerald-600"
+                  fill="currentColor"
+                >
+                  <path d="M6 2a1 1 0 0 0-1 1v18l7-4 7 4V3a1 1 0 0 0-1-1H6z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-8 h-8 text-slate-400 group-hover:text-slate-600"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 2h12a1 1 0 0 1 1 1v18l-7-4-7 4V3a1 1 0 0 1 1-1z"
+                  />
+                </svg>
+              )}
+              <span className="text-xs text-slate-600 font-medium">
+                {bookmarked ? "Bookmarked" : "Bookmark"}
+              </span>
+            </button>
+          </div>
 
           {/* Quick summary, tags and how-to (show same details as the modal) */}
           {tool?.summary && (
@@ -128,8 +229,8 @@ export default function ToolReviewPage() {
                 <button
                   className={`px-3 py-1 rounded ${
                     filterStar === null
-                      ? "bg-purple-600 text-white"
-                      : "bg-purple-100 text-purple-700"
+                      ? "bg-sky-600 text-white"
+                      : "bg-sky-100 text-sky-700"
                   }`}
                   onClick={() => setFilterStar(null)}
                 >

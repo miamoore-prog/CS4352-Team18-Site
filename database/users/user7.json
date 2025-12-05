@@ -20,7 +20,8 @@
         {
           "author": "gina",
           "text": "Share your favorite style prompts.",
-          "date": "2025-11-05T10:00:00.000Z"
+          "date": "2025-11-05T10:00:00.000Z",
+          "likes": []
         }
       ],
       "likes": ["user8"]

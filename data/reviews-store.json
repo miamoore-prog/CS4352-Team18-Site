@@ -50,7 +50,10 @@
       "author": "Alex",
       "rating": 5,
       "text": "Saved me hours drafting customer outreach. The tone suggestions are particularly useful.",
-      "keywords": ["writing", "productivity"],
+      "keywords": [
+        "writing",
+        "productivity"
+      ],
       "date": "2025-11-05T14:12:00.000Z",
       "likes": 21,
       "history": [
@@ -67,7 +70,10 @@
       "author": "Sam",
       "rating": 4,
       "text": "Very capable, but sometimes the output needs editing for tone and factuality checks.",
-      "keywords": ["editing", "accuracy"],
+      "keywords": [
+        "editing",
+        "accuracy"
+      ],
       "date": "2025-10-20T09:30:00.000Z",
       "likes": 3,
       "history": [
@@ -84,7 +90,10 @@
       "author": "Priya",
       "rating": 3,
       "text": "Most prompts are great, but I hit a hallucination when asking for obscure facts. Be cautious for research use.",
-      "keywords": ["hallucination", "research"],
+      "keywords": [
+        "hallucination",
+        "research"
+      ],
       "date": "2025-09-10T18:00:00.000Z",
       "likes": 2,
       "history": [
@@ -103,7 +112,11 @@
       "author": "Jordan",
       "rating": 5,
       "text": "Amazing outputs for concept art — great starting point for iterations.",
-      "keywords": ["art", "concept", "visuals"],
+      "keywords": [
+        "art",
+        "concept",
+        "visuals"
+      ],
       "date": "2025-10-01T12:00:00.000Z",
       "likes": 8,
       "history": [
@@ -120,7 +133,10 @@
       "author": "Casey",
       "rating": 4,
       "text": "Love the aesthetic results but sometimes composition needs manual cleanup.",
-      "keywords": ["composition", "workflow"],
+      "keywords": [
+        "composition",
+        "workflow"
+      ],
       "date": "2025-08-15T08:00:00.000Z",
       "likes": 1,
       "history": [
@@ -139,7 +155,10 @@
       "author": "Maya",
       "rating": 5,
       "text": "Great for quick visual mockups. Colors and styles are convenient for moodboards.",
-      "keywords": ["moodboard", "ideation"],
+      "keywords": [
+        "moodboard",
+        "ideation"
+      ],
       "date": "2025-10-05T16:20:00.000Z",
       "likes": 5,
       "history": [
@@ -158,7 +177,10 @@
       "author": "Riley",
       "rating": 4,
       "text": "Good for long-form replies and summarization. Occasionally verbose but accurate.",
-      "keywords": ["summaries", "longform"],
+      "keywords": [
+        "summaries",
+        "longform"
+      ],
       "date": "2025-09-22T11:00:00.000Z",
       "likes": 4,
       "history": [
@@ -177,7 +199,10 @@
       "author": "Taylor",
       "rating": 5,
       "text": "The video-editing tools are surprisingly capable for quick cuts and style transfer.",
-      "keywords": ["video", "editing"],
+      "keywords": [
+        "video",
+        "editing"
+      ],
       "date": "2025-07-30T10:00:00.000Z",
       "likes": 2,
       "history": [
@@ -196,7 +221,10 @@
       "author": "Morgan",
       "rating": 5,
       "text": "Integration was straightforward and reduced manual tasks across apps.",
-      "keywords": ["automation", "integrations"],
+      "keywords": [
+        "automation",
+        "integrations"
+      ],
       "date": "2025-06-12T09:00:00.000Z",
       "likes": 7,
       "history": [
@@ -215,7 +243,10 @@
       "author": "Jordan",
       "rating": 4,
       "text": "Helps structure lessons well; I'd like more interactive widgets though.",
-      "keywords": ["education", "tutoring"],
+      "keywords": [
+        "education",
+        "tutoring"
+      ],
       "date": "2025-11-01T13:00:00.000Z",
       "likes": 1,
       "history": [
@@ -225,6 +256,27 @@
           "rating": 4
         }
       ]
+    }
+  ],
+  "copilot": [
+    {
+      "id": "copilot-r1764627921242-755",
+      "title": null,
+      "authorId": "admin-1",
+      "author": "admin-1",
+      "authorDisplay": null,
+      "rating": 5,
+      "text": "test",
+      "history": [
+        {
+          "date": "2025-12-01T22:25:21.242Z",
+          "text": "test",
+          "rating": 5
+        }
+      ],
+      "keywords": [],
+      "date": "2025-12-01T22:25:21.242Z",
+      "likes": 0
     }
   ]
 }

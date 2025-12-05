@@ -23,12 +23,14 @@
         {
           "author": "alice",
           "text": "What's your favorite email prompt?",
-          "date": "2025-11-09T09:00:00.000Z"
+          "date": "2025-11-09T09:00:00.000Z",
+          "likes": []
         },
         {
           "author": "bob",
           "text": "I like: 'Write a polite follow-up'",
-          "date": "2025-11-09T09:15:00.000Z"
+          "date": "2025-11-09T09:15:00.000Z",
+          "likes": []
         }
       ],
       "likes": [
@@ -47,27 +49,56 @@
         {
           "author": "alice",
           "text": "Chatgpt old version really generate good responses. But in this new version with the auto-switching model. I feel like it lost its touch.",
-          "date": "2025-11-09T18:54:44.960Z"
+          "date": "2025-11-09T18:54:44.960Z",
+          "likes": []
         },
         {
           "author": "admin-1",
           "text": "can you elaborate?",
-          "date": "2025-11-11T18:55:18.046Z"
+          "date": "2025-11-11T18:55:18.046Z",
+          "likes": []
         },
         {
           "author": "user1",
           "text": "i tried it and i do not like it",
-          "date": "2025-11-11T18:55:42.838Z"
+          "date": "2025-11-11T18:55:42.838Z",
+          "likes": [
+            "user1"
+          ]
         },
         {
           "author": "alice",
           "text": "test",
-          "date": "2025-11-14T18:26:45.296Z"
+          "date": "2025-11-14T18:26:45.296Z",
+          "likes": [
+            "user1"
+          ]
+        },
+        {
+          "author": "alice",
+          "text": "test",
+          "date": "2025-12-01T22:10:28.038Z",
+          "likes": [
+            "user1"
+          ]
+        },
+        {
+          "author": "alice",
+          "text": "",
+          "date": "2025-12-01T22:10:33.225Z",
+          "likes": [
+            "user1"
+          ],
+          "deletedByAdmin": true,
+          "deletedAt": "2025-12-03T02:30:17.180Z",
+          "deletedBy": "admin-1",
+          "deletedText": "Hello"
         }
       ],
       "flagged": true,
       "flaggedBy": "admin-1",
-      "flaggedAt": "2025-11-11T18:42:11.086Z"
+      "flaggedAt": "2025-11-11T18:42:11.086Z",
+      "likes": []
     },
     {
       "id": "thread-1763144797462-165",
@@ -79,12 +110,14 @@
         {
           "author": "alice",
           "text": "testing",
-          "date": "2025-11-14T18:26:37.463Z"
+          "date": "2025-11-14T18:26:37.463Z",
+          "likes": []
         },
         {
           "author": "admin",
           "text": "",
           "date": "2025-11-14T21:53:04.205Z",
+          "likes": [],
           "deletedByAdmin": true,
           "deletedAt": "2025-11-14T21:53:09.828Z",
           "deletedBy": "admin-1",

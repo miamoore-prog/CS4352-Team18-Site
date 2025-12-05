@@ -16,12 +16,14 @@
         {
           "author": "harry",
           "text": "I've been using MagicSchool to build interactive lessons — does anyone have favorite templates?",
-          "date": "2025-11-06T08:00:00.000Z"
+          "date": "2025-11-06T08:00:00.000Z",
+          "likes": []
         },
         {
           "author": "gina",
           "text": "Try branching scenarios — students choose paths and the model adapts content.",
-          "date": "2025-11-06T09:10:00.000Z"
+          "date": "2025-11-06T09:10:00.000Z",
+          "likes": []
         }
       ],
       "likes": ["user2"]

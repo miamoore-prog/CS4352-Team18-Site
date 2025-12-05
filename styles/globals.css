@@ -11,9 +11,9 @@
   /* warm beige card */
   background: linear-gradient(
     180deg,
-      rgba(255, 250, 244, 0.9),
-      rgba(250, 245, 236, 0.9)
-      );
+    rgba(255, 250, 244, 0.9),
+    rgba(250, 245, 236, 0.9)
+  );
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(16, 24, 40, 0.06);
   padding: 1rem;
@@ -47,24 +47,46 @@ body {
 /* shadcn-like utility classes */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
+
   .btn-primary {
-    @apply bg-primary text-white px-3 py-2 shadow-sm;
+    @apply btn bg-sky-600 text-white px-3 py-2 shadow-sm hover:bg-sky-700 focus:ring-sky-500;
   }
+
   .btn-ghost {
-    @apply bg-transparent text-primary px-2 py-1;
+    @apply btn bg-transparent text-slate-700 px-2 py-1 hover:bg-slate-100 focus:ring-slate-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white px-3 py-2 shadow-sm hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-outline {
+    @apply btn border border-slate-300 bg-white text-slate-700 px-3 py-2 hover:bg-slate-50 focus:ring-slate-500;
+  }
+
+  .btn-sm {
+    @apply text-xs px-2 py-1;
+  }
+
+  .btn-lg {
+    @apply text-base px-4 py-2.5;
   }
 
   .input {
-    @apply w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary text-sm;
-  } 
+    @apply w-full rounded-md border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm transition-colors;
+  }
 }
 
 /* animation for carousel */
 @keyframes carousel {
-  0% { transform: translateX(0) }
-  100% { transform: translateX(-50%) }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 .animate-carousel {
   animation: carousel 60s infinite linear;
@@ -171,7 +193,6 @@ body {
   vertical-align: middle !important;
 }
 
-
 /* Hide the border separator */
 #google_translate_element .goog-te-gadget-simple span[style*="border-left"] {
   display: none !important;
@@ -241,11 +262,15 @@ body {
   top: 0 !important;
 }
 
-/* Additional cleanup for Google Translate UI elements */
-.goog-te-balloon-frame {
+/* Hide hover tooltip but not the dropdown menu */
+.goog-te-balloon-frame:not(.goog-te-menu-frame) {
   display: none !important;
 }
 
 #goog-gt-tt {
   display: none !important;
+}
+
+.skiptranslate iframe {
+  visibility: hidden !important;
 }
