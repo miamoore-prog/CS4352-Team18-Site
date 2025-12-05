@@ -573,17 +573,17 @@ export default function CommunityPage() {
                 const date = t.date || (first && first.date) || null;
                 return (
                   <div key={`flagged-${t.id}`} className="border p-3 rounded bg-yellow-50">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-semibold">
+                    <div key={`flagged-${t.id}-header`} className="flex items-center justify-between">
+                      <div key={`flagged-${t.id}-info`}>
+                        <div key={`flagged-${t.id}-title`} className="font-semibold">
                           {t.title || t.ownerName}
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div key={`flagged-${t.id}-date`} className="text-xs text-slate-500">
                           {date ? new Date(date).toLocaleDateString() : ""} •{" "}
                           {t.ownerName}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div key={`flagged-${t.id}-actions`} className="flex items-center gap-2">
                         <button
                           type="button"
                           className="px-2 py-1 bg-white border rounded text-sm"
@@ -608,7 +608,7 @@ export default function CommunityPage() {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-2 text-sm">
+                    <div key={`flagged-${t.id}-text`} className="mt-2 text-sm">
                       {first ? first.text : ""}
                     </div>
                   </div>
@@ -636,17 +636,17 @@ export default function CommunityPage() {
               const date = t.date || (first && first.date) || null;
               return (
                 <div key={`visible-${t.id}`} className="border p-3 rounded">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold">
+                  <div key={`visible-${t.id}-header`} className="flex items-center justify-between">
+                    <div key={`visible-${t.id}-info`}>
+                      <div key={`visible-${t.id}-title`} className="font-semibold">
                         {t.title || t.ownerName}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div key={`visible-${t.id}-date`} className="text-xs text-slate-500">
                         {date ? new Date(date).toLocaleDateString() : ""} •{" "}
                         {t.ownerName}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div key={`visible-${t.id}-actions`} className="flex items-center gap-2">
                       <button
                         type="button"
                         className={`inline-flex items-center gap-2 px-2 py-1 rounded text-sm ${
@@ -664,7 +664,7 @@ export default function CommunityPage() {
                       </button>
                       {/* admin controls: flag/unflag thread */}
                       {currentUserObj && currentUserObj.role === "admin" && (
-                        <div className="flex items-center gap-2 ml-2">
+                        <div key={`visible-${t.id}-admin-controls`} className="flex items-center gap-2 ml-2">
                           {t.flagged ? (
                             <span className="text-sm text-red-600">
                               Flagged
@@ -688,21 +688,21 @@ export default function CommunityPage() {
                     currentUser &&
                     t.ownerId === currentUser &&
                     (!currentUserObj || currentUserObj.role !== "admin") && (
-                      <div className="mt-3 p-2 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
+                      <div key={`visible-${t.id}-flagged-alert`} className="mt-3 p-2 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
                         Your post is being flagged and is currently under review
                         by an administrator.
                       </div>
                     )}
 
-                  <div className="mt-2 text-sm">{first ? first.text : ""}</div>
+                  <div key={`visible-${t.id}-text`} className="mt-2 text-sm">{first ? first.text : ""}</div>
                   {t.keywords && t.keywords.length > 0 && (
-                    <div className="mt-2 text-xs text-slate-500">
+                    <div key={`visible-${t.id}-keywords`} className="mt-2 text-xs text-slate-500">
                       {t.keywords.join(" • ")}
                     </div>
                   )}
 
                   {/* comments: show up to 3, then a view more link */}
-                  <div className="mt-3 space-y-2">
+                  <div key={`visible-${t.id}-comments`} className="mt-3 space-y-2">
                     {comments.slice(0, 3).map((c, idx) => {
                       const postIndex = c.dbIndex; // Use database index for mutations
                       if (c.deletedByAdmin) {
@@ -712,9 +712,9 @@ export default function CommunityPage() {
                               key={`${t.id}-comment-${postIndex}-${idx}`}
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="text-xs text-slate-500">
+                              <div key={`${t.id}-comment-${postIndex}-${idx}-container`} className="flex items-start justify-between">
+                                <div key={`${t.id}-comment-${postIndex}-${idx}-content`} className="flex-1">
+                                  <div key={`${t.id}-comment-${postIndex}-${idx}-meta`} className="text-xs text-slate-500">
                                     {c.authorIsAdmin
                                       ? "admin"
                                       : c.authorName || c.author}{" "}
@@ -727,7 +727,7 @@ export default function CommunityPage() {
                                       deleted by admin
                                     </span>
                                   </div>
-                                  <div className="mt-1 italic text-slate-500">{c.deletedText || ""}</div>
+                                  <div key={`${t.id}-comment-${postIndex}-${idx}-deleted-text`} className="mt-1 italic text-slate-500">{c.deletedText || ""}</div>
                                 </div>
                                 <button
                                   className="text-xs text-green-600 hover:text-green-700 px-2 py-1"
@@ -747,7 +747,7 @@ export default function CommunityPage() {
                             key={`${t.id}-comment-${postIndex}-${idx}`}
                             className="text-sm border rounded p-2 bg-slate-50"
                           >
-                            <div className="text-xs text-slate-500">
+                            <div key={`${t.id}-comment-${postIndex}-${idx}-deleted-msg`} className="text-xs text-slate-500">
                               Comment deleted by admin
                             </div>
                           </div>
@@ -764,17 +764,17 @@ export default function CommunityPage() {
                           key={`${t.id}-comment-${postIndex}-${idx}`}
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="text-xs text-slate-500">
+                          <div key={`${t.id}-comment-${postIndex}-${idx}-container`} className="flex items-start justify-between">
+                            <div key={`${t.id}-comment-${postIndex}-${idx}-content`} className="flex-1">
+                              <div key={`${t.id}-comment-${postIndex}-${idx}-meta`} className="text-xs text-slate-500">
                                 {c.authorIsAdmin
                                   ? "admin"
                                   : c.authorName || c.author}{" "}
                                 • {c.date ? new Date(c.date).toLocaleString() : ""}
                               </div>
-                              <div className="mt-1">{c.text}</div>
+                              <div key={`${t.id}-comment-${postIndex}-${idx}-text`} className="mt-1">{c.text}</div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div key={`${t.id}-comment-${postIndex}-${idx}-actions`} className="flex items-center gap-2">
                               <button
                                 onClick={() => handleLikeComment(t.id, postIndex)}
                                 className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors ${
@@ -812,7 +812,7 @@ export default function CommunityPage() {
                     })}
 
                     {comments.length > 3 && (
-                      <div>
+                      <div key={`visible-${t.id}-view-more`}>
                         <a
                           className="text-sm text-sky-600 hover:underline"
                           href={`/community/${t.id}`}
