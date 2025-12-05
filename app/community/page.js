@@ -248,8 +248,6 @@ export default function CommunityPage() {
       if (res.ok && mountedRef.current) {
         const controller = new AbortController();
         await fetchPosts(controller.signal);
-        // Add delay to allow DOM to settle after React re-renders
-        await new Promise(resolve => setTimeout(resolve, 300));
       }
     } catch (e) {
       return;
@@ -574,7 +572,7 @@ export default function CommunityPage() {
                   Array.isArray(t.posts) && t.posts[0] ? t.posts[0] : null;
                 const date = t.date || (first && first.date) || null;
                 return (
-                  <div key={t.id} className="border p-3 rounded bg-yellow-50">
+                  <div key={`flagged-${t.id}`} className="border p-3 rounded bg-yellow-50">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-semibold">
@@ -637,7 +635,7 @@ export default function CommunityPage() {
               const comments = Array.isArray(t.posts) ? t.posts.slice(1) : [];
               const date = t.date || (first && first.date) || null;
               return (
-                <div key={t.id} className="border p-3 rounded">
+                <div key={`visible-${t.id}`} className="border p-3 rounded">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-semibold">
@@ -711,7 +709,7 @@ export default function CommunityPage() {
                         if (currentUserObj && currentUserObj.role === "admin") {
                           return (
                             <div
-                              key={idx}
+                              key={`${t.id}-comment-${postIndex}-${idx}`}
                               className="text-sm border rounded p-2 bg-slate-50"
                             >
                               <div className="flex items-start justify-between">
@@ -746,7 +744,7 @@ export default function CommunityPage() {
                         }
                         return (
                           <div
-                            key={idx}
+                            key={`${t.id}-comment-${postIndex}-${idx}`}
                             className="text-sm border rounded p-2 bg-slate-50"
                           >
                             <div className="text-xs text-slate-500">
@@ -763,7 +761,7 @@ export default function CommunityPage() {
 
                       return (
                         <div
-                          key={idx}
+                          key={`${t.id}-comment-${postIndex}-${idx}`}
                           className="text-sm border rounded p-2 bg-slate-50"
                         >
                           <div className="flex items-start justify-between">
