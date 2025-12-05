@@ -36,6 +36,7 @@ export default function CommunityPage() {
   const [sort, setSort] = useState("recent");
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
+  const [flaggingThreadId, setFlaggingThreadId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -223,10 +224,17 @@ export default function CommunityPage() {
   }
 
   async function toggleFlag(threadId, currentFlag) {
+    // Prevent multiple rapid clicks
+    if (flaggingThreadId === threadId) return;
+
     try {
+      setFlaggingThreadId(threadId);
       const auth = localStorage.getItem("mock_auth");
       const token = auth ? JSON.parse(auth).token : null;
-      if (!token) return;
+      if (!token) {
+        setFlaggingThreadId(null);
+        return;
+      }
       const headers = { "Content-Type": "application/json" };
       if (token) headers["x-user-id"] = token;
       const res = await fetch("/api/community", {
@@ -236,10 +244,14 @@ export default function CommunityPage() {
       });
       if (res.ok && mountedRef.current) {
         const controller = new AbortController();
-        fetchPosts(controller.signal);
+        await fetchPosts(controller.signal);
       }
     } catch (e) {
       return;
+    } finally {
+      if (mountedRef.current) {
+        setFlaggingThreadId(null);
+      }
     }
   }
 
@@ -577,10 +589,11 @@ export default function CommunityPage() {
                         </button>
                         <button
                           type="button"
-                          className="px-2 py-1 bg-red-600 text-white rounded text-sm"
+                          className="px-2 py-1 bg-red-600 text-white rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => toggleFlag(t.id, true)}
+                          disabled={flaggingThreadId === t.id}
                         >
-                          Unflag
+                          {flaggingThreadId === t.id ? "..." : "Unflag"}
                         </button>
                         <button
                           type="button"
@@ -655,10 +668,11 @@ export default function CommunityPage() {
                           ) : null}
                           <button
                             type="button"
-                            className="px-2 py-1 border rounded text-sm bg-white"
+                            className="px-2 py-1 border rounded text-sm bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={() => toggleFlag(t.id, !!t.flagged)}
+                            disabled={flaggingThreadId === t.id}
                           >
-                            {t.flagged ? "Unflag" : "Flag"}
+                            {flaggingThreadId === t.id ? "..." : (t.flagged ? "Unflag" : "Flag")}
                           </button>
                         </div>
                       )}
